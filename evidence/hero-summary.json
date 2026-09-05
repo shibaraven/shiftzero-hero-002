@@ -1,0 +1,108 @@
+{
+  "approval": {
+    "actor": "reliability-run-001",
+    "expires_at": "2026-09-05T09:46:17.226757Z",
+    "issued_at": "2026-09-05T09:31:17.226757Z",
+    "token_id": "APR-60CF05A774"
+  },
+  "claims_boundary": "All values come from a deterministic fixture/reference-simulator trace. No physical stop-latency or live Nebius claim is made.",
+  "final_status": "COMPLETED",
+  "initial_route": [
+    "N01",
+    "N04",
+    "N09",
+    "N12"
+  ],
+  "initial_route_version": "route-44000c8e3339",
+  "intent": {
+    "constraints": [
+      "avoid-human-zone"
+    ],
+    "destination": "RACK-A12",
+    "pallet_id": "P-104",
+    "requested_agv": null,
+    "source": "INBOUND-01"
+  },
+  "measurement_scope": "reference_simulator_fixture_provider",
+  "mission_id": "M-B15526A022",
+  "model_calls": [
+    {
+      "completed_at": "2026-09-05T09:31:17.222569Z",
+      "estimated_cost_usd": null,
+      "fallback_state": null,
+      "finish_reason": null,
+      "http_status": null,
+      "input_tokens": null,
+      "latency_ms": 1.373,
+      "model": "deterministic-fixture-not-a-model",
+      "output_tokens": null,
+      "provider": "fixture",
+      "rate_limit_remaining": null,
+      "rate_limit_reset": null,
+      "repair_count": 0,
+      "request_id": "FIXTURE-BF1F0830",
+      "retry_count": 0,
+      "started_at": "2026-09-05T09:31:17.221196Z",
+      "timed_out": false,
+      "tool_arguments_hash": "2b57fbd9e421ce96fe71ae24c86400352f7aae15c90868351949332a283b0588",
+      "tool_name": "parse_mission_intent"
+    },
+    {
+      "completed_at": "2026-09-05T09:31:17.224585Z",
+      "estimated_cost_usd": null,
+      "fallback_state": null,
+      "finish_reason": null,
+      "http_status": null,
+      "input_tokens": null,
+      "latency_ms": 0.001,
+      "model": "deterministic-fixture-not-a-model",
+      "output_tokens": null,
+      "provider": "fixture",
+      "rate_limit_remaining": null,
+      "rate_limit_reset": null,
+      "repair_count": 0,
+      "request_id": "FIXTURE-E5B38F93",
+      "retry_count": 0,
+      "started_at": "2026-09-05T09:31:17.224585Z",
+      "timed_out": false,
+      "tool_arguments_hash": "33918f3c6b7f1260ba8e578fd5a07ddcceb159f552fd007e33569add7c9cb201",
+      "tool_name": "propose_transport"
+    }
+  ],
+  "official_gate_passed": false,
+  "proposal_id": "TP-9265826657",
+  "replan_route": [
+    "N04",
+    "N05",
+    "N10",
+    "N12"
+  ],
+  "replan_route_version": "route-d8c9119af45a",
+  "safety_policy_sha256": "8199d15fbc4153c9a86978f304b933dc07dbf7629be07407cb706c4b81574934",
+  "safety_policy_version": "safety-v1",
+  "safety_proof_hash": "1ad2f7bb812f0080fab57961ff2d4b6c3833503eaacd8a1aadf84b98ebfd3b56",
+  "safety_proof_id": "SP-6A4CE1F95D",
+  "selected_agv": "AGV-03",
+  "state_history": [
+    "OBSERVED",
+    "PLANNED",
+    "PROPOSED",
+    "VERIFIED",
+    "APPROVED",
+    "EXECUTING",
+    "BLOCKED",
+    "SAFE_STOP",
+    "REPLANNING",
+    "VERIFIED",
+    "EXECUTING",
+    "COMPLETED"
+  ],
+  "stop_latency_kind": "simulated_process",
+  "stop_latency_ms": 0.0305,
+  "summary_hash": "5febe735fe0326a3f9f1dfd2c9fa98d253e4b2a5aae72b6e17b6dab7550cdf5f",
+  "summary_version": "hero-summary-v1",
+  "trace_chain_valid": true,
+  "trace_id": "TR-070649BC2BED",
+  "trace_path": "evidence/hero-reliability/runs/TR-070649BC2BED/hero-run.jsonl",
+  "trace_sha256": "3af9ac571f59c53fff579e592d6fe8b3c17c973cfeee1ce28350b520826032b7"
+}

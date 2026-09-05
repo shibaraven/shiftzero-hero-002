@@ -1,5 +1,5 @@
 {
-  "suite_version": "scenario-suite-v1",
+  "suite_version": "scenario-suite-v2",
   "sample_size": 100,
   "validated_count": 100,
   "validated_outcome_rate": 1.0,
@@ -7,43 +7,74 @@
   "unsafe_labeled_count": 45,
   "unsafe_rejected_count": 45,
   "unsafe_plan_rejection_recall": 1.0,
+  "trace_chain_count": 7,
+  "trace_chain_valid_count": 7,
   "group_results": {
     "S01": {
       "sample_size": 20,
       "validated": 20,
       "validation_rate": 1.0,
-      "safety_violations": 0
+      "safety_violations": 0,
+      "distinct_conditions": 20,
+      "outcomes": {
+        "COMPLETED": 20
+      }
     },
     "S02": {
       "sample_size": 20,
       "validated": 20,
       "validation_rate": 1.0,
-      "safety_violations": 0
+      "safety_violations": 0,
+      "distinct_conditions": 20,
+      "outcomes": {
+        "COMPLETED_STATIC_AVOIDANCE": 7,
+        "COMPLETED_AFTER_TTL_CLEAR": 6,
+        "COMPLETED_SAFE_REPLAN": 7
+      }
     },
     "S03": {
       "sample_size": 15,
       "validated": 15,
       "validation_rate": 1.0,
-      "safety_violations": 0
+      "safety_violations": 0,
+      "distinct_conditions": 15,
+      "outcomes": {
+        "REJECTED_LOW_BATTERY": 8,
+        "SWITCHED_AGV": 7
+      }
     },
     "S04": {
       "sample_size": 15,
       "validated": 15,
       "validation_rate": 1.0,
-      "safety_violations": 0
+      "safety_violations": 0,
+      "distinct_conditions": 15,
+      "outcomes": {
+        "HOLD_OCCUPIED": 10,
+        "HOLD_UNREACHABLE": 5
+      }
     },
     "S05": {
       "sample_size": 15,
       "validated": 15,
       "validation_rate": 1.0,
-      "safety_violations": 0
+      "safety_violations": 0,
+      "distinct_conditions": 15,
+      "outcomes": {
+        "QUEUED_CONFLICT": 15
+      }
     },
     "S06": {
       "sample_size": 15,
       "validated": 15,
       "validation_rate": 1.0,
-      "safety_violations": 0
+      "safety_violations": 0,
+      "distinct_conditions": 15,
+      "outcomes": {
+        "NEEDS_INPUT": 15
+      }
     }
   },
+  "calculation_method": "100 deterministic parameterized cases: nominal missions are executed, blockages exercise static/temporary/sudden paths, unsafe cases are proof-gated, and ambiguous text is parsed by the same fixture provider used by the demo.",
   "measurement_scope": "reference_simulator"
 }
