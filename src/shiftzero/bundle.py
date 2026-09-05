@@ -94,6 +94,10 @@ def _resolve_files(root: Path) -> list[Path]:
         (root / "evidence" / "hero-reliability" / "runs").glob("*/hero-run.jsonl")
     )
     paths.extend(reliability_trace_paths)
+    scenario_trace_paths = sorted(
+        (root / "evidence" / "scenario-evaluation" / "runs").glob("*/hero-run.jsonl")
+    )
+    paths.extend(scenario_trace_paths)
     missing = [path for path in paths[: len(REQUIRED_PATHS)] if not path.is_file()]
     if missing:
         missing_text = ", ".join(path.relative_to(root).as_posix() for path in missing)
