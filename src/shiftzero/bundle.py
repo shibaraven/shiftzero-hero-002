@@ -9,6 +9,12 @@ from shiftzero.evidence import EvidenceRecorder
 
 BUNDLE_VERSION = "hero002-evidence-v2"
 REQUIRED_PATHS = (
+    "LICENSE",
+    "PRE_EXISTING_WORK.md",
+    "README.md",
+    "THIRD_PARTY_LICENSES.json",
+    "THIRD_PARTY_NOTICES.md",
+    "requirements.lock",
     "evidence/scenario-evaluation/metrics.json",
     "evidence/scenario-evaluation/run-manifest.json",
     "evidence/scenario-evaluation/scenario-results.jsonl",
@@ -36,6 +42,8 @@ REQUIRED_PATHS = (
     "docs/SPEC_COMPLIANCE.md",
     "docs/AUTHORIZATION.md",
     "docs/JUDGE_MODE_PERFORMANCE.md",
+    "docs/DEVPOST_DRAFT.md",
+    "docs/VIDEO_SHOTLIST.md",
     "schemas/openapi.json",
 )
 
@@ -150,6 +158,11 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
     impact_load = json.loads(
         (root / "evidence/impact-load-model.json").read_text(encoding="utf-8")
     )
+    license_inventory = json.loads(
+        (root / "THIRD_PARTY_LICENSES.json").read_text(encoding="utf-8")
+    )
+    devpost = (root / "docs/DEVPOST_DRAFT.md").read_text(encoding="utf-8")
+    video_shotlist = (root / "docs/VIDEO_SHOTLIST.md").read_text(encoding="utf-8")
     checks = {
         "scenario_count_is_100": metrics["sample_size"] == 100,
         "scenario_all_outcomes_valid": metrics["validated_count"] == metrics["sample_size"],
@@ -180,6 +193,17 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         }
         == {400, 450, 500}
         and impact_load["official_or_physical_evidence"] is False,
+        "third_party_inventory_complete": all(
+            license_inventory["summary"][key] == 0
+            for key in ("missing_version", "missing_license", "missing_source")
+        )
+        and license_inventory["summary"]["total_packages"]
+        == len(license_inventory["packages"]),
+        "devpost_has_existing_work_section": "## Existing work" in devpost,
+        "video_plan_has_continuous_65_second_physical_segment": (
+            "Continuous physical segment: 65 seconds" in video_shotlist
+            and "Encoded target: 2:58" in video_shotlist
+        ),
         "required_file_count": len(files),
     }
     checks["passed"] = all(value is True for value in checks.values() if isinstance(value, bool))

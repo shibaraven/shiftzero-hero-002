@@ -72,6 +72,24 @@ official six-variant Compatibility Gate. Only a passing live report can unlock s
 transport work. The next physical phase requires an OEM protocol, MQTT or VDA 5050 gateway,
 PLC/edge stop contract, mapped test area and safety-owner approval.
 
+## Existing work
+
+Before 2026-08-26, HERO-001 had already established the concepts of deterministic WebMCP
+end-to-end proof, a Digital Twin/AGV simulator, proposal-approval-blockage-replan flow, and a trace
+and metrics foundation. Those concepts are prior work and are not presented as new hackathon
+inventions.
+
+During the HERO-002 competition period, this repository added the Nebius Token Factory/Nemotron
+provider implementation, the six-variant Compatibility Gate, state-gated typed contracts,
+three-layer validation, signed approval and idempotency controls, proof-carrying mission objects,
+the reproducible 100-scenario suite, public-release-gated Judge Mode, and the hardware integration
+boundary. Live-provider, Serverless and physical claims remain pending until their corresponding
+external evidence exists.
+
+The detailed file-level declaration is maintained in `PRE_EXISTING_WORK.md`. The project owner
+must confirm that declaration against the complete private history and sign/date it before final
+submission; this draft does not impersonate that owner confirmation.
+
 ## Links to fill at submission time
 
 - Judge Mode staging: `https://shiftzero-hero-002.mingjen.chatgpt.site` (owner-private until

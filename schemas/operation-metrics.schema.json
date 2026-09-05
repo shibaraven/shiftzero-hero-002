@@ -1,0 +1,148 @@
+{
+  "$defs": {
+    "MissionStatus": {
+      "enum": [
+        "INTENT",
+        "NEEDS_INPUT",
+        "OBSERVED",
+        "PLANNED",
+        "PROPOSED",
+        "VERIFIED",
+        "APPROVED",
+        "EXECUTING",
+        "BLOCKED",
+        "SAFE_STOP",
+        "REPLANNING",
+        "COMPLETED",
+        "REJECTED",
+        "FAILED",
+        "FAILED_SAFE"
+      ],
+      "title": "MissionStatus",
+      "type": "string"
+    },
+    "Pose": {
+      "additionalProperties": false,
+      "properties": {
+        "heading_deg": {
+          "default": 0,
+          "exclusiveMaximum": 360,
+          "minimum": 0,
+          "title": "Heading Deg",
+          "type": "number"
+        },
+        "node_id": {
+          "title": "Node Id",
+          "type": "string"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "node_id",
+        "x",
+        "y"
+      ],
+      "title": "Pose",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "completed": {
+      "title": "Completed",
+      "type": "boolean"
+    },
+    "destination_occupancy": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Destination Occupancy"
+    },
+    "estimated_model_cost_usd": {
+      "minimum": 0,
+      "title": "Estimated Model Cost Usd",
+      "type": "number"
+    },
+    "final_node": {
+      "title": "Final Node",
+      "type": "string"
+    },
+    "final_pose": {
+      "$ref": "#/$defs/Pose"
+    },
+    "final_status": {
+      "$ref": "#/$defs/MissionStatus"
+    },
+    "human_interventions": {
+      "minimum": 0,
+      "title": "Human Interventions",
+      "type": "integer"
+    },
+    "measurement_scope": {
+      "title": "Measurement Scope",
+      "type": "string"
+    },
+    "mission_id": {
+      "title": "Mission Id",
+      "type": "string"
+    },
+    "sample_size": {
+      "default": 1,
+      "minimum": 1,
+      "title": "Sample Size",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "operation-metrics-v1",
+      "default": "operation-metrics-v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "stop_latency_kind": {
+      "enum": [
+        "simulated_process",
+        "physical_edge"
+      ],
+      "title": "Stop Latency Kind",
+      "type": "string"
+    },
+    "stop_latency_ms": {
+      "minimum": 0,
+      "title": "Stop Latency Ms",
+      "type": "number"
+    },
+    "total_duration_ms": {
+      "minimum": 0,
+      "title": "Total Duration Ms",
+      "type": "number"
+    }
+  },
+  "required": [
+    "measurement_scope",
+    "mission_id",
+    "final_status",
+    "completed",
+    "total_duration_ms",
+    "human_interventions",
+    "stop_latency_ms",
+    "stop_latency_kind",
+    "estimated_model_cost_usd",
+    "final_node",
+    "final_pose",
+    "destination_occupancy"
+  ],
+  "title": "OperationMetrics",
+  "type": "object"
+}

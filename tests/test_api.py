@@ -142,6 +142,11 @@ def test_interactive_api_enforces_approval_and_completes_replan() -> None:
     trace = client.get(f"/api/traces/{trace_id}")
     assert trace.status_code == 200
     assert any(event["kind"] == "outcome.completed" for event in trace.json())
+    metrics_events = [
+        event for event in trace.json() if event["kind"] == "tool.get_operation_metrics"
+    ]
+    assert len(metrics_events) == 1
+    assert metrics_events[0]["payload"]["result"]["completed"] is True
 
 
 def test_ambiguous_fixture_intent_requires_clarification() -> None:

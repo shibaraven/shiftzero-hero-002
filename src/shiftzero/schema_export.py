@@ -8,6 +8,7 @@ from shiftzero.domain import (
     Mission,
     MissionIntent,
     OperationalSnapshot,
+    OperationMetrics,
     RecoveryIntent,
     RoutePlan,
     SafetyProof,
@@ -22,6 +23,7 @@ SCHEMAS = {
     "safety-proof.schema.json": SafetyProof,
     "approval-token.schema.json": ApprovalToken,
     "mission.schema.json": Mission,
+    "operation-metrics.schema.json": OperationMetrics,
     "recovery-intent.schema.json": RecoveryIntent,
 }
 

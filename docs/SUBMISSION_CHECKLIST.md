@@ -21,6 +21,13 @@
 - [x] Matched 20+20 Manual UI versus Agent Flow simulator baseline.
 - [x] Judge Mode Run Hero, Architecture, Evidence and GitHub/source-gate entrances.
 - [x] Devpost draft and three-minute video shot list.
+- [x] Typed `get_operation_metrics` result is present in completed Hero traces and its JSON Schema
+      is checked in.
+- [x] Video plan reserves a continuous 65-second physical segment, a 15-second opening and no more
+      than 20 seconds for architecture within a 2:58 encoded target.
+- [x] Devpost draft contains an explicit Existing work section linked to the detailed disclosure.
+- [x] Resolved Python/npm inventory records exact versions, licenses and sources; Python
+      verification dependencies are frozen.
 
 ## External prerequisites before final submission claims
 

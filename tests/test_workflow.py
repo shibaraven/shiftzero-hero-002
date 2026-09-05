@@ -41,9 +41,7 @@ def test_complete_proof_carrying_hero_loop(tmp_path: Path) -> None:
         "error",
     }
     assert all(
-        required <= set(event["payload"])
-        for event in events
-        if event["kind"].startswith("tool.")
+        required <= set(event["payload"]) for event in events if event["kind"].startswith("tool.")
     )
     outcome = next(event["payload"] for event in events if event["kind"] == "outcome.completed")
     assert outcome["total_duration_ms"] > 0
@@ -57,6 +55,12 @@ def test_complete_proof_carrying_hero_loop(tmp_path: Path) -> None:
         "heading_deg": 315.0,
     }
     assert outcome["destination_occupancy"] == "P-104"
+    metrics_event = next(event for event in events if event["kind"] == "tool.get_operation_metrics")
+    assert metrics_event["payload"]["tool"] == "get_operation_metrics"
+    assert metrics_event["payload"]["arguments"] == {"mission_id": result.mission_id}
+    assert metrics_event["payload"]["result"]["schema_version"] == "operation-metrics-v1"
+    assert metrics_event["payload"]["result"]["completed"] is True
+    assert metrics_event["payload"]["result"]["final_pose"]["heading_deg"] == 315.0
 
 
 def test_fixture_is_never_labeled_as_nebius(tmp_path: Path) -> None:

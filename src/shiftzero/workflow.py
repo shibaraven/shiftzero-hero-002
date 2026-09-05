@@ -11,6 +11,7 @@ from shiftzero.domain import (
     HeroRunResult,
     Mission,
     MissionStatus,
+    OperationMetrics,
     ToolName,
     canonical_hash,
     utc_now,
@@ -310,22 +311,45 @@ class WorkflowController:
         final_agv = world.agvs[mission.selected_agv]
         if final_agv.pose is None:
             raise RuntimeError("completed mission is missing the final AGV pose")
+        measurement_scope = (
+            "reference_simulator_fixture_provider"
+            if self.provider.provider_name == "fixture"
+            else "live_provider_reference_simulator"
+        )
+        estimated_model_cost_usd = sum(
+            call.estimated_cost_usd or 0 for call in model_calls
+        )
+        operation_metrics, _ = recorder.call_tool(
+            kind="tool.get_operation_metrics",
+            tool_name=ToolName.GET_OPERATION_METRICS,
+            arguments={"mission_id": mission.mission_id},
+            operation=lambda: OperationMetrics(
+                measurement_scope=measurement_scope,
+                mission_id=mission.mission_id,
+                final_status=mission.status,
+                completed=mission.status == MissionStatus.COMPLETED,
+                total_duration_ms=total_duration_ms,
+                human_interventions=1,
+                stop_latency_ms=round(stop_latency_ms, 6),
+                stop_latency_kind="simulated_process",
+                estimated_model_cost_usd=estimated_model_cost_usd,
+                final_node=final_agv.node_id,
+                final_pose=final_agv.pose,
+                destination_occupancy=world.locations[intent.destination].occupancy,
+            ),
+        )
         recorder.record(
             "outcome.completed",
             {
-                "mission_id": mission.mission_id,
-                "final_node": final_agv.node_id,
-                "final_pose": final_agv.pose,
-                "destination_occupancy": world.locations[intent.destination].occupancy,
+                "mission_id": operation_metrics.mission_id,
+                "final_node": operation_metrics.final_node,
+                "final_pose": operation_metrics.final_pose,
+                "destination_occupancy": operation_metrics.destination_occupancy,
                 "trace_chain_valid": EvidenceRecorder.verify(recorder.path),
-                "total_duration_ms": total_duration_ms,
-                "human_interventions": 1,
-                "estimated_model_cost_usd": sum(
-                    call.estimated_cost_usd or 0 for call in model_calls
-                ),
-                "measurement_scope": "reference_simulator_fixture_provider"
-                if self.provider.provider_name == "fixture"
-                else "live_provider_reference_simulator",
+                "total_duration_ms": operation_metrics.total_duration_ms,
+                "human_interventions": operation_metrics.human_interventions,
+                "estimated_model_cost_usd": operation_metrics.estimated_model_cost_usd,
+                "measurement_scope": operation_metrics.measurement_scope,
             },
         )
         recorder.export_json()

@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from shiftzero.domain import canonical_hash
+from shiftzero.domain import OperationMetrics, canonical_hash
 from shiftzero.evidence import EvidenceRecorder
 
 
@@ -29,6 +29,9 @@ def build_hero_summary(*, root: Path, output_path: Path) -> dict[str, Any]:
     stop = _payload(events, "execution.local_stop")
     outcome_event = _event(events, "outcome.completed")
     outcome = outcome_event["payload"]
+    operation_metrics = OperationMetrics.model_validate(
+        _payload(events, "tool.get_operation_metrics")["result"]
+    )
     model_calls = [
         event["payload"]
         for event in events
@@ -37,7 +40,7 @@ def build_hero_summary(*, root: Path, output_path: Path) -> dict[str, Any]:
     policy_path = root / "schemas" / "safety-policy.json"
     trace_relative = trace_path.resolve().relative_to(root.resolve()).as_posix()
     body: dict[str, Any] = {
-        "summary_version": "hero-summary-v2",
+        "summary_version": "hero-summary-v3",
         "measurement_scope": "reference_simulator_fixture_provider",
         "official_gate_passed": False,
         "evidence_captured_at": outcome_event["recorded_at"],
@@ -64,6 +67,7 @@ def build_hero_summary(*, root: Path, output_path: Path) -> dict[str, Any]:
         "total_duration_ms": outcome["total_duration_ms"],
         "human_interventions": outcome["human_interventions"],
         "estimated_model_cost_usd": outcome["estimated_model_cost_usd"],
+        "operation_metrics": operation_metrics,
         "final_node": outcome["final_node"],
         "final_pose": outcome["final_pose"],
         "destination_occupancy": outcome["destination_occupancy"],

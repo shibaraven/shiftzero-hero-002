@@ -16,6 +16,7 @@ from shiftzero.domain import (
     MissionIntent,
     MissionStatus,
     OperationalSnapshot,
+    OperationMetrics,
     RecoveryIntent,
     RoutePlan,
     SafetyProof,
@@ -62,6 +63,7 @@ class MissionSession:
     rejection_reason: str | None = None
     recovery: RecoveryIntent | None = None
     replan_proof: SafetyProof | None = None
+    operation_metrics: OperationMetrics | None = None
     created_at: datetime = field(default_factory=utc_now)
 
 
@@ -428,9 +430,7 @@ class MissionService:
                 kind="tool.stop_mission",
                 tool_name="stop_mission",
                 arguments={"mission_id": mission_id, "trigger_source": trigger_source},
-                operation=lambda: session.adapter.local_stop(
-                    mission_id, source=trigger_source
-                ),
+                operation=lambda: session.adapter.local_stop(mission_id, source=trigger_source),
             )
             if session.mission is not None:
                 session.mission = session.adapter.get(session.mission.mission_id)
@@ -612,21 +612,41 @@ class MissionService:
             final_agv = session.world.agvs[session.mission.selected_agv]
             if final_agv.pose is None:
                 raise MissionServiceError("completed mission is missing the final AGV pose")
+            total_duration_ms = round((utc_now() - session.created_at).total_seconds() * 1000, 6)
+            session.operation_metrics, _ = session.recorder.call_tool(
+                kind="tool.get_operation_metrics",
+                tool_name="get_operation_metrics",
+                arguments={"mission_id": mission_id},
+                operation=lambda: OperationMetrics(
+                    measurement_scope="current_process_reference_simulator",
+                    mission_id=mission_id,
+                    final_status=session.mission.status,
+                    completed=session.mission.status == MissionStatus.COMPLETED,
+                    total_duration_ms=total_duration_ms,
+                    human_interventions=2,
+                    stop_latency_ms=session.stop_latency_ms or 0.0,
+                    stop_latency_kind="simulated_process",
+                    estimated_model_cost_usd=0.0,
+                    final_node=final_agv.node_id,
+                    final_pose=final_agv.pose,
+                    destination_occupancy=session.world.locations[
+                        session.intent.destination
+                    ].occupancy,
+                ),
+            )
             session.recorder.record(
                 "outcome.completed",
                 {
-                    "mission_id": mission_id,
-                    "final_node": final_agv.node_id,
-                    "final_pose": final_agv.pose,
-                    "destination_occupancy": session.world.locations[
-                        session.intent.destination
-                    ].occupancy,
-                    "total_duration_ms": round(
-                        (utc_now() - session.created_at).total_seconds() * 1000, 6
+                    "mission_id": session.operation_metrics.mission_id,
+                    "final_node": session.operation_metrics.final_node,
+                    "final_pose": session.operation_metrics.final_pose,
+                    "destination_occupancy": session.operation_metrics.destination_occupancy,
+                    "total_duration_ms": session.operation_metrics.total_duration_ms,
+                    "human_interventions": session.operation_metrics.human_interventions,
+                    "estimated_model_cost_usd": (
+                        session.operation_metrics.estimated_model_cost_usd
                     ),
-                    "human_interventions": 2,
-                    "estimated_model_cost_usd": 0.0,
-                    "measurement_scope": "current_process_reference_simulator",
+                    "measurement_scope": session.operation_metrics.measurement_scope,
                 },
             )
             session.recorder.export_json()
@@ -701,9 +721,7 @@ class MissionService:
             session.state.transition(MissionStatus.FAILED_SAFE)
             session.recorder.record("workflow.transition", {"state": session.state.current})
             session.recorder.export_json()
-            return self._finish_operation(
-                session, name="override", idempotency_key=idempotency_key
-            )
+            return self._finish_operation(session, name="override", idempotency_key=idempotency_key)
 
     def proof(self, proposal_id: str) -> SafetyProof:
         session = self._by_proposal(proposal_id)
@@ -758,6 +776,7 @@ class MissionService:
             "replan": session.replan,
             "recovery": session.recovery,
             "replan_proof": session.replan_proof,
+            "operation_metrics": session.operation_metrics,
             "stop_latency_ms": session.stop_latency_ms,
             "version": session.version,
             "rejection_reason": session.rejection_reason,

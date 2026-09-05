@@ -366,6 +366,23 @@ class Mission(StrictModel):
     current_node_index: int = 0
 
 
+class OperationMetrics(StrictModel):
+    schema_version: Literal["operation-metrics-v1"] = "operation-metrics-v1"
+    measurement_scope: str
+    mission_id: str
+    sample_size: int = Field(default=1, ge=1)
+    final_status: MissionStatus
+    completed: bool
+    total_duration_ms: float = Field(ge=0)
+    human_interventions: int = Field(ge=0)
+    stop_latency_ms: float = Field(ge=0)
+    stop_latency_kind: Literal["simulated_process", "physical_edge"]
+    estimated_model_cost_usd: float = Field(ge=0)
+    final_node: str
+    final_pose: Pose
+    destination_occupancy: str | None
+
+
 class ModelCallEvidence(StrictModel):
     provider: str
     model: str

@@ -13,6 +13,7 @@ from shiftzero.config import TokenFactorySettings
 from shiftzero.evaluation import evaluate_scenarios
 from shiftzero.evidence_summary import build_hero_summary
 from shiftzero.impact import run_impact_load_model
+from shiftzero.license_inventory import build_license_inventory
 from shiftzero.reliability import run_hero_reliability
 from shiftzero.schema_export import export_schemas
 from shiftzero.screenshot_manifest import build_screenshot_manifest
@@ -126,6 +127,21 @@ def main() -> None:
         default=Path("evidence/screenshots/manifest.json"),
     )
 
+    licenses = subparsers.add_parser(
+        "build-license-inventory",
+        help="Freeze Python packages and inventory Python/npm licenses and sources",
+    )
+    licenses.add_argument("--root", type=Path, default=Path.cwd())
+    licenses.add_argument(
+        "--output", type=Path, default=Path("THIRD_PARTY_LICENSES.json")
+    )
+    licenses.add_argument(
+        "--notices", type=Path, default=Path("THIRD_PARTY_NOTICES.md")
+    )
+    licenses.add_argument(
+        "--requirements-lock", type=Path, default=Path("requirements.lock")
+    )
+
     args = parser.parse_args()
     scenario = load_default_scenario()
 
@@ -164,6 +180,16 @@ def main() -> None:
             output_path=args.output.resolve(),
         )
         print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
+        return
+
+    if args.command == "build-license-inventory":
+        report = build_license_inventory(
+            root=args.root,
+            output_path=args.output,
+            notices_path=args.notices,
+            requirements_lock_path=args.requirements_lock,
+        )
+        print(json.dumps(report["summary"], ensure_ascii=False, indent=2, sort_keys=True))
         return
 
     if args.command == "hero":

@@ -44,6 +44,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m shiftzero.cli verify-hero-reliability --runs 20
 .\.venv\Scripts\python.exe -m shiftzero.cli fair-baseline --samples 20
 .\.venv\Scripts\python.exe -m shiftzero.cli impact-load-model --sample-days 20
+.\.venv\Scripts\python.exe -m shiftzero.cli build-license-inventory
 .\.venv\Scripts\python.exe -m shiftzero.cli compatibility --provider fixture --repetitions 20
 .\.venv\Scripts\python.exe -m shiftzero.cli build-hero-summary
 .\.venv\Scripts\python.exe -m shiftzero.cli build-screenshot-manifest
@@ -57,6 +58,12 @@ The checked-in impact report evaluates 400, 450, and 500 pallets/day over 20 see
 days per load. It is explicitly a planning projection with declared cycle-time and operator-touch
 assumptions—not physical throughput or observed labor savings. Completed Hero outcomes include
 the final AGV node and `x`, `y`, and heading pose.
+
+Every completed Hero trace also contains a typed `tool.get_operation_metrics` span whose result
+is validated by `operation-metrics.schema.json`. The complete resolved Python/npm dependency
+inventory is generated into `THIRD_PARTY_LICENSES.json`, with exact Python pins in
+`requirements.lock` and the human-readable direct-dependency summary in
+`THIRD_PARTY_NOTICES.md`.
 
 ## Real Token Factory verification
 

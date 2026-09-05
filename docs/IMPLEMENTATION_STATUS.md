@@ -25,6 +25,8 @@
 - Matched 20-sample Manual UI versus Agent Flow simulator baseline, with no labor/time savings
   claim extrapolated to physical operations.
 - Final completion evidence seals destination occupancy and AGV `x/y/heading` pose.
+- Completed missions emit a typed, schema-validated `tool.get_operation_metrics` span carrying
+  the per-mission sample size, completion, duration, intervention, stop, cost and final-pose KPIs.
 - Seeded 400/450/500 pallets/day M/G/2 planning model with 20 simulated days per load, explicit
   assumptions, fleet-buffer recommendation, and no physical throughput or labor claim.
 - Judge Mode local production-build load report with 20 browser samples and a 5,000 ms gate.
@@ -35,6 +37,10 @@
   entrances, explicit MOCK labeling, final pose, load evidence, impact projection, typed
   model-tool and release-acceptance evidence.
 - Devpost draft, anonymous judge runbook, submission checklist, and three-minute video shot list.
+- Spec-aligned 2:58 video plan with a 15-second opening, at most 20 seconds of architecture and an
+  uninterrupted 65-second physical segment; Devpost includes an explicit existing-work section.
+- Complete resolved Python/npm dependency inventory with exact versions, license identifiers,
+  source URLs and a frozen Python verification lock.
 - Owner-private Judge Mode deployment at `https://shiftzero-hero-002.mingjen.chatgpt.site`.
 
 ## Current external blockers

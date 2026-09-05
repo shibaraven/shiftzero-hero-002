@@ -21,9 +21,7 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
     )
     screenshot_content = b"\x89PNG\r\n\x1a\nfixture"
     for name in screenshot_names:
-        (tmp_path / "evidence" / "screenshots" / name).write_bytes(
-            screenshot_content
-        )
+        (tmp_path / "evidence" / "screenshots" / name).write_bytes(screenshot_content)
     (tmp_path / "evidence/screenshots/manifest.json").write_text(
         json.dumps(
             {
@@ -41,9 +39,7 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     (tmp_path / "evidence/scenario-evaluation/metrics.json").write_text(
-        json.dumps(
-            {"sample_size": 100, "validated_count": 100, "safety_violation_count": 0}
-        ),
+        json.dumps({"sample_size": 100, "validated_count": 100, "safety_violation_count": 0}),
         encoding="utf-8",
     )
     (tmp_path / "evidence/hero-reliability/report.json").write_text(
@@ -72,6 +68,34 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
                 "official_or_physical_evidence": False,
             }
         ),
+        encoding="utf-8",
+    )
+    (tmp_path / "THIRD_PARTY_LICENSES.json").write_text(
+        json.dumps(
+            {
+                "summary": {
+                    "total_packages": 1,
+                    "missing_version": 0,
+                    "missing_license": 0,
+                    "missing_source": 0,
+                },
+                "packages": [
+                    {
+                        "name": "fixture",
+                        "version": "1.0.0",
+                        "license": "MIT",
+                        "source": "https://example.invalid/fixture",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "docs/DEVPOST_DRAFT.md").write_text(
+        "# Devpost\n\n## Existing work\n\nDeclared.\n", encoding="utf-8"
+    )
+    (tmp_path / "docs/VIDEO_SHOTLIST.md").write_text(
+        "Encoded target: 2:58\n\nContinuous physical segment: 65 seconds\n",
         encoding="utf-8",
     )
     sample = EvidenceRecorder(tmp_path / "evidence/sample-verified-run")
@@ -103,4 +127,10 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         assert embedded["claim_scope"] == "reference_simulator_and_fixture_provider_only"
         assert len(embedded["files"]) == len(REQUIRED_PATHS) + 42
         assert embedded["completeness_checks"]["scenario_all_outcomes_valid"] is True
+        assert embedded["completeness_checks"]["third_party_inventory_complete"] is True
+        assert embedded["completeness_checks"]["devpost_has_existing_work_section"] is True
+        assert (
+            embedded["completeness_checks"]["video_plan_has_continuous_65_second_physical_segment"]
+            is True
+        )
         assert embedded["completeness_checks"]["passed"] is True

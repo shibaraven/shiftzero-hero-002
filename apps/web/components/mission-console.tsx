@@ -45,6 +45,14 @@ type HeroSummary = {
   total_duration_ms?: number;
   human_interventions?: number;
   estimated_model_cost_usd?: number;
+  operation_metrics?: {
+    schema_version: string;
+    mission_id: string;
+    sample_size: number;
+    completed: boolean;
+    total_duration_ms: number;
+    human_interventions: number;
+  };
   final_node: string;
   destination_occupancy: string;
   final_pose: {
@@ -1456,6 +1464,24 @@ function EvidenceView({
               <p className="text-xs text-slate-500">
                 Loading verified tool spans…
               </p>
+            )}
+            {heroSummary?.operation_metrics && (
+              <div className="border border-cyan-300/15 bg-cyan-300/[0.035] p-3 sm:col-span-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="font-mono text-[10px] text-cyan-200">
+                    get_operation_metrics
+                  </span>
+                  <span className="font-mono text-[9px] text-emerald-300">
+                    {heroSummary.operation_metrics.completed ? 'TYPED RESULT · PASS' : 'INCOMPLETE'}
+                  </span>
+                </div>
+                <p className="mt-2 font-mono text-[9px] leading-4 text-slate-500">
+                  {heroSummary.operation_metrics.schema_version} · mission{' '}
+                  {heroSummary.operation_metrics.mission_id} · sample n={heroSummary.operation_metrics.sample_size} ·{' '}
+                  {heroSummary.operation_metrics.total_duration_ms.toFixed(3)} ms ·{' '}
+                  {heroSummary.operation_metrics.human_interventions} human approval
+                </p>
+              </div>
             )}
           </CardContent>
         </Card>

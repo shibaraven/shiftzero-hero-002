@@ -17,6 +17,10 @@ tamper-evident evidence. They do not demonstrate live Nebius behavior or physica
   error. Planner output records candidate count and estimated duration. Outcomes record duration,
   human interventions, cost, measurement scope, destination occupancy, and final `x/y/heading`
   pose.
+- Immediately before the outcome is sealed, the controller calls the typed
+  `get_operation_metrics` read tool. Its `operation-metrics-v1` result records one completed
+  mission, duration, interventions, stop timing, model cost and final pose; the trace stores its
+  arguments, result, hashes and measured tool latency.
 - The Compatibility preflight is explicitly unofficial. The official gate remains false until the
   same test matrix runs against live Token Factory/Nemotron and its raw request evidence is stored.
 - Judge Mode first-load evidence uses browser end-to-end wall time from navigation start until the
