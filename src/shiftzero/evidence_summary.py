@@ -67,7 +67,7 @@ def build_hero_summary(*, root: Path, output_path: Path) -> dict[str, Any]:
         "total_duration_ms": outcome["total_duration_ms"],
         "human_interventions": outcome["human_interventions"],
         "estimated_model_cost_usd": outcome["estimated_model_cost_usd"],
-        "operation_metrics": operation_metrics,
+        "operation_metrics": operation_metrics.model_dump(mode="json"),
         "final_node": outcome["final_node"],
         "final_pose": outcome["final_pose"],
         "destination_occupancy": outcome["destination_occupancy"],
