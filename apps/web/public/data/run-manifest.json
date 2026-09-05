@@ -1,0 +1,17 @@
+{
+  "claims_boundary": "Reference simulator evidence; not Nebius runtime or physical AGV evidence.",
+  "generated_at": "2026-09-05T08:45:50.020181+00:00",
+  "git_commit": "WORKTREE-UNCOMMITTED",
+  "map_hash": "450dd99ed21ea0f120e34ab07ef71b342ffa9eb8d63af1742df18d7a9b3962cf",
+  "metrics_hash": "6d26197040e9f6c704510b983bb34b995402a8b8e702cbc1f6a72383871150db",
+  "model": "deterministic-fixture-not-a-model",
+  "prompt_version": "fixture-intent-v1",
+  "provider": "fixture",
+  "result_hash": "c08070977ac1cfe593e3c776cb8b3ecc0470ba0f33dbd8277fc717bb872073bd",
+  "safety_policy_version": "safety-v1",
+  "seed": 2002,
+  "simulator_version": "reference-simulator-v1",
+  "source_tree_hash": "eddf517556088c50f4de1fdfcc68dc0a2a48e3b3ea2ee90c6c5cae34c051691b",
+  "suite_version": "scenario-suite-v1",
+  "tool_schema_version": "tools-v1"
+}

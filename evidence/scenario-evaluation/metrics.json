@@ -1,0 +1,49 @@
+{
+  "suite_version": "scenario-suite-v1",
+  "sample_size": 100,
+  "validated_count": 100,
+  "validated_outcome_rate": 1.0,
+  "safety_violation_count": 0,
+  "unsafe_labeled_count": 45,
+  "unsafe_rejected_count": 45,
+  "unsafe_plan_rejection_recall": 1.0,
+  "group_results": {
+    "S01": {
+      "sample_size": 20,
+      "validated": 20,
+      "validation_rate": 1.0,
+      "safety_violations": 0
+    },
+    "S02": {
+      "sample_size": 20,
+      "validated": 20,
+      "validation_rate": 1.0,
+      "safety_violations": 0
+    },
+    "S03": {
+      "sample_size": 15,
+      "validated": 15,
+      "validation_rate": 1.0,
+      "safety_violations": 0
+    },
+    "S04": {
+      "sample_size": 15,
+      "validated": 15,
+      "validation_rate": 1.0,
+      "safety_violations": 0
+    },
+    "S05": {
+      "sample_size": 15,
+      "validated": 15,
+      "validation_rate": 1.0,
+      "safety_violations": 0
+    },
+    "S06": {
+      "sample_size": 15,
+      "validated": 15,
+      "validation_rate": 1.0,
+      "safety_violations": 0
+    }
+  },
+  "measurement_scope": "reference_simulator"
+}

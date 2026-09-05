@@ -1,0 +1,13 @@
+{
+  "manifest_version": "scenario-suite-v1",
+  "seed": 2002,
+  "groups": [
+    {"id": "S01", "name": "Nominal", "count": 20, "expected": "COMPLETED"},
+    {"id": "S02", "name": "Blockage", "count": 20, "expected": "SAFE_REPLAN"},
+    {"id": "S03", "name": "Low battery", "count": 15, "expected": "SWITCH_OR_REJECT"},
+    {"id": "S04", "name": "Occupied destination", "count": 15, "expected": "HOLD"},
+    {"id": "S05", "name": "Mission conflict", "count": 15, "expected": "QUEUE_OR_REPLAN"},
+    {"id": "S06", "name": "Ambiguous intent", "count": 15, "expected": "NEEDS_INPUT"}
+  ]
+}
+

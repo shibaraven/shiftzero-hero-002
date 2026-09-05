@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "shiftzero-hero002"
+version = "0.1.0"
+description = "Proof-carrying Physical AI reference implementation for warehouse robots"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {file = "LICENSE"}
+dependencies = [
+  "fastapi>=0.116,<1",
+  "httpx>=0.28,<1",
+  "pydantic>=2.11,<3",
+  "uvicorn[standard]>=0.35,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.4,<9",
+  "pytest-cov>=6.2,<7",
+  "ruff>=0.12,<1",
+]
+
+[project.scripts]
+shiftzero = "shiftzero.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/shiftzero"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+

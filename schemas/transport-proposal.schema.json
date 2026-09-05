@@ -1,0 +1,121 @@
+{
+  "$defs": {
+    "MissionIntent": {
+      "additionalProperties": false,
+      "properties": {
+        "constraints": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Constraints",
+          "type": "array"
+        },
+        "destination": {
+          "pattern": "^[A-Z]+(?:-[A-Z]+)*-?[A-Z]*\\d+$",
+          "title": "Destination",
+          "type": "string"
+        },
+        "pallet_id": {
+          "pattern": "^[A-Z]+-\\d+$",
+          "title": "Pallet Id",
+          "type": "string"
+        },
+        "requested_agv": {
+          "anyOf": [
+            {
+              "pattern": "^AGV-\\d+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Requested Agv"
+        },
+        "source": {
+          "pattern": "^[A-Z]+(?:-[A-Z]+)*-\\d+$",
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "pallet_id",
+        "source",
+        "destination"
+      ],
+      "title": "MissionIntent",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "evidence_refs": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 2,
+      "title": "Evidence Refs",
+      "type": "array"
+    },
+    "map_version": {
+      "title": "Map Version",
+      "type": "string"
+    },
+    "mission_goal": {
+      "$ref": "#/$defs/MissionIntent"
+    },
+    "proposal_hash": {
+      "title": "Proposal Hash",
+      "type": "string"
+    },
+    "proposal_id": {
+      "title": "Proposal Id",
+      "type": "string"
+    },
+    "route": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 2,
+      "title": "Route",
+      "type": "array"
+    },
+    "route_version": {
+      "title": "Route Version",
+      "type": "string"
+    },
+    "selected_agv": {
+      "title": "Selected Agv",
+      "type": "string"
+    },
+    "snapshot_id": {
+      "title": "Snapshot Id",
+      "type": "string"
+    },
+    "status": {
+      "const": "PROPOSED",
+      "default": "PROPOSED",
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "proposal_id",
+    "mission_goal",
+    "selected_agv",
+    "route",
+    "route_version",
+    "map_version",
+    "snapshot_id",
+    "evidence_refs",
+    "proposal_hash"
+  ],
+  "title": "TransportProposal",
+  "type": "object"
+}

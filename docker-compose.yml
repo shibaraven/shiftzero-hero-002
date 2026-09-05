@@ -1,0 +1,12 @@
+services:
+  agent-api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      NEBIUS_API_KEY: ${NEBIUS_API_KEY:-}
+      NEBIUS_BASE_URL: ${NEBIUS_BASE_URL:-https://api.tokenfactory.us-central1.nebius.com/v1/}
+      NEBIUS_MODEL: ${NEBIUS_MODEL:-nvidia/nemotron-3-super-120b-a12b}
+    volumes:
+      - ./evidence/runs:/app/evidence/runs
+

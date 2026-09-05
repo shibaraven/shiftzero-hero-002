@@ -1,0 +1,29 @@
+{
+  "manifest_version": "compat-v1",
+  "repetitions_per_variant": 20,
+  "intent_variants": [
+    "Move pallet P-104 from INBOUND-01 to RACK-A12.",
+    "Use AGV-03 to take P-104 from inbound location INBOUND-01 to rack RACK-A12.",
+    "Please transport P-104: INBOUND-01 -> RACK-A12, avoiding human-only zones.",
+    "Deliver pallet P-104 currently at INBOUND-01 to RACK-A12 safely.",
+    "Create a warehouse transport for P-104 between INBOUND-01 and RACK-A12.",
+    "把棧板 P-104 從 INBOUND-01 安全搬到 RACK-A12。"
+  ],
+  "fault_injections": [
+    "stale_snapshot",
+    "invalid_entity",
+    "timeout",
+    "http_429",
+    "duplicate_response"
+  ],
+  "hard_thresholds": {
+    "first_schema_valid_rate": 0.98,
+    "post_repair_schema_valid_rate": 1.0,
+    "wrong_entity_dispatch_count": 0,
+    "duplicate_mission_count": 0,
+    "stale_proposal_execution_count": 0,
+    "hero_consecutive_successes": 20,
+    "intent_to_proposal_p95_seconds": 10.0
+  }
+}
+

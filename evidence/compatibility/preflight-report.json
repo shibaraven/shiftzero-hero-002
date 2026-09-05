@@ -1,0 +1,52 @@
+{
+  "all_thresholds_passed": true,
+  "failures": [],
+  "fault_controls": {
+    "duplicate_dispatch_idempotent": true,
+    "duplicate_mission_count": 0,
+    "http_429_bounded_retry": true,
+    "invalid_entity_blocked": true,
+    "stale_proposal_execution_count": 0,
+    "stale_snapshot_blocked": true,
+    "timeout_failed_closed": true,
+    "wrong_entity_dispatch_count": 0
+  },
+  "gate_version": "compat-v1",
+  "generated_at": "2026-09-05T08:05:37.777720+00:00",
+  "metrics": {
+    "completed_runs": 120,
+    "duplicate_mission_count": 0,
+    "first_schema_valid_rate": 1.0,
+    "hero_max_consecutive_successes": 120,
+    "intent_to_proposal_p95_seconds": 0.001015,
+    "post_repair_schema_valid_rate": 1.0,
+    "requested_runs": 120,
+    "stale_proposal_execution_count": 0,
+    "wrong_entity_dispatch_count": 0
+  },
+  "model": "deterministic-fixture-not-a-model",
+  "official_gate_passed": false,
+  "provider": "fixture",
+  "real_provider": false,
+  "report_hash": "fc4428fe551ff323858aefa4cb855584985a57285631f236c4ffa305f405c2c9",
+  "thresholds": {
+    "duplicate_mission_count": 0,
+    "first_schema_valid_rate": 0.98,
+    "hero_consecutive_successes": 20,
+    "intent_to_proposal_p95_seconds": 10.0,
+    "post_repair_schema_valid_rate": 1.0,
+    "stale_proposal_execution_count": 0,
+    "wrong_entity_dispatch_count": 0
+  },
+  "thresholds_passed": {
+    "duplicate_mission": true,
+    "first_schema_valid": true,
+    "hero_consecutive": true,
+    "http_429_bounded_retry": true,
+    "intent_to_proposal_p95": true,
+    "post_repair_schema_valid": true,
+    "stale_proposal_execution": true,
+    "timeout_failed_closed": true,
+    "wrong_entity_dispatch": true
+  }
+}

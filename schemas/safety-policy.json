@@ -1,0 +1,28 @@
+{
+  "version": "safety-v1",
+  "default_decision": "FAIL_CLOSED",
+  "minimum_battery_reserve_percent": 20.0,
+  "minimum_obstacle_confidence": 0.5,
+  "forbidden_zones": ["forbidden", "human-only"],
+  "checks": [
+    "entity_validity",
+    "map_consistency",
+    "battery_reserve",
+    "forbidden_zone",
+    "collision",
+    "deadlock",
+    "destination_occupancy",
+    "proposal_semantics",
+    "approval_integrity"
+  ],
+  "local_stop": {
+    "cloud_dependency": false,
+    "model_dependency": false,
+    "target_ms": 200
+  },
+  "replan": {
+    "equivalent_route_may_auto_resume": true,
+    "changed_goal_requires_new_approval": true
+  }
+}
+

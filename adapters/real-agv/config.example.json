@@ -1,0 +1,11 @@
+{
+  "adapter_kind": "vda5050_mqtt",
+  "broker_url": "mqtts://broker.example.invalid:8883",
+  "manufacturer": "REPLACE_AFTER_SITE_REVIEW",
+  "serial_number": "REPLACE_AFTER_SITE_REVIEW",
+  "topic_prefix": "vda5050/v2",
+  "local_stop_owner": "edge_safety_controller",
+  "cloud_stop_allowed": false,
+  "required_attestation": "official_gate_passed"
+}
+

@@ -1,0 +1,109 @@
+{
+  "$defs": {
+    "MissionStatus": {
+      "enum": [
+        "INTENT",
+        "NEEDS_INPUT",
+        "OBSERVED",
+        "PLANNED",
+        "PROPOSED",
+        "VERIFIED",
+        "APPROVED",
+        "EXECUTING",
+        "BLOCKED",
+        "SAFE_STOP",
+        "REPLANNING",
+        "COMPLETED",
+        "REJECTED",
+        "FAILED",
+        "FAILED_SAFE"
+      ],
+      "title": "MissionStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "current_node_index": {
+      "default": 0,
+      "title": "Current Node Index",
+      "type": "integer"
+    },
+    "destination": {
+      "title": "Destination",
+      "type": "string"
+    },
+    "goal_hash": {
+      "title": "Goal Hash",
+      "type": "string"
+    },
+    "idempotency_key": {
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "mission_id": {
+      "title": "Mission Id",
+      "type": "string"
+    },
+    "pallet_id": {
+      "title": "Pallet Id",
+      "type": "string"
+    },
+    "proposal_hash": {
+      "title": "Proposal Hash",
+      "type": "string"
+    },
+    "proposal_id": {
+      "title": "Proposal Id",
+      "type": "string"
+    },
+    "route": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Route",
+      "type": "array"
+    },
+    "route_version": {
+      "title": "Route Version",
+      "type": "string"
+    },
+    "selected_agv": {
+      "title": "Selected Agv",
+      "type": "string"
+    },
+    "source": {
+      "title": "Source",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/MissionStatus"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "title": "Updated At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "mission_id",
+    "proposal_id",
+    "proposal_hash",
+    "goal_hash",
+    "pallet_id",
+    "source",
+    "destination",
+    "selected_agv",
+    "route",
+    "route_version",
+    "status",
+    "idempotency_key"
+  ],
+  "title": "Mission",
+  "type": "object"
+}

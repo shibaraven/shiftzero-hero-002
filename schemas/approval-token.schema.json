@@ -1,0 +1,41 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "actor": {
+      "title": "Actor",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "goal_hash": {
+      "title": "Goal Hash",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "proposal_hash": {
+      "title": "Proposal Hash",
+      "type": "string"
+    },
+    "token_id": {
+      "title": "Token Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "token_id",
+    "proposal_hash",
+    "goal_hash",
+    "actor",
+    "issued_at",
+    "expires_at"
+  ],
+  "title": "ApprovalToken",
+  "type": "object"
+}

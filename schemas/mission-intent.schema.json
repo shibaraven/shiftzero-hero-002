@@ -1,0 +1,47 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "constraints": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Constraints",
+      "type": "array"
+    },
+    "destination": {
+      "pattern": "^[A-Z]+(?:-[A-Z]+)*-?[A-Z]*\\d+$",
+      "title": "Destination",
+      "type": "string"
+    },
+    "pallet_id": {
+      "pattern": "^[A-Z]+-\\d+$",
+      "title": "Pallet Id",
+      "type": "string"
+    },
+    "requested_agv": {
+      "anyOf": [
+        {
+          "pattern": "^AGV-\\d+$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Requested Agv"
+    },
+    "source": {
+      "pattern": "^[A-Z]+(?:-[A-Z]+)*-\\d+$",
+      "title": "Source",
+      "type": "string"
+    }
+  },
+  "required": [
+    "pallet_id",
+    "source",
+    "destination"
+  ],
+  "title": "MissionIntent",
+  "type": "object"
+}

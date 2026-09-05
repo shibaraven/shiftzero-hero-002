@@ -1,0 +1,88 @@
+{
+  "$defs": {
+    "SafetyCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "detail": {
+          "title": "Detail",
+          "type": "string"
+        },
+        "evidence_hash": {
+          "title": "Evidence Hash",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "passed",
+        "detail",
+        "evidence_hash"
+      ],
+      "title": "SafetyCheck",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "checks": {
+      "items": {
+        "$ref": "#/$defs/SafetyCheck"
+      },
+      "title": "Checks",
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "passed": {
+      "title": "Passed",
+      "type": "boolean"
+    },
+    "policy_version": {
+      "default": "safety-v1",
+      "title": "Policy Version",
+      "type": "string"
+    },
+    "proof_hash": {
+      "title": "Proof Hash",
+      "type": "string"
+    },
+    "proof_id": {
+      "title": "Proof Id",
+      "type": "string"
+    },
+    "proposal_id": {
+      "title": "Proposal Id",
+      "type": "string"
+    },
+    "route_version": {
+      "title": "Route Version",
+      "type": "string"
+    },
+    "snapshot_id": {
+      "title": "Snapshot Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "proof_id",
+    "proposal_id",
+    "route_version",
+    "snapshot_id",
+    "checks",
+    "passed",
+    "proof_hash"
+  ],
+  "title": "SafetyProof",
+  "type": "object"
+}

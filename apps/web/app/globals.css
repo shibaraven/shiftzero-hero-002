@@ -1,0 +1,214 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+body {
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+:root {
+  --background: oklch(0.145 0.035 252);
+  --foreground: oklch(0.91 0.025 238);
+  --card: oklch(0.19 0.038 250);
+  --card-foreground: oklch(0.93 0.02 238);
+  --popover: oklch(0.19 0.038 250);
+  --popover-foreground: oklch(0.93 0.02 238);
+  --primary: oklch(0.87 0.14 192);
+  --primary-foreground: oklch(0.15 0.04 252);
+  --secondary: oklch(0.26 0.04 250);
+  --secondary-foreground: oklch(0.91 0.025 238);
+  --muted: oklch(0.23 0.035 250);
+  --muted-foreground: oklch(0.68 0.035 242);
+  --accent: oklch(0.7 0.16 289);
+  --accent-foreground: oklch(0.97 0.01 240);
+  --destructive: oklch(0.67 0.22 20);
+  --border: oklch(0.38 0.035 245 / 35%);
+  --input: oklch(0.3 0.035 245);
+  --ring: oklch(0.87 0.14 192);
+  --chart-1: oklch(0.87 0.14 192);
+  --chart-2: oklch(0.72 0.17 285);
+  --chart-3: oklch(0.79 0.15 155);
+  --chart-4: oklch(0.82 0.16 85);
+  --chart-5: oklch(0.68 0.22 20);
+  --radius: 0.5rem;
+  --sidebar: oklch(0.17 0.035 252);
+  --sidebar-foreground: oklch(0.93 0.02 238);
+  --sidebar-primary: oklch(0.87 0.14 192);
+  --sidebar-primary-foreground: oklch(0.15 0.04 252);
+  --sidebar-accent: oklch(0.26 0.04 250);
+  --sidebar-accent-foreground: oklch(0.93 0.02 238);
+  --sidebar-border: oklch(0.38 0.035 245 / 35%);
+  --sidebar-ring: oklch(0.87 0.14 192);
+}
+
+.dark {
+  --background: oklch(0.125 0.035 252);
+  --foreground: oklch(0.94 0.02 238);
+  --card: oklch(0.18 0.038 250);
+  --card-foreground: oklch(0.94 0.02 238);
+  --popover: oklch(0.18 0.038 250);
+  --popover-foreground: oklch(0.94 0.02 238);
+  --primary: oklch(0.87 0.14 192);
+  --primary-foreground: oklch(0.13 0.04 252);
+  --secondary: oklch(0.24 0.04 250);
+  --secondary-foreground: oklch(0.91 0.025 238);
+  --muted: oklch(0.21 0.035 250);
+  --muted-foreground: oklch(0.68 0.035 242);
+  --accent: oklch(0.7 0.16 289);
+  --accent-foreground: oklch(0.97 0.01 240);
+  --destructive: oklch(0.67 0.22 20);
+  --border: oklch(0.38 0.035 245 / 35%);
+  --input: oklch(0.28 0.035 245);
+  --ring: oklch(0.87 0.14 192);
+  --chart-1: oklch(0.87 0.14 192);
+  --chart-2: oklch(0.72 0.17 285);
+  --chart-3: oklch(0.79 0.15 155);
+  --chart-4: oklch(0.82 0.16 85);
+  --chart-5: oklch(0.68 0.22 20);
+  --sidebar: oklch(0.15 0.035 252);
+  --sidebar-foreground: oklch(0.93 0.02 238);
+  --sidebar-primary: oklch(0.87 0.14 192);
+  --sidebar-primary-foreground: oklch(0.15 0.04 252);
+  --sidebar-accent: oklch(0.24 0.04 250);
+  --sidebar-accent-foreground: oklch(0.93 0.02 238);
+  --sidebar-border: oklch(0.38 0.035 245 / 35%);
+  --sidebar-ring: oklch(0.87 0.14 192);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(
+        circle at 15% 0%,
+        rgb(39 204 203 / 8%),
+        transparent 28rem
+      ),
+      radial-gradient(
+        circle at 95% 20%,
+        rgb(124 112 255 / 7%),
+        transparent 30rem
+      );
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+.map-grid {
+  background-image:
+    linear-gradient(rgb(255 255 255 / 3%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 3%) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+.metric-cyan {
+  color: #72ebe7;
+}
+.metric-amber {
+  color: #f5c563;
+}
+.metric-slate {
+  color: #9badc0;
+}
+.metric-emerald {
+  color: #66dca7;
+}
+.metric-violet {
+  color: #a69cff;
+}
+.metric-rose {
+  color: #ff8a9a;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  box-shadow: 0 0 12px currentColor;
+}
+.status-cyan {
+  color: #67e8e3;
+  background-color: #67e8e3;
+  border-color: #67e8e3;
+}
+.status-amber {
+  color: #f5c563;
+  background-color: #f5c563;
+  border-color: #f5c563;
+}
+.status-slate {
+  color: #7f96aa;
+  background-color: #7f96aa;
+  border-color: #7f96aa;
+}
+.status-emerald {
+  color: #66dca7;
+  background-color: #66dca7;
+  border-color: #66dca7;
+}
+.status-violet {
+  color: #a69cff;
+  background-color: #a69cff;
+  border-color: #a69cff;
+}
+.status-rose {
+  color: #ff8a9a;
+  background-color: #ff8a9a;
+  border-color: #ff8a9a;
+}
+
+::selection {
+  color: #07111f;
+  background: #67e8e3;
+}

@@ -1,0 +1,59 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "cost": {
+      "minimum": 0,
+      "title": "Cost",
+      "type": "number"
+    },
+    "distance_m": {
+      "exclusiveMinimum": 0,
+      "title": "Distance M",
+      "type": "number"
+    },
+    "estimated_energy_percent": {
+      "minimum": 0,
+      "title": "Estimated Energy Percent",
+      "type": "number"
+    },
+    "map_version": {
+      "title": "Map Version",
+      "type": "string"
+    },
+    "nodes": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 2,
+      "title": "Nodes",
+      "type": "array"
+    },
+    "reservation_groups": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Reservation Groups",
+      "type": "array"
+    },
+    "route_version": {
+      "title": "Route Version",
+      "type": "string"
+    },
+    "selected_agv": {
+      "title": "Selected Agv",
+      "type": "string"
+    }
+  },
+  "required": [
+    "route_version",
+    "map_version",
+    "selected_agv",
+    "nodes",
+    "reservation_groups",
+    "distance_m",
+    "estimated_energy_percent",
+    "cost"
+  ],
+  "title": "RoutePlan",
+  "type": "object"
+}

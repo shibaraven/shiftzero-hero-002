@@ -1,0 +1,16 @@
+{
+  "version": "tools-v1",
+  "tools": [
+    {"name": "get_operational_snapshot", "type": "READ", "failure": "block_proposal"},
+    {"name": "inspect_location", "type": "READ", "failure": "invalid_or_occupied"},
+    {"name": "plan_transport", "type": "COMPUTE", "failure": "no_feasible_plan"},
+    {"name": "propose_transport", "type": "WRITE_PROPOSAL", "failure": "schema_reject"},
+    {"name": "approve_transport", "type": "HUMAN", "failure": "remain_proposed"},
+    {"name": "get_mission_status", "type": "READ", "failure": "stale_or_unknown"},
+    {"name": "replan_mission", "type": "COMPUTE", "failure": "remain_safe_stop"},
+    {"name": "get_operation_metrics", "type": "READ", "failure": "incomplete"}
+  ],
+  "model_side_effect_permissions": [],
+  "maximum_schema_repairs": 1
+}
+

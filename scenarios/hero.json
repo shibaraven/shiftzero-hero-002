@@ -1,0 +1,46 @@
+{
+  "scenario_id": "hero-001",
+  "seed": 2002,
+  "operator_text": "Move pallet P-104 from INBOUND-01 to RACK-A12 using an available AGV while avoiding human-only zones.",
+  "expected": {
+    "pallet_id": "P-104",
+    "source": "INBOUND-01",
+    "destination": "RACK-A12",
+    "selected_agv": "AGV-03",
+    "incident": "aisle_blockage",
+    "outcome": "COMPLETED"
+  },
+  "map": {
+    "version": "map-v1",
+    "nodes": [
+      {"id": "N01", "x": 0, "y": 0, "zone": "inbound", "capacity": 1},
+      {"id": "N04", "x": 2, "y": 0, "zone": "travel", "capacity": 1},
+      {"id": "N05", "x": 2, "y": 2, "zone": "travel", "capacity": 1},
+      {"id": "N09", "x": 4, "y": 0, "zone": "travel", "capacity": 1},
+      {"id": "N10", "x": 4, "y": 2, "zone": "travel", "capacity": 1},
+      {"id": "N12", "x": 6, "y": 0, "zone": "rack", "capacity": 1},
+      {"id": "H01", "x": 3, "y": 1, "zone": "human-only", "capacity": 0}
+    ],
+    "edges": [
+      {"from_node": "N01", "to_node": "N04", "length_m": 2, "speed_limit_mps": 1, "reservation_group": "R1"},
+      {"from_node": "N04", "to_node": "N09", "length_m": 2, "speed_limit_mps": 1, "reservation_group": "R2"},
+      {"from_node": "N09", "to_node": "N12", "length_m": 2, "speed_limit_mps": 1, "reservation_group": "R3"},
+      {"from_node": "N04", "to_node": "N05", "length_m": 2, "speed_limit_mps": 1, "reservation_group": "R4"},
+      {"from_node": "N05", "to_node": "N10", "length_m": 2, "speed_limit_mps": 1, "reservation_group": "R5"},
+      {"from_node": "N10", "to_node": "N12", "length_m": 2.9, "speed_limit_mps": 1, "reservation_group": "R6"},
+      {"from_node": "N04", "to_node": "H01", "length_m": 1.5, "speed_limit_mps": 0.5, "reservation_group": "RH"},
+      {"from_node": "H01", "to_node": "N12", "length_m": 3.5, "speed_limit_mps": 0.5, "reservation_group": "RH"}
+    ]
+  },
+  "agvs": [
+    {"id": "AGV-03", "node_id": "N01", "state": "IDLE", "battery_percent": 82, "capabilities": ["pallet"]},
+    {"id": "AGV-07", "node_id": "N10", "state": "CHARGING", "battery_percent": 16, "capabilities": ["pallet"]}
+  ],
+  "locations": [
+    {"id": "INBOUND-01", "node_id": "N01", "kind": "INBOUND", "occupancy": "P-104"},
+    {"id": "RACK-A12", "node_id": "N12", "kind": "RACK", "occupancy": null}
+  ],
+  "pallets": [{"id": "P-104", "location_id": "INBOUND-01"}],
+  "blockage": {"obstacle_id": "OBS-HERO", "node_id": "N09", "confidence": 0.99}
+}
+

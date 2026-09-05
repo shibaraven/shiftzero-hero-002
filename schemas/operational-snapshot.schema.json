@@ -1,0 +1,311 @@
+{
+  "$defs": {
+    "AgvState": {
+      "additionalProperties": false,
+      "properties": {
+        "battery_percent": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Battery Percent",
+          "type": "number"
+        },
+        "capabilities": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Capabilities",
+          "type": "array"
+        },
+        "current_mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Current Mission Id"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "node_id": {
+          "title": "Node Id",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "IDLE",
+            "CHARGING",
+            "EXECUTING",
+            "STOPPED",
+            "OFFLINE"
+          ],
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "node_id",
+        "state",
+        "battery_percent",
+        "capabilities"
+      ],
+      "title": "AgvState",
+      "type": "object"
+    },
+    "LocationState": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "INBOUND",
+            "RACK",
+            "STAGING"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "node_id": {
+          "title": "Node Id",
+          "type": "string"
+        },
+        "occupancy": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Occupancy"
+        }
+      },
+      "required": [
+        "id",
+        "node_id",
+        "kind"
+      ],
+      "title": "LocationState",
+      "type": "object"
+    },
+    "MapEdge": {
+      "additionalProperties": false,
+      "properties": {
+        "from_node": {
+          "title": "From Node",
+          "type": "string"
+        },
+        "length_m": {
+          "exclusiveMinimum": 0,
+          "title": "Length M",
+          "type": "number"
+        },
+        "reservation_group": {
+          "title": "Reservation Group",
+          "type": "string"
+        },
+        "speed_limit_mps": {
+          "exclusiveMinimum": 0,
+          "title": "Speed Limit Mps",
+          "type": "number"
+        },
+        "to_node": {
+          "title": "To Node",
+          "type": "string"
+        }
+      },
+      "required": [
+        "from_node",
+        "to_node",
+        "length_m",
+        "speed_limit_mps",
+        "reservation_group"
+      ],
+      "title": "MapEdge",
+      "type": "object"
+    },
+    "MapNode": {
+      "additionalProperties": false,
+      "properties": {
+        "capacity": {
+          "default": 1,
+          "title": "Capacity",
+          "type": "integer"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        },
+        "zone": {
+          "title": "Zone",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "x",
+        "y",
+        "zone"
+      ],
+      "title": "MapNode",
+      "type": "object"
+    },
+    "ObstacleState": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "first_seen": {
+          "format": "date-time",
+          "title": "First Seen",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "node_id": {
+          "title": "Node Id",
+          "type": "string"
+        },
+        "source": {
+          "default": "simulator",
+          "title": "Source",
+          "type": "string"
+        },
+        "ttl_seconds": {
+          "default": 30,
+          "exclusiveMinimum": 0,
+          "title": "Ttl Seconds",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "node_id",
+        "confidence"
+      ],
+      "title": "ObstacleState",
+      "type": "object"
+    },
+    "PalletState": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "location_id": {
+          "title": "Location Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "location_id"
+      ],
+      "title": "PalletState",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "agvs": {
+      "items": {
+        "$ref": "#/$defs/AgvState"
+      },
+      "title": "Agvs",
+      "type": "array"
+    },
+    "captured_at": {
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    },
+    "edges": {
+      "items": {
+        "$ref": "#/$defs/MapEdge"
+      },
+      "title": "Edges",
+      "type": "array"
+    },
+    "locations": {
+      "items": {
+        "$ref": "#/$defs/LocationState"
+      },
+      "title": "Locations",
+      "type": "array"
+    },
+    "map_version": {
+      "title": "Map Version",
+      "type": "string"
+    },
+    "nodes": {
+      "items": {
+        "$ref": "#/$defs/MapNode"
+      },
+      "title": "Nodes",
+      "type": "array"
+    },
+    "obstacles": {
+      "items": {
+        "$ref": "#/$defs/ObstacleState"
+      },
+      "title": "Obstacles",
+      "type": "array"
+    },
+    "pallets": {
+      "items": {
+        "$ref": "#/$defs/PalletState"
+      },
+      "title": "Pallets",
+      "type": "array"
+    },
+    "reserved_groups": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Reserved Groups",
+      "type": "object"
+    },
+    "snapshot_id": {
+      "title": "Snapshot Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "snapshot_id",
+    "captured_at",
+    "map_version",
+    "nodes",
+    "edges",
+    "agvs",
+    "locations",
+    "pallets"
+  ],
+  "title": "OperationalSnapshot",
+  "type": "object"
+}
