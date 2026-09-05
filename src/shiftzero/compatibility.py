@@ -19,6 +19,7 @@ from shiftzero.domain import (
     TransportProposal,
     canonical_hash,
 )
+from shiftzero.evaluation import _git_commit, _source_tree_hash
 from shiftzero.safety import SafetyEngine
 from shiftzero.simulator import (
     DeterministicPlanner,
@@ -117,9 +118,14 @@ def run_compatibility_gate(
         "http_429_bounded_retry": fault_controls["http_429_bounded_retry"],
     }
     real_provider = provider.provider_name == "nebius_token_factory"
+    root = Path(__file__).resolve().parents[2]
     report: dict[str, Any] = {
-        "gate_version": "compat-v1",
+        "gate_version": "compat-v2",
         "generated_at": datetime.now(UTC).isoformat(),
+        "git_commit": _git_commit(root),
+        "source_tree_hash": _source_tree_hash(root),
+        "manifest_hash": canonical_hash(manifest),
+        "map_hash": canonical_hash(scenario.map),
         "provider": provider.provider_name,
         "model": provider.model_name,
         "real_provider": real_provider,
@@ -129,6 +135,10 @@ def run_compatibility_gate(
         "fault_controls": fault_controls,
         "failures": failures,
         "all_thresholds_passed": all(thresholds_passed.values()),
+        "claims_boundary": (
+            "Fixture reports are preflight evidence only; official status requires the live "
+            "nebius_token_factory provider."
+        ),
     }
     report["official_gate_passed"] = bool(real_provider and report["all_thresholds_passed"])
     report["report_hash"] = canonical_hash(report)
