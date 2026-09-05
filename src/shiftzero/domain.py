@@ -7,7 +7,7 @@ from datetime import UTC, datetime, timedelta
 from enum import StrEnum
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from pydantic_core import to_jsonable_python
 
 
@@ -54,6 +54,9 @@ class ToolName(StrEnum):
     STOP_MISSION = "stop_mission"
     GET_MISSION_STATUS = "get_mission_status"
     REPLAN_MISSION = "replan_mission"
+    PROPOSE_RECOVERY = "propose_recovery"
+    RESUME_MISSION = "resume_mission"
+    OVERRIDE_MISSION = "override_mission"
     GET_OPERATION_METRICS = "get_operation_metrics"
 
 
@@ -94,6 +97,13 @@ class MapEdge(StrictModel):
     direction: Literal["bidirectional", "forward"] = "bidirectional"
 
 
+class Pose(StrictModel):
+    node_id: str
+    x: float
+    y: float
+    heading_deg: float = Field(default=0, ge=0, lt=360)
+
+
 class AgvState(StrictModel):
     id: str
     node_id: str
@@ -102,6 +112,7 @@ class AgvState(StrictModel):
     capabilities: list[str]
     current_mission_id: str | None = None
     load_id: str | None = None
+    pose: Pose | None = None
 
 
 class LocationState(StrictModel):
@@ -109,12 +120,28 @@ class LocationState(StrictModel):
     node_id: str
     kind: Literal["INBOUND", "RACK", "STAGING"]
     occupancy: str | None = None
+    pallet_id: str | None = None
     reachable: bool = True
+
+    @model_validator(mode="after")
+    def align_pallet_occupancy(self) -> LocationState:
+        if self.occupancy is not None and self.pallet_id is None:
+            self.pallet_id = self.occupancy
+        elif self.pallet_id is not None and self.occupancy is None:
+            self.occupancy = self.pallet_id
+        elif self.pallet_id != self.occupancy:
+            raise ValueError("pallet_id and occupancy must describe the same load")
+        return self
 
 
 class PalletState(StrictModel):
     id: str
     location_id: str
+
+
+class ObstacleGeometry(StrictModel):
+    type: Literal["Point", "Polygon"] = "Point"
+    coordinates: list[float] | list[list[float]] = Field(default_factory=lambda: [0.0, 0.0])
 
 
 class ObstacleState(StrictModel):
@@ -123,7 +150,24 @@ class ObstacleState(StrictModel):
     confidence: float = Field(ge=0, le=1)
     source: str = "simulator"
     first_seen: datetime = Field(default_factory=utc_now)
+    last_seen: datetime = Field(default_factory=utc_now)
     ttl_seconds: float = Field(default=30, gt=0)
+    observation_count: int = Field(default=1, ge=1)
+    geometry: ObstacleGeometry = Field(default_factory=ObstacleGeometry)
+
+
+class RouteReservation(StrictModel):
+    reservation_group: str
+    held_by: str
+    starts_at: datetime
+    ends_at: datetime
+    waiting_for: str | None = None
+
+    @model_validator(mode="after")
+    def validate_window(self) -> RouteReservation:
+        if self.ends_at <= self.starts_at:
+            raise ValueError("reservation ends_at must be after starts_at")
+        return self
 
 
 class OperationalSnapshot(StrictModel):
@@ -137,6 +181,8 @@ class OperationalSnapshot(StrictModel):
     pallets: list[PalletState]
     obstacles: list[ObstacleState] = Field(default_factory=list)
     reserved_groups: dict[str, str] = Field(default_factory=dict)
+    route_reservations: list[RouteReservation] = Field(default_factory=list)
+    wait_for: dict[str, str] = Field(default_factory=dict)
 
 
 class LocationInspection(StrictModel):
@@ -156,6 +202,17 @@ class RoutePlan(StrictModel):
     distance_m: float = Field(gt=0)
     estimated_energy_percent: float = Field(ge=0)
     cost: float = Field(ge=0)
+    estimated_duration_seconds: float = Field(gt=0)
+    candidate_count: int = Field(ge=1)
+
+
+class RecoveryIntent(StrictModel):
+    mission_id: str
+    reason: str
+    action: Literal["REPLAN", "WAIT", "ABORT"]
+    blocked_node_id: str | None = None
+    preserve_goal_hash: str
+    requested_tools: list[ToolName] = Field(default_factory=lambda: [ToolName.REPLAN_MISSION])
 
 
 class ToolEvidenceRef(StrictModel):
@@ -210,7 +267,7 @@ class SafetyCheck(StrictModel):
 
 class SafetyProof(StrictModel):
     proof_id: str
-    policy_version: str = "safety-v1"
+    policy_version: str = "safety-v2"
     proposal_id: str
     route_version: str
     snapshot_id: str
@@ -230,7 +287,7 @@ class SafetyProof(StrictModel):
     ) -> SafetyProof:
         content = {
             "proof_id": f"SP-{uuid.uuid4().hex[:10].upper()}",
-            "policy_version": "safety-v1",
+            "policy_version": "safety-v2",
             "proposal_id": proposal_id,
             "route_version": route_version,
             "snapshot_id": snapshot_id,
@@ -245,8 +302,10 @@ class ApprovalToken(StrictModel):
     proposal_hash: str
     goal_hash: str
     actor: str
+    actor_role: Literal["approver", "admin"]
     issued_at: datetime
     expires_at: datetime
+    approval_hash: str
 
     @classmethod
     def issue(
@@ -255,21 +314,30 @@ class ApprovalToken(StrictModel):
         proposal_hash: str,
         goal_hash: str,
         actor: str,
+        actor_role: Literal["approver", "admin"] = "approver",
         lifetime: timedelta = timedelta(minutes=15),
     ) -> ApprovalToken:
         issued_at = utc_now()
+        content = {
+            "token_id": f"APR-{uuid.uuid4().hex[:10].upper()}",
+            "proposal_hash": proposal_hash,
+            "goal_hash": goal_hash,
+            "actor": actor,
+            "actor_role": actor_role,
+            "issued_at": issued_at,
+            "expires_at": issued_at + lifetime,
+        }
         return cls(
-            token_id=f"APR-{uuid.uuid4().hex[:10].upper()}",
-            proposal_hash=proposal_hash,
-            goal_hash=goal_hash,
-            actor=actor,
-            issued_at=issued_at,
-            expires_at=issued_at + lifetime,
+            **content,
+            approval_hash=canonical_hash(content),
         )
 
     def valid_for(self, proposal: TransportProposal, *, at: datetime | None = None) -> bool:
         instant = at or utc_now()
+        content = self.model_dump(mode="json", exclude={"approval_hash"})
         return (
+            self.approval_hash == canonical_hash(content)
+            and
             self.proposal_hash == proposal.proposal_hash
             and self.goal_hash == proposal.mission_goal.goal_hash
             and self.issued_at <= instant < self.expires_at
@@ -287,6 +355,8 @@ class Mission(StrictModel):
     selected_agv: str
     route: list[str]
     route_version: str
+    map_version: str
+    snapshot_id: str
     proof_hash: str
     status: MissionStatus
     idempotency_key: str
@@ -308,6 +378,7 @@ class ModelCallEvidence(StrictModel):
     finish_reason: str | None = None
     tool_name: str
     tool_arguments_hash: str
+    tool_result_hash: str
     retry_count: int = 0
     repair_count: int = 0
     http_status: int | None = None
@@ -316,6 +387,7 @@ class ModelCallEvidence(StrictModel):
     estimated_cost_usd: float | None = Field(default=None, ge=0)
     timed_out: bool = False
     fallback_state: str | None = None
+    inference_budget_ms: float | None = Field(default=None, gt=0)
 
 
 class HeroRunResult(StrictModel):

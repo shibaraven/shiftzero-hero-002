@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from shiftzero.agent import FixtureProvider
@@ -23,6 +24,31 @@ def test_complete_proof_carrying_hero_loop(tmp_path: Path) -> None:
     assert MissionStatus.SAFE_STOP in result.state_history
     assert MissionStatus.REPLANNING in result.state_history
     assert EvidenceRecorder.verify(Path(result.evidence_path))
+    assert Path(result.evidence_path).with_suffix(".json").is_file()
+    assert len(result.model_calls) == 3
+    assert result.model_calls[-1].tool_name == "propose_recovery"
+    events = [
+        json.loads(line)
+        for line in Path(result.evidence_path).read_text(encoding="utf-8").splitlines()
+    ]
+    required = {
+        "tool",
+        "arguments",
+        "arguments_hash",
+        "result",
+        "result_hash",
+        "latency_ms",
+        "error",
+    }
+    assert all(
+        required <= set(event["payload"])
+        for event in events
+        if event["kind"].startswith("tool.")
+    )
+    outcome = next(event["payload"] for event in events if event["kind"] == "outcome.completed")
+    assert outcome["total_duration_ms"] > 0
+    assert outcome["human_interventions"] == 1
+    assert "estimated_model_cost_usd" in outcome
 
 
 def test_fixture_is_never_labeled_as_nebius(tmp_path: Path) -> None:

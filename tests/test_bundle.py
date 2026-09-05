@@ -13,6 +13,14 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         path = tmp_path / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(f"fixture for {relative}\n", encoding="utf-8")
+    for name in (
+        "01-completed.png",
+        "02-model-tool-call.png",
+        "03-verified-proof.png",
+    ):
+        (tmp_path / "evidence" / "screenshots" / name).write_bytes(
+            b"\x89PNG\r\n\x1a\nfixture"
+        )
     (tmp_path / "evidence/scenario-evaluation/metrics.json").write_text(
         json.dumps({"sample_size": 100, "safety_violation_count": 0}), encoding="utf-8"
     )
@@ -20,13 +28,13 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         json.dumps({"max_consecutive_passes": 20, "acceptance_passed": True}),
         encoding="utf-8",
     )
-    EvidenceRecorder(tmp_path / "evidence/sample-verified-run").record(
-        "fixture", {"valid": True}
-    )
+    sample = EvidenceRecorder(tmp_path / "evidence/sample-verified-run")
+    sample.record("fixture", {"valid": True})
+    sample.export_json()
     for index in range(20):
-        EvidenceRecorder(tmp_path / "evidence/hero-reliability/runs").record(
-            "fixture", {"run": index}
-        )
+        recorder = EvidenceRecorder(tmp_path / "evidence/hero-reliability/runs")
+        recorder.record("fixture", {"run": index})
+        recorder.export_json()
 
     first_zip = tmp_path / "evidence/first.zip"
     second_zip = tmp_path / "evidence/second.zip"
@@ -47,5 +55,5 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
     with ZipFile(first_zip) as archive:
         embedded = json.loads(archive.read("MANIFEST.json"))
         assert embedded["claim_scope"] == "reference_simulator_and_fixture_provider_only"
-        assert len(embedded["files"]) == len(REQUIRED_PATHS) + 21
+        assert len(embedded["files"]) == len(REQUIRED_PATHS) + 42
         assert embedded["completeness_checks"]["passed"] is True

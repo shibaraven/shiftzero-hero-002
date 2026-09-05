@@ -15,10 +15,13 @@ from shiftzero.domain import (
     MapEdge,
     MapNode,
     MissionIntent,
+    ObstacleGeometry,
     ObstacleState,
     OperationalSnapshot,
     PalletState,
+    Pose,
     RoutePlan,
+    RouteReservation,
     canonical_hash,
     utc_now,
 )
@@ -86,21 +89,34 @@ class ReferenceWorld:
         self.pallets = {pallet.id: pallet.model_copy(deep=True) for pallet in self.scenario.pallets}
         self.obstacles: dict[str, ObstacleState] = {}
         self.reserved_groups: dict[str, str] = {}
+        self.route_reservations: list[RouteReservation] = []
+        self.wait_for: dict[str, str] = {}
         self._snapshot_sequence = 0
 
     def snapshot(self) -> OperationalSnapshot:
         self._snapshot_sequence += 1
+        agvs = []
+        for agv in self.agvs.values():
+            node = self.nodes[agv.node_id]
+            agvs.append(
+                agv.model_copy(
+                    update={"pose": Pose(node_id=node.id, x=node.x, y=node.y)},
+                    deep=True,
+                )
+            )
         return OperationalSnapshot(
             snapshot_id=f"SNAP-{self._snapshot_sequence:04d}",
             captured_at=utc_now(),
             map_version=self.scenario.map.version,
             nodes=list(self.nodes.values()),
             edges=self.edges,
-            agvs=list(self.agvs.values()),
+            agvs=agvs,
             locations=list(self.locations.values()),
             pallets=list(self.pallets.values()),
             obstacles=list(self.obstacles.values()),
             reserved_groups=self.reserved_groups,
+            route_reservations=self.route_reservations,
+            wait_for=self.wait_for,
         )
 
     def inspect_location(self, location_id: str, snapshot_id: str) -> LocationInspection:
@@ -125,6 +141,14 @@ class ReferenceWorld:
             confidence=definition.confidence,
             source=definition.source,
             ttl_seconds=definition.ttl_seconds,
+            observation_count=1,
+            geometry=ObstacleGeometry(
+                type="Point",
+                coordinates=[
+                    self.nodes[definition.node_id].x,
+                    self.nodes[definition.node_id].y,
+                ],
+            ),
         )
         self.obstacles[obstacle.id] = obstacle
         return obstacle
@@ -155,9 +179,15 @@ class DeterministicPlanner:
         ):
             raise NoFeasiblePlan("source or destination is absent from the live snapshot")
 
-        agv = self._select_agv(intent, snapshot, force_agv)
+        agv, candidate_count = self._select_agv(intent, snapshot, force_agv)
         origin = start_node or source.node_id
-        blocked_nodes = {obstacle.node_id for obstacle in snapshot.obstacles}
+        blocked_nodes = {
+            obstacle.node_id
+            for obstacle in snapshot.obstacles
+            if obstacle.last_seen.timestamp() + obstacle.ttl_seconds
+            >= snapshot.captured_at.timestamp()
+            and (obstacle.confidence >= 0.9 or obstacle.observation_count >= 2)
+        }
         forbidden_nodes = {
             node.id for node in snapshot.nodes if node.zone in {"forbidden", "human-only"}
         }
@@ -168,6 +198,7 @@ class DeterministicPlanner:
             blocked_nodes | forbidden_nodes,
         )
         distance = sum(edge.length_m for edge in edges)
+        duration = sum(edge.length_m / edge.speed_limit_mps for edge in edges)
         energy = round(distance * self.energy_percent_per_meter, 3)
         route_content: dict[str, Any] = {
             "map_version": snapshot.map_version,
@@ -185,6 +216,8 @@ class DeterministicPlanner:
             distance_m=distance,
             estimated_energy_percent=energy,
             cost=round(distance, 3),
+            estimated_duration_seconds=round(duration, 3),
+            candidate_count=candidate_count,
         )
 
     def _select_agv(
@@ -192,7 +225,7 @@ class DeterministicPlanner:
         intent: MissionIntent,
         snapshot: OperationalSnapshot,
         force_agv: str | None,
-    ) -> AgvState:
+    ) -> tuple[AgvState, int]:
         requested = force_agv or intent.requested_agv
         allowed_states = {"IDLE", "STOPPED"} if force_agv else {"IDLE"}
         candidates = [
@@ -204,7 +237,9 @@ class DeterministicPlanner:
             candidates = [agv for agv in candidates if agv.id == requested]
         if not candidates:
             raise NoFeasiblePlan("no idle pallet-capable AGV is available")
-        return sorted(candidates, key=lambda agv: (-agv.battery_percent, agv.id))[0]
+        return sorted(candidates, key=lambda agv: (-agv.battery_percent, agv.id))[0], len(
+            candidates
+        )
 
     @staticmethod
     def _shortest_path(

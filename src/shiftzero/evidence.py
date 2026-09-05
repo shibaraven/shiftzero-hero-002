@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import hashlib
 import json
+import time
 import uuid
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -19,6 +22,7 @@ class EvidenceRecorder:
         self.directory = root / self.trace_id
         self.directory.mkdir(parents=True, exist_ok=False)
         self.path = self.directory / "hero-run.jsonl"
+        self.json_path = self.directory / "hero-run.json"
         self._previous_hash = "GENESIS"
         self._sequence = 0
 
@@ -41,6 +45,68 @@ class EvidenceRecorder:
             stream.write(json.dumps(span, ensure_ascii=False, sort_keys=True) + "\n")
         self._previous_hash = span_hash
         return f"trace:{self.trace_id}:{self._sequence}:{span_hash}"
+
+    def call_tool(
+        self,
+        *,
+        kind: str,
+        tool_name: str,
+        arguments: BaseModel | dict[str, Any],
+        operation: Callable[[], Any],
+    ) -> tuple[Any, str]:
+        started_at = utc_now()
+        started_ns = time.perf_counter_ns()
+        try:
+            result = operation()
+        except Exception as exc:
+            completed_at = utc_now()
+            self.record(
+                kind,
+                {
+                    "tool": tool_name,
+                    "arguments": arguments,
+                    "arguments_hash": canonical_hash(arguments),
+                    "result": None,
+                    "result_hash": canonical_hash(None),
+                    "started_at": started_at,
+                    "completed_at": completed_at,
+                    "latency_ms": round((time.perf_counter_ns() - started_ns) / 1_000_000, 6),
+                    "error": f"{type(exc).__name__}: {exc}",
+                },
+            )
+            raise
+        completed_at = utc_now()
+        reference = self.record(
+            kind,
+            {
+                "tool": tool_name,
+                "arguments": arguments,
+                "arguments_hash": canonical_hash(arguments),
+                "result": result,
+                "result_hash": canonical_hash(result),
+                "started_at": started_at,
+                "completed_at": completed_at,
+                "latency_ms": round((time.perf_counter_ns() - started_ns) / 1_000_000, 6),
+                "error": None,
+            },
+        )
+        return result, reference
+
+    def export_json(self) -> Path:
+        spans = [json.loads(line) for line in self.path.read_text(encoding="utf-8").splitlines()]
+        body = {
+            "trace_id": self.trace_id,
+            "generated_at": utc_now().isoformat(),
+            "trace_jsonl_sha256": hashlib.sha256(self.path.read_bytes()).hexdigest(),
+            "trace_chain_valid": self.verify(self.path),
+            "spans": spans,
+        }
+        self.json_path.write_text(
+            json.dumps(body, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+        return self.json_path
 
     @staticmethod
     def verify(path: Path) -> bool:

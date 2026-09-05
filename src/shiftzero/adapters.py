@@ -66,7 +66,9 @@ class SimulatorAdapter:
             source = self.world.locations[mission.source]
             destination = self.world.locations[mission.destination]
             source.occupancy = None
+            source.pallet_id = None
             destination.occupancy = mission.pallet_id
+            destination.pallet_id = mission.pallet_id
             self.world.pallets[mission.pallet_id].location_id = mission.destination
         return mission.model_copy(deep=True)
 

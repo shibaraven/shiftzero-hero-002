@@ -6,7 +6,9 @@ from shiftzero.agent import TokenFactoryProvider
 from shiftzero.config import TokenFactorySettings
 
 
-def _response(arguments: dict, *, status: int = 200) -> httpx.Response:
+def _response(
+    arguments: dict, *, status: int = 200, tool_name: str = "parse_mission_intent"
+) -> httpx.Response:
     return httpx.Response(
         status,
         headers={"x-request-id": "req-test", "x-ratelimit-remaining-requests": "9"},
@@ -22,7 +24,7 @@ def _response(arguments: dict, *, status: int = 200) -> httpx.Response:
                                 "id": "call-test",
                                 "type": "function",
                                 "function": {
-                                    "name": "parse_mission_intent",
+                                    "name": tool_name,
                                     "arguments": json.dumps(arguments),
                                 },
                             }
@@ -61,6 +63,9 @@ def test_real_provider_contract_parses_forced_tool_call() -> None:
     assert evidence.provider == "nebius_token_factory"
     assert evidence.request_id == "req-test"
     assert evidence.tool_name == "parse_mission_intent"
+    assert len(evidence.tool_arguments_hash) == 64
+    assert evidence.tool_result_hash == evidence.tool_arguments_hash
+    assert evidence.inference_budget_ms == 45_000
 
 
 def test_one_schema_repair_is_allowed_without_side_effect() -> None:
@@ -129,3 +134,34 @@ def test_timeout_fails_closed_after_bounded_retry() -> None:
     else:
         raise AssertionError("timeout unexpectedly produced an intent")
     assert calls == 2
+
+
+def test_circuit_breaker_opens_after_bounded_failure() -> None:
+    calls = 0
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        raise httpx.ReadTimeout("injected timeout", request=request)
+
+    settings = TokenFactorySettings(
+        api_key="test",
+        max_retries=0,
+        circuit_breaker_threshold=1,
+        circuit_breaker_cooldown_seconds=30,
+    )
+    provider = TokenFactoryProvider(
+        settings,
+        client=httpx.Client(
+            base_url=settings.base_url,
+            transport=httpx.MockTransport(handler),
+        ),
+    )
+    for expected in ("failed closed", "circuit breaker is open"):
+        try:
+            provider.parse_intent("Move the pallet")
+        except RuntimeError as exc:
+            assert expected in str(exc)
+        else:
+            raise AssertionError("provider unexpectedly returned while faulted")
+    assert calls == 1

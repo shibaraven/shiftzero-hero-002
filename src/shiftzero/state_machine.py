@@ -16,7 +16,12 @@ ALLOWED_TRANSITIONS: dict[MissionStatus, frozenset[MissionStatus]] = {
     MissionStatus.PLANNED: frozenset({MissionStatus.PROPOSED, MissionStatus.REJECTED}),
     MissionStatus.PROPOSED: frozenset({MissionStatus.VERIFIED, MissionStatus.REJECTED}),
     MissionStatus.VERIFIED: frozenset(
-        {MissionStatus.APPROVED, MissionStatus.EXECUTING, MissionStatus.REJECTED}
+        {
+            MissionStatus.APPROVED,
+            MissionStatus.EXECUTING,
+            MissionStatus.REJECTED,
+            MissionStatus.FAILED_SAFE,
+        }
     ),
     MissionStatus.APPROVED: frozenset(
         {MissionStatus.EXECUTING, MissionStatus.REJECTED, MissionStatus.FAILED_SAFE}

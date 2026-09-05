@@ -3,8 +3,6 @@
 import {
   Activity,
   AlertTriangle,
-  Bot,
-  Box,
   Check,
   ChevronRight,
   CircleStop,
@@ -32,7 +30,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-type View = 'mission' | 'architecture' | 'evidence';
+type View = 'mission' | 'architecture' | 'evidence' | 'source';
 type ReplayDecision = 'approved' | 'rejected' | 'stopped' | null;
 
 type HeroSummary = {
@@ -43,7 +41,26 @@ type HeroSummary = {
   stop_latency_kind: string;
   trace_chain_valid: boolean;
   trace_id: string;
+  total_duration_ms?: number;
+  human_interventions?: number;
+  estimated_model_cost_usd?: number;
+  model_calls?: Array<{
+    provider: string;
+    model: string;
+    request_id: string;
+    tool_name: string;
+    latency_ms: number;
+    tool_arguments_hash: string;
+    tool_result_hash: string;
+  }>;
 };
+
+const views: Array<{ id: View; label: string }> = [
+  { id: 'mission', label: 'Run Hero' },
+  { id: 'architecture', label: 'Architecture' },
+  { id: 'evidence', label: 'Evidence' },
+  { id: 'source', label: 'GitHub' },
+];
 
 const timeline = [
   {
@@ -73,7 +90,7 @@ const timeline = [
   {
     state: 'VERIFIED',
     event: 'safety.proof',
-    detail: '8 deterministic rules passed',
+    detail: '10 deterministic rules passed',
     tone: 'emerald',
   },
   {
@@ -99,6 +116,12 @@ const timeline = [
     event: 'execution.local_stop',
     detail: 'Local simulator stop measured and written to trace',
     tone: 'rose',
+  },
+  {
+    state: 'SAFE_STOP',
+    event: 'recovery.intent',
+    detail: 'Typed recovery preserves the approved goal',
+    tone: 'violet',
   },
   {
     state: 'REPLANNING',
@@ -238,13 +261,19 @@ export default function MissionConsole() {
     setRunning(false);
     setDecision(nextDecision);
     setRunStep(
-      nextDecision === 'approved' ? 5 : nextDecision === 'stopped' ? 8 : 4,
+      nextDecision === 'approved'
+        ? timeline.findIndex((item) => item.state === 'APPROVED')
+        : nextDecision === 'stopped'
+          ? timeline.findIndex((item) => item.event === 'execution.local_stop')
+          : timeline.findIndex((item) => item.state === 'VERIFIED'),
     );
   };
 
   const active = timeline[Math.min(runStep, timeline.length - 1)];
-  const blocked = runStep >= 7;
-  const replanned = runStep >= 9;
+  const blocked =
+    runStep >= timeline.findIndex((item) => item.state === 'BLOCKED');
+  const replanned =
+    runStep >= timeline.findIndex((item) => item.event === 'replan_mission');
   const complete = runStep >= timeline.length - 1;
 
   return (
@@ -272,33 +301,33 @@ export default function MissionConsole() {
             className="hidden items-center gap-1 md:flex"
             aria-label="Primary navigation"
           >
-            {(['mission', 'architecture', 'evidence'] as View[]).map((item) => (
+            {views.map((item) => (
               <Button
-                key={item}
+                key={item.id}
                 variant="ghost"
                 size="sm"
-                onClick={() => setView(item)}
+                onClick={() => setView(item.id)}
                 className={classNames(
                   'h-9 rounded-md px-4 text-xs capitalize tracking-wide',
-                  view === item
+                  view === item.id
                     ? 'bg-white/[0.07] text-white'
                     : 'text-slate-400 hover:bg-white/[0.04] hover:text-white',
                 )}
               >
-                {item}
+                {item.label}
               </Button>
             ))}
           </nav>
 
           <div className="flex items-center gap-2">
             <Button
-              disabled
-              title="Public GitHub repository has not been authorized or configured"
+              onClick={() => setView('source')}
+              title="Inspect source readiness and publication gate"
               variant="ghost"
               size="sm"
               className="hidden h-8 rounded-md px-3 font-mono text-[9px] text-slate-500 lg:flex"
             >
-              <GitBranch className="size-3" /> SOURCE LOCAL
+              <GitBranch className="size-3" /> SOURCE GATE
             </Button>
             <Badge
               variant="outline"
@@ -352,19 +381,19 @@ export default function MissionConsole() {
       </section>
 
       <div className="md:hidden">
-        <div className="grid grid-cols-3 border-b border-white/[0.06]">
-          {(['mission', 'architecture', 'evidence'] as View[]).map((item) => (
+        <div className="grid grid-cols-4 border-b border-white/[0.06]">
+          {views.map((item) => (
             <button
-              key={item}
-              onClick={() => setView(item)}
+              key={item.id}
+              onClick={() => setView(item.id)}
               className={classNames(
                 'py-3 text-[10px] font-bold uppercase tracking-[0.15em]',
-                view === item
+                view === item.id
                   ? 'border-b border-cyan-200 text-cyan-200'
                   : 'text-slate-500',
               )}
             >
-              {item}
+              {item.label}
             </button>
           ))}
         </div>
@@ -388,6 +417,7 @@ export default function MissionConsole() {
       {view === 'evidence' && (
         <EvidenceView heroSummary={heroSummary} evidenceError={evidenceError} />
       )}
+      {view === 'source' && <SourceView />}
     </main>
   );
 }
@@ -464,25 +494,40 @@ function MissionView({
         </div>
       </div>
 
-      <div className="mb-4 grid grid-cols-2 border border-white/[0.08] bg-[#0a1828] sm:grid-cols-4">
+      <div className="mb-4 grid grid-cols-2 border border-white/[0.08] bg-[#0a1828] sm:grid-cols-3 xl:grid-cols-6">
         {[
           [
-            'Robot',
-            heroSummary?.selected_agv ?? 'AGV-03',
-            <Bot key="bot" className="size-3.5" />,
+            'Connection',
+            'VERIFIED REPLAY',
+            <RadioTower key="radio" className="size-3.5" />,
           ],
-          ['Payload', 'P-104', <Box key="box" className="size-3.5" />],
+          [
+            'State',
+            active.state,
+            <Activity key="state" className="size-3.5" />,
+          ],
+          [
+            'Model latency',
+            heroSummary?.model_calls
+              ? `${heroSummary.model_calls
+                  .slice(0, 2)
+                  .reduce((sum, call) => sum + call.latency_ms, 0)
+                  .toFixed(3)} ms`
+              : 'loading',
+            <Cpu key="cpu" className="size-3.5" />,
+          ],
+          [
+            'Model cost',
+            typeof heroSummary?.estimated_model_cost_usd === 'number'
+              ? `$${heroSummary.estimated_model_cost_usd.toFixed(4)}`
+              : 'loading',
+            <Zap key="cost" className="size-3.5" />,
+          ],
+          ['Success', '20 / 20', <Check key="success" className="size-3.5" />],
           [
             'Safety',
-            '8 / 8 passed',
+            '10 / 10 passed',
             <ShieldCheck key="shield" className="size-3.5" />,
-          ],
-          [
-            'Trace',
-            heroSummary?.trace_chain_valid
-              ? 'SHA-256 chain · valid'
-              : 'verifying',
-            <Fingerprint key="finger" className="size-3.5" />,
           ],
         ].map(([label, value, icon]) => (
           <div
@@ -792,8 +837,10 @@ function SafetyCard({
     ['entity_validity', runStep >= 4],
     ['map_consistency', runStep >= 4],
     ['battery_reserve', runStep >= 4],
+    ['vehicle_type', runStep >= 4],
     ['forbidden_zone', runStep >= 4],
     ['collision', runStep >= 4],
+    ['reservation_availability', runStep >= 4],
     ['deadlock', runStep >= 4],
     ['destination_occupancy', runStep >= 4],
     ['proposal_semantics', runStep >= 4],
@@ -1230,8 +1277,85 @@ function EvidenceView({
                 href="/data/hero-summary.json"
                 label="hero-summary.json"
               />
+              <EvidenceLink
+                href="/data/baseline-comparison.json"
+                label="manual-vs-agent-baseline.json"
+              />
               <EvidenceLink href="/data/openapi.json" label="openapi.json" />
             </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-[1.15fr_.85fr]">
+        <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+          <CardHeader className="border-b border-white/[0.06] px-5 py-4">
+            <CardTitle className="flex items-center gap-2 text-xs text-white">
+              <TerminalSquare className="size-4 text-violet-200" />
+              Typed model tool evidence
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-3 p-5 sm:grid-cols-2">
+            {heroSummary?.model_calls?.map((call) => (
+              <div
+                key={`${call.request_id}-${call.tool_name}`}
+                className="border border-white/[0.07] bg-white/[0.02] p-3"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-mono text-[10px] text-violet-200">
+                    {call.tool_name}
+                  </span>
+                  <span className="font-mono text-[9px] text-slate-500">
+                    {call.latency_ms.toFixed(3)} ms
+                  </span>
+                </div>
+                <p className="mt-2 truncate font-mono text-[9px] text-slate-600">
+                  {call.provider} / {call.model}
+                </p>
+                <p className="mt-1 truncate font-mono text-[9px] text-slate-600">
+                  args {call.tool_arguments_hash.slice(0, 12)}… · result{' '}
+                  {call.tool_result_hash.slice(0, 12)}…
+                </p>
+              </div>
+            )) ?? (
+              <p className="text-xs text-slate-500">
+                Loading verified tool spans…
+              </p>
+            )}
+          </CardContent>
+        </Card>
+        <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+          <CardHeader className="border-b border-white/[0.06] px-5 py-4">
+            <CardTitle className="text-xs text-white">
+              Release acceptance boundary
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 p-5">
+            {[
+              ['A05', '100-scenario simulator suite', 'PASS', 'emerald'],
+              ['A03', '20 consecutive Hero replays', 'SIMULATOR', 'cyan'],
+              ['A01–A02', 'Live Nebius + official gate', 'KEY GATED', 'amber'],
+              ['A06–A07', 'Physical stop and AGV loop', 'HARDWARE', 'amber'],
+              [
+                'A09–A12',
+                'Public links, video, submission',
+                'RELEASE',
+                'violet',
+              ],
+            ].map(([id, label, status, tone]) => (
+              <div
+                key={id}
+                className="grid grid-cols-[60px_1fr_auto] items-center gap-3 border-b border-white/[0.05] py-2"
+              >
+                <span className="font-mono text-[9px] text-slate-600">
+                  {id}
+                </span>
+                <span className="text-[11px] text-slate-400">{label}</span>
+                <span className={`font-mono text-[9px] metric-${tone}`}>
+                  {status}
+                </span>
+              </div>
+            ))}
           </CardContent>
         </Card>
       </div>
@@ -1251,6 +1375,76 @@ function EvidenceView({
             </p>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function SourceView() {
+  const requiredFiles = [
+    'README.md + LICENSE',
+    'PRE_EXISTING_WORK.md',
+    'SECURITY.md + THIRD_PARTY_NOTICES.md',
+    'docker-compose.yml + Dockerfile',
+    'apps / services / adapters / schemas / scenarios / tests',
+    'Evidence Bundle with reproducibility hashes',
+  ];
+  return (
+    <div className="mx-auto max-w-[1100px] px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mb-8">
+        <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-300">
+          GitHub / source release gate
+        </div>
+        <h1 className="text-3xl font-semibold tracking-[-0.03em] text-white sm:text-4xl">
+          Source is release-ready.{' '}
+          <span className="text-amber-200">Publication is not authorized.</span>
+        </h1>
+        <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-400">
+          The local repository contains the required public boundary, build
+          instructions, licenses, disclosures, schemas, simulator and evidence.
+          No GitHub remote is configured, so this page does not invent a public
+          URL.
+        </p>
+      </div>
+      <div className="grid gap-4 lg:grid-cols-[1fr_.7fr]">
+        <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+          <CardHeader className="border-b border-white/[0.06] px-5 py-4">
+            <CardTitle className="flex items-center gap-2 text-xs text-white">
+              <GitBranch className="size-4 text-cyan-200" /> Repository
+              checklist
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 p-5">
+            {requiredFiles.map((file) => (
+              <div
+                key={file}
+                className="flex items-center gap-3 text-xs text-slate-300"
+              >
+                <Check className="size-4 shrink-0 text-emerald-300" /> {file}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+        <Card className="rounded-lg border-amber-300/20 bg-amber-300/[0.035] shadow-none">
+          <CardContent className="p-6">
+            <LockKeyhole className="mb-4 size-6 text-amber-200" />
+            <p className="text-sm font-semibold text-white">
+              Public remote pending
+            </p>
+            <p className="mt-2 text-xs leading-5 text-slate-400">
+              A public GitHub, GitLab or Bitbucket URL must be supplied before
+              A10 and the anonymous Judge path can pass. Publishing is a
+              deliberate IP exposure action and remains outside this private
+              replay.
+            </p>
+            <Badge
+              variant="outline"
+              className="mt-5 border-amber-300/20 bg-amber-300/[0.06] font-mono text-[9px] text-amber-200"
+            >
+              NO PUBLIC REMOTE CONFIGURED
+            </Badge>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

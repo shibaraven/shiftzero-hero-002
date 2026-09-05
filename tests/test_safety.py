@@ -1,5 +1,7 @@
+from datetime import timedelta
+
 from shiftzero.agent import FixtureProvider
-from shiftzero.domain import MissionIntent
+from shiftzero.domain import MissionIntent, RouteReservation, TransportProposal
 from shiftzero.safety import SafetyEngine
 from shiftzero.simulator import DeterministicPlanner, ReferenceWorld, load_default_scenario
 
@@ -68,3 +70,62 @@ def test_blockage_forces_alternate_route() -> None:
     )
     assert "N09" not in replan.nodes
     assert replan.nodes == ["N04", "N05", "N10", "N12"]
+
+
+def test_temporal_reservation_collision_is_rejected() -> None:
+    _, snapshot, intent, plan, _ = _proposal_setup()
+    reservation = RouteReservation(
+        reservation_group=plan.reservation_groups[0],
+        held_by="AGV-99",
+        starts_at=snapshot.captured_at,
+        ends_at=snapshot.captured_at + timedelta(seconds=10),
+    )
+    snapshot = snapshot.model_copy(update={"route_reservations": [reservation]})
+    proposal = TransportProposal.issue(
+        proposal_id="TP-TEMPORAL",
+        intent=intent,
+        plan=plan,
+        snapshot_id=snapshot.snapshot_id,
+        evidence_refs=["snapshot:test", "plan:test"],
+    )
+    proof = SafetyEngine().verify(
+        intent=intent, plan=plan, snapshot=snapshot, proposal=proposal
+    )
+    assert not next(check for check in proof.checks if check.name == "collision").passed
+
+
+def test_circular_wait_is_rejected_as_deadlock() -> None:
+    _, snapshot, intent, plan, _ = _proposal_setup()
+    snapshot = snapshot.model_copy(
+        update={"wait_for": {plan.selected_agv: "AGV-07", "AGV-07": plan.selected_agv}}
+    )
+    proposal = TransportProposal.issue(
+        proposal_id="TP-DEADLOCK",
+        intent=intent,
+        plan=plan,
+        snapshot_id=snapshot.snapshot_id,
+        evidence_refs=["snapshot:test", "plan:test"],
+    )
+    proof = SafetyEngine().verify(
+        intent=intent, plan=plan, snapshot=snapshot, proposal=proposal
+    )
+    assert not next(check for check in proof.checks if check.name == "deadlock").passed
+
+
+def test_single_medium_confidence_observation_is_not_persistent_collision() -> None:
+    world, _, intent, plan, _ = _proposal_setup()
+    obstacle = world.add_hero_blockage()
+    obstacle.confidence = 0.6
+    obstacle.observation_count = 1
+    snapshot = world.snapshot()
+    proposal = TransportProposal.issue(
+        proposal_id="TP-FILTERED-OBSERVATION",
+        intent=intent,
+        plan=plan,
+        snapshot_id=snapshot.snapshot_id,
+        evidence_refs=["snapshot:test", "plan:test"],
+    )
+    proof = SafetyEngine().verify(
+        intent=intent, plan=plan, snapshot=snapshot, proposal=proposal
+    )
+    assert next(check for check in proof.checks if check.name == "collision").passed

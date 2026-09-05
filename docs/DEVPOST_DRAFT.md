@@ -42,6 +42,7 @@ blockage, low battery, occupied destinations, reservation conflicts and ambiguou
 The hardest design problem was preserving the usefulness of language-model reasoning without
 letting probabilistic output become an actuation command. We treated typed tool output as an
 untrusted proposal, versioned every live object it references, made approval content-addressed,
+authenticated actor roles with short-lived signed tokens, persisted exact idempotency receipts,
 and kept emergency stopping on the edge path.
 
 ## Accomplishments
@@ -51,6 +52,8 @@ and kept emergency stopping on the edge path.
 - Reproducible 100-scenario evaluation: 100/100 expected outcomes, zero observed safety
   violations, and 45/45 unsafe conditions rejected or safely handled.
 - 120-call deterministic fixture preflight across six intent variants.
+- 20+20 matched Manual UI versus Agent Flow simulator baseline with method and sample size.
+- Per-tool arguments/result hashes, latency/error fields and structured JSON replay artifacts.
 - Credential-free owner-private Judge Mode staging and downloadable, hash-indexed evidence;
   public access remains an explicit release action.
 

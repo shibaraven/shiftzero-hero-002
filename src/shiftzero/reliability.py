@@ -51,7 +51,16 @@ def run_hero_reliability(
         ).run_hero(approval_actor=f"reliability-run-{index:03d}")
         wall_latency_ms = (time.perf_counter_ns() - started) / 1_000_000
         trace_path = Path(result.evidence_path)
+        trace_json_path = trace_path.with_suffix(".json")
         trace_valid = EvidenceRecorder.verify(trace_path)
+        events = [json.loads(line) for line in trace_path.read_text(encoding="utf-8").splitlines()]
+        replan_latency_ms = next(
+            event["payload"]["latency_ms"]
+            for event in events
+            if event["kind"] == "tool.replan_mission"
+        )
+        intent_to_proposal_ms = sum(call.latency_ms for call in result.model_calls[:2])
+        model_cost_usd = sum(call.estimated_cost_usd or 0 for call in result.model_calls)
         state_path_valid = result.state_history == EXPECTED_HERO_STATES
         passed = (
             result.final_status == MissionStatus.COMPLETED
@@ -68,6 +77,10 @@ def run_hero_reliability(
                 "trace_id": result.trace_id,
                 "trace_path": _portable_trace_path(trace_path, root, output_dir),
                 "trace_sha256": hashlib.sha256(trace_path.read_bytes()).hexdigest(),
+                "trace_json_path": _portable_trace_path(
+                    trace_json_path, root, output_dir
+                ),
+                "trace_json_sha256": hashlib.sha256(trace_json_path.read_bytes()).hexdigest(),
                 "trace_chain_valid": trace_valid,
                 "state_path_valid": state_path_valid,
                 "final_status": result.final_status,
@@ -76,11 +89,19 @@ def run_hero_reliability(
                 "stop_latency_ms": result.stop_latency_ms,
                 "stop_latency_kind": result.stop_latency_kind,
                 "wall_latency_ms": round(wall_latency_ms, 6),
+                "replan_latency_ms": replan_latency_ms,
+                "intent_to_proposal_ms": round(intent_to_proposal_ms, 6),
+                "model_cost_usd": model_cost_usd,
             }
         )
 
     stop_latencies = [record["stop_latency_ms"] for record in records]
     wall_latencies = [record["wall_latency_ms"] for record in records]
+    replan_latencies = [record["replan_latency_ms"] for record in records]
+    intent_to_proposal_latencies = [
+        record["intent_to_proposal_ms"] for record in records
+    ]
+    model_costs = [record["model_cost_usd"] for record in records]
     passed_count = sum(record["passed"] for record in records)
     body: dict[str, Any] = {
         "report_version": "hero-reliability-v1",
@@ -104,6 +125,21 @@ def run_hero_reliability(
         "acceptance_passed": runs >= 20 and max_consecutive >= 20,
         "stop_latency_ms": _distribution(stop_latencies),
         "wall_latency_ms": _distribution(wall_latencies),
+        "replan_latency_ms": _distribution(replan_latencies),
+        "intent_to_proposal_ms": _distribution(intent_to_proposal_latencies),
+        "model_cost_usd": _distribution(model_costs),
+        "measurement": {
+            "sample_size": runs,
+            "units": {
+                "latency": "milliseconds",
+                "cost": "USD",
+                "success_rate": "ratio_0_to_1",
+            },
+            "method": (
+                "fresh independent fixture/reference-simulator runs; intent-to-proposal "
+                "excludes recovery; replan latency is measured around deterministic planning"
+            ),
+        },
         "runs": records,
     }
     body["report_hash"] = canonical_hash(body)

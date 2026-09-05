@@ -42,6 +42,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m shiftzero.cli hero --provider fixture
 .\.venv\Scripts\python.exe -m shiftzero.cli evaluate-scenarios
 .\.venv\Scripts\python.exe -m shiftzero.cli verify-hero-reliability --runs 20
+.\.venv\Scripts\python.exe -m shiftzero.cli fair-baseline --samples 20
 .\.venv\Scripts\python.exe -m shiftzero.cli compatibility --provider fixture --repetitions 20
 .\.venv\Scripts\python.exe -m shiftzero.cli build-hero-summary
 .\.venv\Scripts\python.exe -m shiftzero.cli build-evidence-bundle
@@ -78,13 +79,16 @@ and the [Nebius Nemotron 3 Super guide](https://github.com/nebius/token-factory-
 - `schemas`: checked-in JSON Schemas generated from the Pydantic contracts.
 - `evidence`: verified run and compatibility outputs. Generated live evidence is ignored by Git.
 
-All mutating Agent API calls require an idempotency key and expected version. Stale writes return
-HTTP 409, role violations return HTTP 403, and Approve/Reject/Start/Stop/Replan decisions are
-recorded in the tamper-evident trace. The checked-in `schemas/openapi.json` is the frozen contract.
+All mutating Agent API calls require a signed bearer identity, idempotency key and expected version.
+Stale writes return HTTP 409, verified-role violations return HTTP 403, and
+Approve/Reject/Start/Stop/Replan/Resume/Override decisions are recorded in both the tamper-evident
+trace and SQLite audit ledger. See `docs/AUTHORIZATION.md`; the checked-in `schemas/openapi.json` is
+the frozen contract.
 
 Run the Agent API with:
 
 ```powershell
+$env:SHIFTZERO_AUTH_SECRET = "generate-at-least-32-random-characters"
 .\.venv\Scripts\python.exe -m uvicorn shiftzero.api:app --reload --port 8000
 ```
 

@@ -7,13 +7,15 @@ fixture result is equivalent to Nebius or physical evidence.
 | Requirement | Status | Evidence or gate |
 |---|---|---|
 | Repository, hero scenario, IP boundary | Complete locally | `scenarios/hero.json`, `docs/IP_BOUNDARY.md`, `PRE_EXISTING_WORK.md` |
-| Frozen schemas, state machine, safety rules | Complete locally | `schemas/`, `docs/SAFETY_RULES.md` |
-| Typed intent/proposal with no invented identifiers | Complete locally | fixture ambiguity tests and `NEEDS_INPUT`; live behavior awaits key |
+| Frozen schemas, state machine, safety rules | Complete locally | safety-v2 includes temporal collision, reservation availability, circular-wait deadlock and sensor persistence |
+| Typed intent/proposal/recovery with no invented identifiers | Complete locally | fixture ambiguity tests, `NEEDS_INPUT`, `RecoveryIntent`; live behavior awaits key |
 | Deterministic simulator trust loop | Complete locally | Hero trace and 20-run reliability report |
-| Human Approve/Reject and explicit Stop | Complete locally | Agent API/OpenAPI, role gates, idempotent audit events, Judge replay controls |
-| API idempotency and optimistic concurrency | Complete locally | repeated request and stale-version tests |
+| Human Approve/Reject/Stop/Resume/Override | Complete locally | signed actor identity, least-privilege roles, trace and SQLite audit; Override only terminates `FAILED_SAFE` |
+| API idempotency and optimistic concurrency | Complete locally | every write requires key/version; SQLite exact-response receipts survive process replacement |
+| Digital Twin core model | Complete locally | pose, pallet/location state, obstacle geometry/TTL, route windows, reservations and wait-for graph |
 | 100-case evaluation | Complete locally | differentiated S01-S06 results and method in Evidence Bundle |
-| Evidence Bundle and reproducibility hashes | Complete locally | bundle manifest, trace chains, source/map/policy hashes |
+| Evidence Bundle and reproducibility hashes | Complete locally | JSON+JSONL traces, tool latency/error/result hashes, screenshots, outcome metrics and source/map/policy hashes |
+| Fair Manual vs Agent baseline | Complete locally | at least 20 matched simulator samples per flow; no physical savings claim |
 | Six variants x 20 Compatibility preflight | Complete locally, unofficial | fixture report remains `official_gate_passed=false` |
 | Real Token Factory/Nemotron trace | Key-gated | `NEBIUS_API_KEY` plus provider receipt required |
 | Official Compatibility Gate | Key-gated | must run 120 live calls; fixture cannot unlock it |
@@ -24,3 +26,6 @@ fixture result is equivalent to Nebius or physical evidence.
 | Anonymous public Judge Mode | Release authorization required | owner-private deployment exists |
 | Physical demo video | Hardware/publication-gated | shot list complete; recording is not fabricated |
 | Devpost submission | External action | draft/checklist complete; final URLs and submit action pending |
+
+The local column is complete only for the reference simulator and credential-free control plane.
+It does not satisfy A01, A02, A06, A07, A09, A10, A11 or A12 without their named external evidence.

@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 from threading import RLock
 from typing import Any
@@ -15,6 +16,7 @@ from shiftzero.domain import (
     MissionIntent,
     MissionStatus,
     OperationalSnapshot,
+    RecoveryIntent,
     RoutePlan,
     SafetyProof,
     TransportProposal,
@@ -58,6 +60,9 @@ class MissionSession:
     stop_latency_ms: float | None = None
     version: int = 1
     rejection_reason: str | None = None
+    recovery: RecoveryIntent | None = None
+    replan_proof: SafetyProof | None = None
+    created_at: datetime = field(default_factory=utc_now)
 
 
 class MissionService:
@@ -122,34 +127,68 @@ class MissionService:
                 return operation
             if session.state.current != MissionStatus.INTENT:
                 raise MissionServiceError("proposal preparation requires INTENT state")
-            snapshot = session.world.snapshot()
+            snapshot, snapshot_ref = session.recorder.call_tool(
+                kind="tool.get_operational_snapshot",
+                tool_name="get_operational_snapshot",
+                arguments={},
+                operation=session.world.snapshot,
+            )
             session.snapshot = snapshot
-            snapshot_ref = session.recorder.record("tool.get_operational_snapshot", snapshot)
             session.state.transition(MissionStatus.OBSERVED)
             session.recorder.record("workflow.transition", {"state": session.state.current})
 
-            source = session.world.inspect_location(session.intent.source, snapshot.snapshot_id)
-            destination = session.world.inspect_location(
-                session.intent.destination, snapshot.snapshot_id
+            source, source_ref = session.recorder.call_tool(
+                kind="tool.inspect_location",
+                tool_name="inspect_location",
+                arguments={"id": session.intent.source, "snapshot_id": snapshot.snapshot_id},
+                operation=lambda: session.world.inspect_location(
+                    session.intent.source, snapshot.snapshot_id
+                ),
             )
-            source_ref = session.recorder.record("tool.inspect_location", source)
-            destination_ref = session.recorder.record("tool.inspect_location", destination)
+            destination, destination_ref = session.recorder.call_tool(
+                kind="tool.inspect_location",
+                tool_name="inspect_location",
+                arguments={
+                    "id": session.intent.destination,
+                    "snapshot_id": snapshot.snapshot_id,
+                },
+                operation=lambda: session.world.inspect_location(
+                    session.intent.destination, snapshot.snapshot_id
+                ),
+            )
             if not source.exists or not destination.exists:
                 session.state.transition(MissionStatus.FAILED_SAFE)
                 raise MissionServiceError("source or destination is not a live entity")
 
-            plan = DeterministicPlanner().plan(intent=session.intent, snapshot=snapshot)
+            plan, plan_ref = session.recorder.call_tool(
+                kind="tool.plan_transport",
+                tool_name="plan_transport",
+                arguments={"intent": session.intent, "snapshot_id": snapshot.snapshot_id},
+                operation=lambda: DeterministicPlanner().plan(
+                    intent=session.intent, snapshot=snapshot
+                ),
+            )
             session.plan = plan
-            plan_ref = session.recorder.record("tool.plan_transport", plan)
             session.state.transition(MissionStatus.PLANNED)
             session.recorder.record("workflow.transition", {"state": session.state.current})
 
-            proposal, call = session.provider.propose_transport(
-                intent=session.intent,
-                snapshot=snapshot,
-                plan=plan,
-                evidence_refs=[snapshot_ref, source_ref, destination_ref, plan_ref],
+            proposal_result, _ = session.recorder.call_tool(
+                kind="tool.propose_transport",
+                tool_name="propose_transport",
+                arguments={
+                    "intent": session.intent,
+                    "snapshot_id": snapshot.snapshot_id,
+                    "route_version": plan.route_version,
+                    "evidence_refs": [snapshot_ref, source_ref, destination_ref, plan_ref],
+                },
+                operation=lambda: session.provider.propose_transport(
+                    intent=session.intent,
+                    snapshot=snapshot,
+                    plan=plan,
+                    evidence_refs=[snapshot_ref, source_ref, destination_ref, plan_ref],
+                ),
             )
+            proposal, call = proposal_result
             session.proposal = proposal
             session.recorder.record("llm.proposal", call)
             session.recorder.record("proposal.created", proposal)
@@ -195,10 +234,16 @@ class MissionService:
                 return operation
             if session.state.current != MissionStatus.VERIFIED or session.proposal is None:
                 raise MissionServiceError("only a VERIFIED proposal can be approved")
-            approval = ApprovalToken.issue(
-                proposal_hash=session.proposal.proposal_hash,
-                goal_hash=session.intent.goal_hash,
-                actor=actor,
+            approval, _ = session.recorder.call_tool(
+                kind="tool.approve_transport",
+                tool_name="approve_transport",
+                arguments={"proposal_id": proposal_id, "actor": actor, "role": actor_role},
+                operation=lambda: ApprovalToken.issue(
+                    proposal_hash=session.proposal.proposal_hash,
+                    goal_hash=session.intent.goal_hash,
+                    actor=actor,
+                    actor_role=actor_role,
+                ),
             )
             if not approval.valid_for(session.proposal):
                 raise MissionServiceError("approval integrity check failed")
@@ -220,6 +265,8 @@ class MissionService:
                 selected_agv=session.plan.selected_agv,
                 route=session.plan.nodes,
                 route_version=session.plan.route_version,
+                map_version=session.plan.map_version,
+                snapshot_id=session.proposal.snapshot_id,
                 proof_hash=session.proof.proof_hash if session.proof else "",
                 status=MissionStatus.APPROVED,
                 idempotency_key=f"dispatch:{session.proposal.proposal_hash}",
@@ -261,6 +308,30 @@ class MissionService:
                 "approval.rejected",
                 {"proposal_id": proposal_id, "actor": actor, "role": actor_role, "reason": reason},
             )
+            session.recorder.record(
+                "tool.reject_transport",
+                {
+                    "tool": "reject_transport",
+                    "arguments": {
+                        "proposal_id": proposal_id,
+                        "actor": actor,
+                        "role": actor_role,
+                        "reason": reason,
+                    },
+                    "arguments_hash": canonical_hash(
+                        {
+                            "proposal_id": proposal_id,
+                            "actor": actor,
+                            "role": actor_role,
+                            "reason": reason,
+                        }
+                    ),
+                    "result": {"state": "REJECTED"},
+                    "result_hash": canonical_hash({"state": "REJECTED"}),
+                    "latency_ms": 0.0,
+                    "error": None,
+                },
+            )
             session.state.transition(MissionStatus.REJECTED)
             session.recorder.record("workflow.transition", {"state": session.state.current})
             return self._finish_operation(session, name="reject", idempotency_key=idempotency_key)
@@ -276,7 +347,7 @@ class MissionService:
     ) -> MissionSession:
         with self._lock:
             session = self._by_mission(mission_id)
-            self._require_role(actor_role, {"operator", "approver", "admin"})
+            self._require_role(actor_role, {"executor", "admin"})
             operation = self._begin_operation(
                 session,
                 name="start",
@@ -295,7 +366,17 @@ class MissionService:
                 raise MissionServiceError(
                     "approval is stale, expired, or bound to another proposal"
                 )
-            session.mission = session.adapter.start(session.mission)
+            session.mission, _ = session.recorder.call_tool(
+                kind="tool.start_mission",
+                tool_name="start_mission",
+                arguments={
+                    "mission_id": mission_id,
+                    "actor": actor,
+                    "role": actor_role,
+                    "idempotency_key": session.mission.idempotency_key,
+                },
+                operation=lambda: session.adapter.start(session.mission),
+            )
             session.state.transition(MissionStatus.EXECUTING)
             session.recorder.record("execution.started", session.mission)
             session.recorder.record("workflow.transition", {"state": session.state.current})
@@ -309,18 +390,24 @@ class MissionService:
         *,
         actor: str,
         actor_role: str,
+        trigger_source: str,
         idempotency_key: str,
         expected_version: int,
     ) -> MissionSession:
         with self._lock:
             session = self._by_mission(mission_id)
-            self._require_role(actor_role, {"operator", "safety_operator", "admin"})
+            self._require_role(actor_role, {"safety", "executor", "admin"})
             operation = self._begin_operation(
                 session,
                 name="stop",
                 idempotency_key=idempotency_key,
                 expected_version=expected_version,
-                payload={"mission_id": mission_id, "actor": actor, "role": actor_role},
+                payload={
+                    "mission_id": mission_id,
+                    "actor": actor,
+                    "role": actor_role,
+                    "trigger_source": trigger_source,
+                },
             )
             if operation is not None:
                 return operation
@@ -329,11 +416,22 @@ class MissionService:
             obstacle = session.world.add_hero_blockage()
             session.recorder.record(
                 "sensor.aisle_blocked",
-                {"obstacle": obstacle, "stop_actor": actor},
+                {
+                    "obstacle": obstacle,
+                    "stop_actor": actor,
+                    "trigger_source": trigger_source,
+                },
             )
             session.state.transition(MissionStatus.BLOCKED)
             session.recorder.record("workflow.transition", {"state": session.state.current})
-            session.stop_latency_ms = session.adapter.local_stop(mission_id, source=obstacle.id)
+            session.stop_latency_ms, _ = session.recorder.call_tool(
+                kind="tool.stop_mission",
+                tool_name="stop_mission",
+                arguments={"mission_id": mission_id, "trigger_source": trigger_source},
+                operation=lambda: session.adapter.local_stop(
+                    mission_id, source=trigger_source
+                ),
+            )
             if session.mission is not None:
                 session.mission = session.adapter.get(session.mission.mission_id)
             session.recorder.record(
@@ -349,24 +447,30 @@ class MissionService:
             session.recorder.record("workflow.transition", {"state": session.state.current})
             return self._finish_operation(session, name="stop", idempotency_key=idempotency_key)
 
-    def replan_and_complete(
+    def replan(
         self,
         mission_id: str,
         *,
         actor: str,
         actor_role: str,
+        blocked_node_id: str | None,
         idempotency_key: str,
         expected_version: int,
     ) -> MissionSession:
         with self._lock:
             session = self._by_mission(mission_id)
-            self._require_role(actor_role, {"operator", "approver", "admin"})
+            self._require_role(actor_role, {"operator", "executor", "admin"})
             operation = self._begin_operation(
                 session,
                 name="replan",
                 idempotency_key=idempotency_key,
                 expected_version=expected_version,
-                payload={"mission_id": mission_id, "actor": actor, "role": actor_role},
+                payload={
+                    "mission_id": mission_id,
+                    "actor": actor,
+                    "role": actor_role,
+                    "blocked_node_id": blocked_node_id,
+                },
             )
             if operation is not None:
                 return operation
@@ -377,23 +481,65 @@ class MissionService:
                 or session.approval is None
             ):
                 raise MissionServiceError("replan requires SAFE_STOP and approval context")
-            snapshot = session.world.snapshot()
+            snapshot, _ = session.recorder.call_tool(
+                kind="tool.get_operational_snapshot",
+                tool_name="get_operational_snapshot",
+                arguments={"reason": "blockage_recovery"},
+                operation=session.world.snapshot,
+            )
+            effective_blocked_node = blocked_node_id or self.scenario.blockage.node_id
+            recovery_result, _ = session.recorder.call_tool(
+                kind="tool.propose_recovery",
+                tool_name="propose_recovery",
+                arguments={
+                    "mission_id": mission_id,
+                    "goal_hash": session.intent.goal_hash,
+                    "blocked_node_id": effective_blocked_node,
+                    "snapshot_id": snapshot.snapshot_id,
+                },
+                operation=lambda: session.provider.recover_from_blockage(
+                    mission_id=mission_id,
+                    goal_hash=session.intent.goal_hash,
+                    blocked_node_id=effective_blocked_node,
+                    snapshot=snapshot,
+                ),
+            )
+            recovery, recovery_call = recovery_result
+            session.recovery = recovery
+            session.recorder.record("llm.recovery", recovery_call)
+            session.recorder.record("recovery.intent", recovery)
+            if (
+                recovery.action != "REPLAN"
+                or recovery.preserve_goal_hash != session.intent.goal_hash
+            ):
+                session.state.transition(MissionStatus.FAILED_SAFE)
+                raise MissionServiceError("recovery intent did not preserve the approved goal")
             session.state.transition(MissionStatus.REPLANNING)
             session.recorder.record("workflow.transition", {"state": session.state.current})
-            plan = DeterministicPlanner().plan(
-                intent=session.intent,
-                snapshot=snapshot,
-                start_node=session.world.agvs[session.mission.selected_agv].node_id,
-                force_agv=session.mission.selected_agv,
+            plan, _ = session.recorder.call_tool(
+                kind="tool.replan_mission",
+                tool_name="replan_mission",
+                arguments={
+                    "mission_id": mission_id,
+                    "snapshot_id": snapshot.snapshot_id,
+                    "start_node": session.world.agvs[session.mission.selected_agv].node_id,
+                    "force_agv": session.mission.selected_agv,
+                },
+                operation=lambda: DeterministicPlanner().plan(
+                    intent=session.intent,
+                    snapshot=snapshot,
+                    start_node=session.world.agvs[session.mission.selected_agv].node_id,
+                    force_agv=session.mission.selected_agv,
+                ),
             )
             session.replan = plan
-            session.recorder.record("tool.replan_mission", plan)
             proof = SafetyEngine().verify_replan(
                 intent=session.intent,
                 plan=plan,
                 snapshot=snapshot,
                 original_proposal=session.proposal,
             )
+            session.replan_proof = proof
             session.recorder.record("safety.replan_proof", proof)
             if not proof.passed or not (
                 session.approval.goal_hash == session.intent.goal_hash
@@ -406,9 +552,57 @@ class MissionService:
                 "workflow.transition",
                 {"state": session.state.current, "authorization": "equivalent-route-policy"},
             )
-            session.mission = session.adapter.replace_route(mission_id, plan)
+            return self._finish_operation(session, name="replan", idempotency_key=idempotency_key)
+
+    def resume_and_complete(
+        self,
+        mission_id: str,
+        *,
+        actor: str,
+        actor_role: str,
+        idempotency_key: str,
+        expected_version: int,
+    ) -> MissionSession:
+        with self._lock:
+            session = self._by_mission(mission_id)
+            self._require_role(actor_role, {"executor", "admin"})
+            operation = self._begin_operation(
+                session,
+                name="resume",
+                idempotency_key=idempotency_key,
+                expected_version=expected_version,
+                payload={"mission_id": mission_id, "actor": actor, "role": actor_role},
+            )
+            if operation is not None:
+                return operation
+            if (
+                session.state.current != MissionStatus.VERIFIED
+                or session.mission is None
+                or session.replan is None
+                or session.replan_proof is None
+                or not session.replan_proof.passed
+                or session.approval is None
+                or session.proposal is None
+                or not session.approval.valid_for(session.proposal)
+            ):
+                raise MissionServiceError(
+                    "resume requires a valid equivalent-route proof and approval"
+                )
+            session.mission, _ = session.recorder.call_tool(
+                kind="tool.resume_mission",
+                tool_name="resume_mission",
+                arguments={
+                    "mission_id": mission_id,
+                    "route_version": session.replan.route_version,
+                    "actor": actor,
+                },
+                operation=lambda: session.adapter.replace_route(mission_id, session.replan),
+            )
             session.state.transition(MissionStatus.EXECUTING)
-            session.recorder.record("execution.resumed", session.mission)
+            session.recorder.record(
+                "execution.resumed",
+                {"mission": session.mission, "actor": actor, "role": actor_role},
+            )
             session.recorder.record("workflow.transition", {"state": session.state.current})
             while session.mission.status == MissionStatus.EXECUTING:
                 session.mission = session.adapter.advance(mission_id)
@@ -423,9 +617,89 @@ class MissionService:
                     "destination_occupancy": session.world.locations[
                         session.intent.destination
                     ].occupancy,
+                    "total_duration_ms": round(
+                        (utc_now() - session.created_at).total_seconds() * 1000, 6
+                    ),
+                    "human_interventions": 2,
+                    "estimated_model_cost_usd": 0.0,
+                    "measurement_scope": "current_process_reference_simulator",
                 },
             )
-            return self._finish_operation(session, name="replan", idempotency_key=idempotency_key)
+            session.recorder.export_json()
+            return self._finish_operation(session, name="resume", idempotency_key=idempotency_key)
+
+    def override_to_failed_safe(
+        self,
+        mission_id: str,
+        *,
+        actor: str,
+        actor_role: str,
+        reason: str,
+        idempotency_key: str,
+        expected_version: int,
+    ) -> MissionSession:
+        with self._lock:
+            session = self._by_mission(mission_id)
+            self._require_role(actor_role, {"safety", "admin"})
+            operation = self._begin_operation(
+                session,
+                name="override",
+                idempotency_key=idempotency_key,
+                expected_version=expected_version,
+                payload={
+                    "mission_id": mission_id,
+                    "actor": actor,
+                    "role": actor_role,
+                    "reason": reason,
+                },
+            )
+            if operation is not None:
+                return operation
+            if session.state.current not in {MissionStatus.SAFE_STOP, MissionStatus.VERIFIED}:
+                raise MissionServiceError("override is allowed only while safely stopped")
+            session.recorder.record(
+                "safety.override",
+                {
+                    "mission_id": mission_id,
+                    "actor": actor,
+                    "role": actor_role,
+                    "reason": reason,
+                    "effect": "FAILED_SAFE; no motion authorized",
+                },
+            )
+            session.recorder.record(
+                "tool.override_mission",
+                {
+                    "tool": "override_mission",
+                    "arguments": {
+                        "mission_id": mission_id,
+                        "actor": actor,
+                        "role": actor_role,
+                        "reason": reason,
+                    },
+                    "arguments_hash": canonical_hash(
+                        {
+                            "mission_id": mission_id,
+                            "actor": actor,
+                            "role": actor_role,
+                            "reason": reason,
+                        }
+                    ),
+                    "result": {"state": "FAILED_SAFE", "motion_authorized": False},
+                    "result_hash": canonical_hash(
+                        {"state": "FAILED_SAFE", "motion_authorized": False}
+                    ),
+                    "latency_ms": 0.0,
+                    "error": None,
+                },
+            )
+            session.approval = None
+            session.state.transition(MissionStatus.FAILED_SAFE)
+            session.recorder.record("workflow.transition", {"state": session.state.current})
+            session.recorder.export_json()
+            return self._finish_operation(
+                session, name="override", idempotency_key=idempotency_key
+            )
 
     def proof(self, proposal_id: str) -> SafetyProof:
         session = self._by_proposal(proposal_id)
@@ -435,7 +709,13 @@ class MissionService:
 
     def status(self, mission_id: str) -> dict[str, Any]:
         session = self._by_mission(mission_id)
-        return self._view(session)
+        result, _ = session.recorder.call_tool(
+            kind="tool.get_mission_status",
+            tool_name="get_mission_status",
+            arguments={"mission_id": mission_id},
+            operation=lambda: self._view(session),
+        )
+        return result
 
     def trace(self, trace_id: str) -> list[dict[str, Any]]:
         session_id = self._trace_index.get(trace_id)
@@ -472,6 +752,8 @@ class MissionService:
             "approval": session.approval,
             "mission": session.mission,
             "replan": session.replan,
+            "recovery": session.recovery,
+            "replan_proof": session.replan_proof,
             "stop_latency_ms": session.stop_latency_ms,
             "version": session.version,
             "rejection_reason": session.rejection_reason,

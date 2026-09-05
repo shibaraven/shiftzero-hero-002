@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import timedelta
 
 from shiftzero.domain import (
     AgvState,
@@ -16,7 +17,7 @@ from shiftzero.domain import (
 
 @dataclass(frozen=True, slots=True)
 class SafetyPolicy:
-    version: str = "safety-v1"
+    version: str = "safety-v2"
     minimum_battery_reserve_percent: float = 20.0
     minimum_obstacle_confidence: float = 0.5
     forbidden_zones: frozenset[str] = frozenset({"forbidden", "human-only"})
@@ -62,20 +63,50 @@ class SafetyEngine:
         active_obstacles = {
             obstacle.node_id
             for obstacle in snapshot.obstacles
-            if obstacle.confidence >= self.policy.minimum_obstacle_confidence
+            if obstacle.last_seen + timedelta(seconds=obstacle.ttl_seconds)
+            >= snapshot.captured_at
+            and (
+                obstacle.confidence >= 0.9
+                or (
+                    obstacle.confidence >= self.policy.minimum_obstacle_confidence
+                    and obstacle.observation_count >= 2
+                )
+            )
         }
         collision_hits = [node_id for node_id in plan.nodes if node_id in active_obstacles]
-        conflicts = [
+        reservation_conflicts = [
             group
             for group in plan.reservation_groups
             if group in snapshot.reserved_groups
             and snapshot.reserved_groups[group] != plan.selected_agv
         ]
+        group_duration = plan.estimated_duration_seconds / max(len(plan.reservation_groups), 1)
+        temporal_conflicts: list[str] = []
+        for index, group in enumerate(plan.reservation_groups):
+            starts_at = snapshot.captured_at + timedelta(seconds=index * group_duration)
+            ends_at = starts_at + timedelta(seconds=group_duration)
+            for reservation in snapshot.route_reservations:
+                if (
+                    reservation.reservation_group == group
+                    and reservation.held_by != plan.selected_agv
+                    and starts_at < reservation.ends_at
+                    and ends_at > reservation.starts_at
+                ):
+                    temporal_conflicts.append(
+                        f"{group}:{reservation.held_by}:{starts_at.isoformat()}"
+                    )
+        circular_wait = self._has_circular_wait(snapshot.wait_for, plan.selected_agv)
         destination = locations.get(intent.destination)
-        destination_ok = destination is not None and destination.occupancy in {
-            None,
-            intent.pallet_id,
-        }
+        destination_ok = (
+            destination is not None
+            and destination.reachable
+            and destination.occupancy in {None, intent.pallet_id}
+        )
+        vehicle_type_ok = selected_agv is not None and all(
+            "AGV" in nodes[node_id].allowed_vehicle_types
+            for node_id in plan.nodes
+            if node_id in nodes
+        )
         proposal_consistent = (
             proposal.mission_goal == intent
             and proposal.selected_agv == plan.selected_agv
@@ -87,9 +118,23 @@ class SafetyEngine:
             self._check("entity_validity", entities_valid, "live entities and pallet source"),
             self._check("map_consistency", map_consistent, "snapshot/map/proposal versions"),
             self._check("battery_reserve", battery_ok, "post-mission reserve >= 20%"),
+            self._check("vehicle_type", vehicle_type_ok, "AGV allowed on every route node"),
             self._check("forbidden_zone", not forbidden_hits, f"hits={forbidden_hits}"),
-            self._check("collision", not collision_hits, f"hits={collision_hits}"),
-            self._check("deadlock", not conflicts, f"reservation_conflicts={conflicts}"),
+            self._check(
+                "collision",
+                not collision_hits and not temporal_conflicts,
+                f"obstacle_hits={collision_hits}; temporal_conflicts={temporal_conflicts}",
+            ),
+            self._check(
+                "reservation_availability",
+                not reservation_conflicts,
+                f"reservation_conflicts={reservation_conflicts}",
+            ),
+            self._check(
+                "deadlock",
+                not circular_wait,
+                f"circular_wait={circular_wait}; wait_for={snapshot.wait_for}",
+            ),
             self._check("destination_occupancy", destination_ok, "destination can receive pallet"),
             self._check(
                 "proposal_semantics",
@@ -132,6 +177,17 @@ class SafetyEngine:
             and agv.battery_percent - plan.estimated_energy_percent
             >= self.policy.minimum_battery_reserve_percent
         )
+
+    @staticmethod
+    def _has_circular_wait(wait_for: dict[str, str], selected_agv: str) -> bool:
+        current = selected_agv
+        visited: set[str] = set()
+        while current in wait_for:
+            if current in visited:
+                return True
+            visited.add(current)
+            current = wait_for[current]
+        return current in visited
 
     @staticmethod
     def _check(name: str, passed: bool, detail: str) -> SafetyCheck:

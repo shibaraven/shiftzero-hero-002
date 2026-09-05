@@ -5,6 +5,18 @@
       "title": "Actor",
       "type": "string"
     },
+    "actor_role": {
+      "enum": [
+        "approver",
+        "admin"
+      ],
+      "title": "Actor Role",
+      "type": "string"
+    },
+    "approval_hash": {
+      "title": "Approval Hash",
+      "type": "string"
+    },
     "expires_at": {
       "format": "date-time",
       "title": "Expires At",
@@ -33,8 +45,10 @@
     "proposal_hash",
     "goal_hash",
     "actor",
+    "actor_role",
     "issued_at",
-    "expires_at"
+    "expires_at",
+    "approval_hash"
   ],
   "title": "ApprovalToken",
   "type": "object"

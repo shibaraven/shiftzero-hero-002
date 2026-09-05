@@ -1,5 +1,5 @@
 {
-  "version": "workflow-v1",
+  "version": "workflow-v2",
   "initial_state": "INTENT",
   "terminal_states": ["COMPLETED", "REJECTED", "FAILED", "FAILED_SAFE"],
   "transitions": {
@@ -8,7 +8,7 @@
     "OBSERVED": ["PLANNED", "FAILED_SAFE"],
     "PLANNED": ["PROPOSED", "REJECTED"],
     "PROPOSED": ["VERIFIED", "REJECTED"],
-    "VERIFIED": ["APPROVED", "EXECUTING", "REJECTED"],
+    "VERIFIED": ["APPROVED", "EXECUTING", "REJECTED", "FAILED_SAFE"],
     "APPROVED": ["EXECUTING", "REJECTED", "FAILED_SAFE"],
     "EXECUTING": ["BLOCKED", "COMPLETED", "FAILED_SAFE"],
     "BLOCKED": ["SAFE_STOP", "FAILED_SAFE"],
@@ -21,4 +21,3 @@
   },
   "verified_to_executing_guard": "Equivalent replan only: unchanged goal and valid mission authorization"
 }
-

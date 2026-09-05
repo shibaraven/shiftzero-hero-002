@@ -46,6 +46,10 @@
       "title": "Idempotency Key",
       "type": "string"
     },
+    "map_version": {
+      "title": "Map Version",
+      "type": "string"
+    },
     "mission_id": {
       "title": "Mission Id",
       "type": "string"
@@ -81,6 +85,10 @@
       "title": "Selected Agv",
       "type": "string"
     },
+    "snapshot_id": {
+      "title": "Snapshot Id",
+      "type": "string"
+    },
     "source": {
       "title": "Source",
       "type": "string"
@@ -111,6 +119,8 @@
     "selected_agv",
     "route",
     "route_version",
+    "map_version",
+    "snapshot_id",
     "proof_hash",
     "status",
     "idempotency_key"

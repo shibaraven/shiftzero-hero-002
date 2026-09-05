@@ -48,6 +48,17 @@
           "title": "Node Id",
           "type": "string"
         },
+        "pose": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Pose"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "state": {
           "enum": [
             "IDLE",
@@ -101,6 +112,18 @@
           ],
           "default": null,
           "title": "Occupancy"
+        },
+        "pallet_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pallet Id"
         },
         "reachable": {
           "default": true,
@@ -202,6 +225,42 @@
       "title": "MapNode",
       "type": "object"
     },
+    "ObstacleGeometry": {
+      "additionalProperties": false,
+      "properties": {
+        "coordinates": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "items": {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              "type": "array"
+            }
+          ],
+          "title": "Coordinates"
+        },
+        "type": {
+          "default": "Point",
+          "enum": [
+            "Point",
+            "Polygon"
+          ],
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "title": "ObstacleGeometry",
+      "type": "object"
+    },
     "ObstacleState": {
       "additionalProperties": false,
       "properties": {
@@ -216,13 +275,27 @@
           "title": "First Seen",
           "type": "string"
         },
+        "geometry": {
+          "$ref": "#/$defs/ObstacleGeometry"
+        },
         "id": {
           "title": "Id",
+          "type": "string"
+        },
+        "last_seen": {
+          "format": "date-time",
+          "title": "Last Seen",
           "type": "string"
         },
         "node_id": {
           "title": "Node Id",
           "type": "string"
+        },
+        "observation_count": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Observation Count",
+          "type": "integer"
         },
         "source": {
           "default": "simulator",
@@ -261,6 +334,80 @@
         "location_id"
       ],
       "title": "PalletState",
+      "type": "object"
+    },
+    "Pose": {
+      "additionalProperties": false,
+      "properties": {
+        "heading_deg": {
+          "default": 0,
+          "exclusiveMaximum": 360,
+          "minimum": 0,
+          "title": "Heading Deg",
+          "type": "number"
+        },
+        "node_id": {
+          "title": "Node Id",
+          "type": "string"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "node_id",
+        "x",
+        "y"
+      ],
+      "title": "Pose",
+      "type": "object"
+    },
+    "RouteReservation": {
+      "additionalProperties": false,
+      "properties": {
+        "ends_at": {
+          "format": "date-time",
+          "title": "Ends At",
+          "type": "string"
+        },
+        "held_by": {
+          "title": "Held By",
+          "type": "string"
+        },
+        "reservation_group": {
+          "title": "Reservation Group",
+          "type": "string"
+        },
+        "starts_at": {
+          "format": "date-time",
+          "title": "Starts At",
+          "type": "string"
+        },
+        "waiting_for": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Waiting For"
+        }
+      },
+      "required": [
+        "reservation_group",
+        "held_by",
+        "starts_at",
+        "ends_at"
+      ],
+      "title": "RouteReservation",
       "type": "object"
     }
   },
@@ -324,9 +471,23 @@
       "title": "Reserved Groups",
       "type": "object"
     },
+    "route_reservations": {
+      "items": {
+        "$ref": "#/$defs/RouteReservation"
+      },
+      "title": "Route Reservations",
+      "type": "array"
+    },
     "snapshot_id": {
       "title": "Snapshot Id",
       "type": "string"
+    },
+    "wait_for": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Wait For",
+      "type": "object"
     }
   },
   "required": [

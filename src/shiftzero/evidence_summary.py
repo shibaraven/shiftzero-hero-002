@@ -25,11 +25,13 @@ def build_hero_summary(*, root: Path, output_path: Path) -> dict[str, Any]:
     proof = _payload(events, "safety.proof")
     approval = _payload(events, "approval.granted")
     initial_plan = _payload(events, "tool.plan_transport")["result"]
-    replan = _payload(events, "tool.replan_mission")
+    replan = _payload(events, "tool.replan_mission")["result"]
     stop = _payload(events, "execution.local_stop")
     outcome = _payload(events, "outcome.completed")
     model_calls = [
-        event["payload"] for event in events if event["kind"] in {"llm.intent", "llm.proposal"}
+        event["payload"]
+        for event in events
+        if event["kind"] in {"llm.intent", "llm.proposal", "llm.recovery"}
     ]
     policy_path = root / "schemas" / "safety-policy.json"
     trace_relative = trace_path.resolve().relative_to(root.resolve()).as_posix()
@@ -57,6 +59,9 @@ def build_hero_summary(*, root: Path, output_path: Path) -> dict[str, Any]:
         },
         "stop_latency_ms": stop["latency_ms"],
         "stop_latency_kind": stop["measurement_kind"],
+        "total_duration_ms": outcome["total_duration_ms"],
+        "human_interventions": outcome["human_interventions"],
+        "estimated_model_cost_usd": outcome["estimated_model_cost_usd"],
         "final_status": "COMPLETED",
         "trace_id": events[0]["trace_id"],
         "trace_path": trace_relative,

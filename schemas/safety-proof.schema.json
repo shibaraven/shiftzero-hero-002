@@ -49,7 +49,7 @@
       "type": "boolean"
     },
     "policy_version": {
-      "default": "safety-v1",
+      "default": "safety-v2",
       "title": "Policy Version",
       "type": "string"
     },

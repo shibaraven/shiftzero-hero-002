@@ -1,6 +1,11 @@
 {
   "additionalProperties": false,
   "properties": {
+    "candidate_count": {
+      "minimum": 1,
+      "title": "Candidate Count",
+      "type": "integer"
+    },
     "cost": {
       "minimum": 0,
       "title": "Cost",
@@ -9,6 +14,11 @@
     "distance_m": {
       "exclusiveMinimum": 0,
       "title": "Distance M",
+      "type": "number"
+    },
+    "estimated_duration_seconds": {
+      "exclusiveMinimum": 0,
+      "title": "Estimated Duration Seconds",
       "type": "number"
     },
     "estimated_energy_percent": {
@@ -52,7 +62,9 @@
     "reservation_groups",
     "distance_m",
     "estimated_energy_percent",
-    "cost"
+    "cost",
+    "estimated_duration_seconds",
+    "candidate_count"
   ],
   "title": "RoutePlan",
   "type": "object"

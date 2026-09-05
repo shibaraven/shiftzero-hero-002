@@ -9,13 +9,14 @@ from datetime import UTC, datetime
 from typing import Any, Protocol
 
 import httpx
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 
 from shiftzero.config import TokenFactorySettings
 from shiftzero.domain import (
     MissionIntent,
     ModelCallEvidence,
     OperationalSnapshot,
+    RecoveryIntent,
     RoutePlan,
     TransportProposal,
     canonical_hash,
@@ -46,6 +47,15 @@ class IntentProposalProvider(Protocol):
         plan: RoutePlan,
         evidence_refs: list[str],
     ) -> tuple[TransportProposal, ModelCallEvidence]: ...
+
+    def recover_from_blockage(
+        self,
+        *,
+        mission_id: str,
+        goal_hash: str,
+        blocked_node_id: str,
+        snapshot: OperationalSnapshot,
+    ) -> tuple[RecoveryIntent, ModelCallEvidence]: ...
 
 
 class FixtureProvider:
@@ -109,6 +119,30 @@ class FixtureProvider:
             completed=completed,
         )
 
+    def recover_from_blockage(
+        self,
+        *,
+        mission_id: str,
+        goal_hash: str,
+        blocked_node_id: str,
+        snapshot: OperationalSnapshot,
+    ) -> tuple[RecoveryIntent, ModelCallEvidence]:
+        started = datetime.now(UTC)
+        recovery = RecoveryIntent(
+            mission_id=mission_id,
+            reason=f"verified obstacle at {blocked_node_id} in {snapshot.snapshot_id}",
+            action="REPLAN",
+            blocked_node_id=blocked_node_id,
+            preserve_goal_hash=goal_hash,
+        )
+        completed = datetime.now(UTC)
+        return recovery, _fixture_evidence(
+            tool_name="propose_recovery",
+            arguments=recovery.model_dump(mode="json"),
+            started=started,
+            completed=completed,
+        )
+
 
 class TokenFactoryProvider:
     provider_name = "nebius_token_factory"
@@ -130,6 +164,8 @@ class TokenFactoryProvider:
                 "Content-Type": "application/json",
             },
         )
+        self._consecutive_failures = 0
+        self._circuit_open_until = 0.0
 
     def parse_intent(self, operator_text: str) -> tuple[MissionIntent, ModelCallEvidence]:
         schema = MissionIntent.model_json_schema()
@@ -269,12 +305,80 @@ class TokenFactoryProvider:
             raise ProviderError("live model returned semantically incorrect verification intent")
         return evidence
 
+    def recover_from_blockage(
+        self,
+        *,
+        mission_id: str,
+        goal_hash: str,
+        blocked_node_id: str,
+        snapshot: OperationalSnapshot,
+    ) -> tuple[RecoveryIntent, ModelCallEvidence]:
+        schema = RecoveryIntent.model_json_schema()
+        verified_context = {
+            "mission_id": mission_id,
+            "goal_hash": goal_hash,
+            "blocked_node_id": blocked_node_id,
+            "snapshot_id": snapshot.snapshot_id,
+        }
+        body = {
+            "model": self.settings.model,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "Describe a bounded recovery decision for the verified blockage. "
+                        "Copy identifiers exactly, preserve the approved goal, choose REPLAN, "
+                        "and call propose_recovery once. Never resume or dispatch."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": "VERIFIED_CONTEXT\n" + json.dumps(verified_context, sort_keys=True),
+                },
+            ],
+            "tools": [
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "propose_recovery",
+                        "description": "Return recovery intent only; it has no side effect.",
+                        "parameters": schema,
+                    },
+                }
+            ],
+            "tool_choice": {
+                "type": "function",
+                "function": {"name": "propose_recovery"},
+            },
+            "temperature": 1.0,
+            "top_p": 0.95,
+        }
+        arguments, evidence = self._call_tool(body, "propose_recovery", RecoveryIntent)
+        recovery = RecoveryIntent.model_validate(arguments)
+        expected = {
+            "mission_id": mission_id,
+            "blocked_node_id": blocked_node_id,
+            "preserve_goal_hash": goal_hash,
+            "action": "REPLAN",
+        }
+        actual = {key: getattr(recovery, key) for key in expected}
+        if actual != expected:
+            raise ProviderError(
+                "schema-valid recovery failed referential/semantic validation: "
+                f"expected={expected!r}, received={actual!r}"
+            )
+        return recovery, evidence
+
     def _call_tool(
         self,
         body: dict[str, Any],
         expected_tool: str,
-        response_model: type[MissionIntent] | None,
+        response_model: type[BaseModel] | None,
     ) -> tuple[dict[str, Any], ModelCallEvidence]:
+        now = time.monotonic()
+        if now < self._circuit_open_until:
+            raise ProviderError("Token Factory circuit breaker is open; failed closed")
+        total_started = now
         retry_count = 0
         repair_count = 0
         idempotency_key = str(uuid.uuid4())
@@ -284,6 +388,12 @@ class TokenFactoryProvider:
             started_ns = time.perf_counter_ns()
             response: httpx.Response | None = None
             for attempt in range(self.settings.max_retries + 1):
+                if (
+                    time.monotonic() - total_started
+                    >= self.settings.max_total_inference_seconds
+                ):
+                    self._register_failure()
+                    raise ProviderError("Token Factory total inference budget exceeded")
                 try:
                     response = self.client.post(
                         "chat/completions",
@@ -296,6 +406,7 @@ class TokenFactoryProvider:
                 except (httpx.TimeoutException, httpx.HTTPStatusError) as exc:
                     last_error = exc
                     if attempt >= self.settings.max_retries:
+                        self._register_failure()
                         raise ProviderError(
                             f"Token Factory request failed closed after {attempt + 1} attempts"
                         ) from exc
@@ -355,14 +466,24 @@ class TokenFactoryProvider:
                 finish_reason=choice.get("finish_reason"),
                 tool_name=expected_tool,
                 tool_arguments_hash=canonical_hash(arguments),
+                tool_result_hash=canonical_hash(arguments),
                 retry_count=retry_count,
                 repair_count=repair_count,
                 http_status=response.status_code,
                 rate_limit_remaining=response.headers.get("x-ratelimit-remaining-requests"),
                 rate_limit_reset=response.headers.get("x-ratelimit-reset-requests"),
+                inference_budget_ms=self.settings.max_total_inference_seconds * 1000,
             )
+            self._consecutive_failures = 0
             return arguments, evidence
         raise ProviderError("unreachable tool-call failure")
+
+    def _register_failure(self) -> None:
+        self._consecutive_failures += 1
+        if self._consecutive_failures >= self.settings.circuit_breaker_threshold:
+            self._circuit_open_until = (
+                time.monotonic() + self.settings.circuit_breaker_cooldown_seconds
+            )
 
 
 def _extract(pattern: str, text: str, default: str | None) -> str | None:
@@ -386,5 +507,7 @@ def _fixture_evidence(
         latency_ms=max((completed - started).total_seconds() * 1000, 0.001),
         tool_name=tool_name,
         tool_arguments_hash=canonical_hash(arguments),
+        tool_result_hash=canonical_hash(arguments),
         http_status=None,
+        inference_budget_ms=1000,
     )

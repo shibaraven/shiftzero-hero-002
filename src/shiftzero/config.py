@@ -11,6 +11,9 @@ class TokenFactorySettings:
     model: str = "nvidia/nemotron-3-super-120b-a12b"
     timeout_seconds: float = 30.0
     max_retries: int = 2
+    max_total_inference_seconds: float = 45.0
+    circuit_breaker_threshold: int = 3
+    circuit_breaker_cooldown_seconds: float = 30.0
 
     @classmethod
     def from_environment(cls) -> TokenFactorySettings:
@@ -29,4 +32,14 @@ class TokenFactorySettings:
             + "/",
             model=os.getenv("NEBIUS_MODEL", "nvidia/nemotron-3-super-120b-a12b"),
             timeout_seconds=float(os.getenv("NEBIUS_TIMEOUT_SECONDS", "30")),
+            max_retries=int(os.getenv("NEBIUS_MAX_RETRIES", "2")),
+            max_total_inference_seconds=float(
+                os.getenv("NEBIUS_MAX_TOTAL_INFERENCE_SECONDS", "45")
+            ),
+            circuit_breaker_threshold=int(
+                os.getenv("NEBIUS_CIRCUIT_BREAKER_THRESHOLD", "3")
+            ),
+            circuit_breaker_cooldown_seconds=float(
+                os.getenv("NEBIUS_CIRCUIT_BREAKER_COOLDOWN_SECONDS", "30")
+            ),
         )

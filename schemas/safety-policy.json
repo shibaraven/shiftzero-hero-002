@@ -1,5 +1,5 @@
 {
-  "version": "safety-v1",
+  "version": "safety-v2",
   "default_decision": "FAIL_CLOSED",
   "minimum_battery_reserve_percent": 20.0,
   "minimum_obstacle_confidence": 0.5,
@@ -8,8 +8,10 @@
     "entity_validity",
     "map_consistency",
     "battery_reserve",
+    "vehicle_type",
     "forbidden_zone",
     "collision",
+    "reservation_availability",
     "deadlock",
     "destination_occupancy",
     "proposal_semantics",
@@ -25,5 +27,14 @@
   "replan": {
     "equivalent_route_may_auto_resume": true,
     "changed_goal_requires_new_approval": true
+  },
+  "obstacle_filter": {
+    "immediate_stop_confidence": 0.9,
+    "medium_confidence_min_observations": 2,
+    "ttl_enforced": true
+  },
+  "collision_prediction": {
+    "reservation_time_windows": true,
+    "circular_wait_graph": true
   }
 }

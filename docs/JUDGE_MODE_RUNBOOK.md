@@ -14,7 +14,9 @@ every evidence artifact.
 3. Open **Architecture** to inspect the authority boundary: Nemotron may propose typed tools;
    deterministic policy and the state machine authorize execution.
 4. Open **Evidence** to inspect the 100-scenario result, run manifest, fixture compatibility
-   preflight, and downloadable Evidence Bundle.
+   preflight, fair baseline, typed tool spans, and downloadable Evidence Bundle.
+5. Open **GitHub** to inspect repository readiness and the explicit public-release gate. The page
+   never fabricates a source URL while no public remote exists.
 
 Expected hero outcome: the simulated AGV stops after the N09 obstruction, takes the alternate
 route only after re-verification, and completes with an intact evidence hash chain.
@@ -28,6 +30,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m shiftzero.cli hero --provider fixture
 .\.venv\Scripts\python.exe -m shiftzero.cli evaluate-scenarios
 .\.venv\Scripts\python.exe -m shiftzero.cli verify-hero-reliability --runs 20
+.\.venv\Scripts\python.exe -m shiftzero.cli fair-baseline --samples 20
 .\.venv\Scripts\python.exe -m shiftzero.cli build-hero-summary
 .\.venv\Scripts\python.exe -m shiftzero.cli build-evidence-bundle
 ```

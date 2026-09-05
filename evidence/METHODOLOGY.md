@@ -13,6 +13,9 @@ tamper-evident evidence. They do not demonstrate live Nebius behavior or physica
   the frozen state path, a route-version change after the blockage, and a valid SHA-256 trace chain.
 - Stop latency in these reports is labelled `simulated_process`. No value is compared with the
   physical 200 ms sensor-to-stop requirement.
+- Tool spans record tool name, arguments and result hashes, start/completion time, latency and
+  error. Planner output records candidate count and estimated duration. Outcomes record duration,
+  human interventions, cost and measurement scope.
 - The Compatibility preflight is explicitly unofficial. The official gate remains false until the
   same test matrix runs against live Token Factory/Nemotron and its raw request evidence is stored.
 
@@ -20,11 +23,12 @@ tamper-evident evidence. They do not demonstrate live Nebius behavior or physica
 
 Run `shiftzero export-schemas`, `shiftzero evaluate-scenarios`,
 `shiftzero verify-hero-reliability --runs 20`, `shiftzero compatibility --provider fixture`, then
-`shiftzero build-evidence-bundle`. The bundle manifest hashes every included byte.
+`shiftzero fair-baseline --samples 20` and `shiftzero build-evidence-bundle`. The bundle manifest
+hashes every included byte.
 
 ## Visual evidence
 
-The private Judge Mode renders the JSON evidence directly. Browser screenshots are not treated as
-primary evidence because they are lossy and cannot be hash-verified; the site and downloadable
-bundle remain the replayable source. Physical AGV video and live-provider screenshots are external
-gates and are intentionally absent.
+The private Judge Mode renders JSON evidence directly. Three checked-in PNG captures show the
+COMPLETED mission, typed model-tool evidence and VERIFIED safety proof; the bundle hashes them, but
+the underlying JSON/JSONL remains the primary machine-verifiable evidence. Physical AGV video and
+live-provider screenshots are external gates and remain intentionally absent.

@@ -3,24 +3,30 @@
 ## Completed locally
 
 - Git repository initialized with public/private IP boundaries and existing-work disclosure.
-- Frozen hero scenario, typed JSON Schemas, state machine, tool catalog, and safety policy.
+- Frozen hero scenario, typed JSON Schemas, workflow-v2, tools-v3, and safety-v2 policy.
 - OpenAI-compatible Nebius Token Factory provider for forced typed Nemotron tool calls.
 - Deterministic simulator loop: observe, plan, propose, verify, approve, execute, block,
-  local stop, replan, reverify, resume, complete.
-- Append-only evidence trace with a verified SHA-256 hash chain.
+  local stop, typed RecoveryIntent, replan, reverify, separately authorized resume, complete.
+- Append-only JSONL and structured JSON evidence with a verified SHA-256 hash chain and complete
+  per-tool arguments/result hashes, latency and errors.
 - 120-run fixture preflight plus stale snapshot, invalid entity, timeout, HTTP 429, and duplicate
   dispatch controls.
 - Compatibility attestation gate that prevents a fixture report from opening the real adapter.
-- Stateful Agent API for intent, proposal, proof, approval, execution, stop, replan, trace, and
-  metric inspection, including request idempotency, optimistic concurrency, role gates, and
-  audited Reject behavior.
+- Stateful Agent API for intent, proposal, proof, approval, execution, stop, replan, resume,
+  fail-safe override, trace and metric inspection. Signed bearer claims replace self-asserted
+  roles; every write is versioned and stored in a SQLite exact-response idempotency ledger.
+- Digital Twin pose, obstacle geometry/TTL, route-reservation time windows, vehicle compatibility,
+  circular-wait deadlock detection, destination reachability and sensor persistence filtering.
 - Differentiated 100-scenario evaluation across six scenario families. Nominal missions execute;
   static, temporary and sudden blockages follow distinct paths; unsafe cases are proof-gated; and
   ambiguous text goes through the real fixture parser without invented defaults.
 - Independent 20-run Hero reliability gate with the complete state path, changed route version,
   and a verified SHA-256 trace chain required on every run.
+- Matched 20-sample Manual UI versus Agent Flow simulator baseline, with no labor/time savings
+  claim extrapolated to physical operations.
 - Byte-reproducible, SHA-256-indexed Evidence Bundle.
-- Interactive Judge Mode website with mission, architecture, and evidence views.
+- Interactive Judge Mode website with Run Hero, Architecture, Evidence and GitHub/source-gate
+  entrances, plus typed model-tool and release-acceptance evidence.
 - Devpost draft, anonymous judge runbook, submission checklist, and three-minute video shot list.
 - Owner-private Judge Mode deployment at `https://shiftzero-hero-002.mingjen.chatgpt.site`.
 

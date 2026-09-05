@@ -4,19 +4,6 @@
       "ApprovalRequest": {
         "additionalProperties": false,
         "properties": {
-          "actor": {
-            "title": "Actor",
-            "type": "string"
-          },
-          "actor_role": {
-            "default": "approver",
-            "enum": [
-              "approver",
-              "admin"
-            ],
-            "title": "Actor Role",
-            "type": "string"
-          },
           "expected_version": {
             "minimum": 1.0,
             "title": "Expected Version",
@@ -30,11 +17,32 @@
           }
         },
         "required": [
-          "actor",
           "idempotency_key",
           "expected_version"
         ],
         "title": "ApprovalRequest",
+        "type": "object"
+      },
+      "ExistingResourceWrite": {
+        "additionalProperties": false,
+        "properties": {
+          "expected_version": {
+            "minimum": 1.0,
+            "title": "Expected Version",
+            "type": "integer"
+          },
+          "idempotency_key": {
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Idempotency Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "idempotency_key",
+          "expected_version"
+        ],
+        "title": "ExistingResourceWrite",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -53,8 +61,15 @@
       "HeroRunRequest": {
         "additionalProperties": false,
         "properties": {
-          "approval_actor": {
-            "title": "Approval Actor",
+          "expected_version": {
+            "const": 0,
+            "title": "Expected Version",
+            "type": "integer"
+          },
+          "idempotency_key": {
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Idempotency Key",
             "type": "string"
           },
           "operator_text": {
@@ -79,7 +94,8 @@
           }
         },
         "required": [
-          "approval_actor"
+          "idempotency_key",
+          "expected_version"
         ],
         "title": "HeroRunRequest",
         "type": "object"
@@ -170,8 +186,15 @@
       "IntentRequest": {
         "additionalProperties": false,
         "properties": {
-          "operator_id": {
-            "title": "Operator Id",
+          "expected_version": {
+            "const": 0,
+            "title": "Expected Version",
+            "type": "integer"
+          },
+          "idempotency_key": {
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Idempotency Key",
             "type": "string"
           },
           "operator_text": {
@@ -189,8 +212,9 @@
           }
         },
         "required": [
-          "operator_text",
-          "operator_id"
+          "idempotency_key",
+          "expected_version",
+          "operator_text"
         ],
         "title": "IntentRequest",
         "type": "object"
@@ -268,6 +292,18 @@
               }
             ],
             "title": "Http Status"
+          },
+          "inference_budget_ms": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inference Budget Ms"
           },
           "input_tokens": {
             "anyOf": [
@@ -356,6 +392,10 @@
           "tool_name": {
             "title": "Tool Name",
             "type": "string"
+          },
+          "tool_result_hash": {
+            "title": "Tool Result Hash",
+            "type": "string"
           }
         },
         "required": [
@@ -366,9 +406,39 @@
           "completed_at",
           "latency_ms",
           "tool_name",
-          "tool_arguments_hash"
+          "tool_arguments_hash",
+          "tool_result_hash"
         ],
         "title": "ModelCallEvidence",
+        "type": "object"
+      },
+      "OverrideRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "expected_version": {
+            "minimum": 1.0,
+            "title": "Expected Version",
+            "type": "integer"
+          },
+          "idempotency_key": {
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Idempotency Key",
+            "type": "string"
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 8,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "idempotency_key",
+          "expected_version",
+          "reason"
+        ],
+        "title": "OverrideRequest",
         "type": "object"
       },
       "ProposalRequest": {
@@ -391,9 +461,9 @@
           }
         },
         "required": [
-          "intent_id",
           "idempotency_key",
-          "expected_version"
+          "expected_version",
+          "intent_id"
         ],
         "title": "ProposalRequest",
         "type": "object"
@@ -401,19 +471,6 @@
       "RejectRequest": {
         "additionalProperties": false,
         "properties": {
-          "actor": {
-            "title": "Actor",
-            "type": "string"
-          },
-          "actor_role": {
-            "default": "approver",
-            "enum": [
-              "approver",
-              "admin"
-            ],
-            "title": "Actor Role",
-            "type": "string"
-          },
           "expected_version": {
             "minimum": 1.0,
             "title": "Expected Version",
@@ -433,7 +490,6 @@
           }
         },
         "required": [
-          "actor",
           "idempotency_key",
           "expected_version",
           "reason"
@@ -444,19 +500,16 @@
       "ReplanRequest": {
         "additionalProperties": false,
         "properties": {
-          "actor": {
-            "title": "Actor",
-            "type": "string"
-          },
-          "actor_role": {
-            "default": "operator",
-            "enum": [
-              "operator",
-              "approver",
-              "admin"
+          "blocked_node_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
             ],
-            "title": "Actor Role",
-            "type": "string"
+            "title": "Blocked Node Id"
           },
           "expected_version": {
             "minimum": 1.0,
@@ -471,7 +524,6 @@
           }
         },
         "required": [
-          "actor",
           "idempotency_key",
           "expected_version"
         ],
@@ -481,20 +533,6 @@
       "StartRequest": {
         "additionalProperties": false,
         "properties": {
-          "actor": {
-            "title": "Actor",
-            "type": "string"
-          },
-          "actor_role": {
-            "default": "operator",
-            "enum": [
-              "operator",
-              "approver",
-              "admin"
-            ],
-            "title": "Actor Role",
-            "type": "string"
-          },
           "expected_version": {
             "minimum": 1.0,
             "title": "Expected Version",
@@ -508,7 +546,6 @@
           }
         },
         "required": [
-          "actor",
           "idempotency_key",
           "expected_version"
         ],
@@ -518,20 +555,6 @@
       "StopRequest": {
         "additionalProperties": false,
         "properties": {
-          "actor": {
-            "title": "Actor",
-            "type": "string"
-          },
-          "actor_role": {
-            "default": "safety_operator",
-            "enum": [
-              "operator",
-              "safety_operator",
-              "admin"
-            ],
-            "title": "Actor Role",
-            "type": "string"
-          },
           "expected_version": {
             "minimum": 1.0,
             "title": "Expected Version",
@@ -542,10 +565,16 @@
             "minLength": 8,
             "title": "Idempotency Key",
             "type": "string"
+          },
+          "trigger_source": {
+            "default": "operator-panel",
+            "maxLength": 128,
+            "minLength": 3,
+            "title": "Trigger Source",
+            "type": "string"
           }
         },
         "required": [
-          "actor",
           "idempotency_key",
           "expected_version"
         ],
@@ -592,6 +621,12 @@
         "title": "ValidationError",
         "type": "object"
       }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "scheme": "bearer",
+        "type": "http"
+      }
     }
   },
   "info": {
@@ -601,6 +636,56 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/audit": {
+      "get": {
+        "operationId": "audit_api_audit_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "title": "Response Audit Api Audit Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Audit"
+      }
+    },
     "/api/hero-runs": {
       "post": {
         "operationId": "run_hero_api_hero_runs_post",
@@ -636,6 +721,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Run Hero"
       }
     },
@@ -676,6 +766,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Create Intent"
       }
     },
@@ -740,6 +835,62 @@
         "summary": "Mission Status"
       }
     },
+    "/api/missions/{mission_id}/override": {
+      "post": {
+        "operationId": "override_mission_api_missions__mission_id__override_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "mission_id",
+            "required": true,
+            "schema": {
+              "title": "Mission Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OverrideRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Override Mission Api Missions  Mission Id  Override Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Override Mission"
+      }
+    },
     "/api/missions/{mission_id}/replan": {
       "post": {
         "operationId": "replan_mission_api_missions__mission_id__replan_post",
@@ -788,7 +939,68 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Replan Mission"
+      }
+    },
+    "/api/missions/{mission_id}/resume": {
+      "post": {
+        "operationId": "resume_mission_api_missions__mission_id__resume_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "mission_id",
+            "required": true,
+            "schema": {
+              "title": "Mission Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExistingResourceWrite"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Resume Mission Api Missions  Mission Id  Resume Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Resume Mission"
       }
     },
     "/api/missions/{mission_id}/start": {
@@ -839,6 +1051,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Start Mission"
       }
     },
@@ -890,6 +1107,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Stop Mission"
       }
     },
@@ -930,6 +1152,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Create Proposal"
       }
     },
@@ -981,6 +1208,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Approve"
       }
     },
@@ -1073,6 +1305,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Reject"
       }
     },

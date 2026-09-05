@@ -1,0 +1,75 @@
+{
+  "$defs": {
+    "ToolName": {
+      "enum": [
+        "get_operational_snapshot",
+        "inspect_location",
+        "plan_transport",
+        "propose_transport",
+        "approve_transport",
+        "reject_transport",
+        "start_mission",
+        "stop_mission",
+        "get_mission_status",
+        "replan_mission",
+        "propose_recovery",
+        "resume_mission",
+        "override_mission",
+        "get_operation_metrics"
+      ],
+      "title": "ToolName",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "enum": [
+        "REPLAN",
+        "WAIT",
+        "ABORT"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "blocked_node_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Blocked Node Id"
+    },
+    "mission_id": {
+      "title": "Mission Id",
+      "type": "string"
+    },
+    "preserve_goal_hash": {
+      "title": "Preserve Goal Hash",
+      "type": "string"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    },
+    "requested_tools": {
+      "items": {
+        "$ref": "#/$defs/ToolName"
+      },
+      "title": "Requested Tools",
+      "type": "array"
+    }
+  },
+  "required": [
+    "mission_id",
+    "reason",
+    "action",
+    "preserve_goal_hash"
+  ],
+  "title": "RecoveryIntent",
+  "type": "object"
+}

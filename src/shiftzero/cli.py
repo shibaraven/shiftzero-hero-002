@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 
 from shiftzero.agent import FixtureProvider, TokenFactoryProvider
+from shiftzero.auth import AuthSettings, issue_access_token
+from shiftzero.baseline import run_fair_baseline
 from shiftzero.bundle import build_evidence_bundle
 from shiftzero.compatibility import run_compatibility_gate
 from shiftzero.config import TokenFactorySettings
@@ -79,8 +81,49 @@ def main() -> None:
     summary.add_argument("--root", type=Path, default=Path.cwd())
     summary.add_argument("--output", type=Path, default=Path("evidence/hero-summary.json"))
 
+    auth_token = subparsers.add_parser(
+        "issue-auth-token", help="Issue a short-lived signed Agent API bearer token"
+    )
+    auth_token.add_argument("--subject", required=True)
+    auth_token.add_argument(
+        "--role",
+        required=True,
+        choices=["operator", "approver", "executor", "safety", "viewer", "admin"],
+    )
+    auth_token.add_argument("--ttl-seconds", type=int, default=900)
+
+    baseline = subparsers.add_parser(
+        "fair-baseline", help="Measure matched Manual UI and Agent Flow simulator baselines"
+    )
+    baseline.add_argument("--samples", type=int, default=20)
+    baseline.add_argument(
+        "--output",
+        type=Path,
+        default=Path("evidence/baseline-comparison.json"),
+    )
+
     args = parser.parse_args()
     scenario = load_default_scenario()
+
+    if args.command == "issue-auth-token":
+        print(
+            issue_access_token(
+                subject=args.subject,
+                role=args.role,
+                settings=AuthSettings.from_environment(),
+                ttl_seconds=args.ttl_seconds,
+            )
+        )
+        return
+
+    if args.command == "fair-baseline":
+        report = run_fair_baseline(
+            scenario=scenario,
+            output_path=args.output,
+            samples_per_flow=args.samples,
+        )
+        print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
+        return
 
     if args.command == "hero":
         controller = WorkflowController(

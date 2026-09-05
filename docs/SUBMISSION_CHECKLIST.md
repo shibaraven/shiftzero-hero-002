@@ -10,8 +10,12 @@
 - [x] 100-scenario deterministic evaluation.
 - [x] 20 consecutive complete Hero runs with a valid trace chain and route-version change.
 - [x] 120-call fixture-provider compatibility preflight.
-- [x] API-level idempotency, optimistic concurrency, role checks, Approve/Reject/Stop audit.
-- [x] Judge Mode website, architecture view and evidence view.
+- [x] Signed identity/RBAC, all-write idempotency/versioning, SQLite audit and exact replay.
+- [x] Temporal collision, circular deadlock, sensor persistence and exact Digital Twin fields.
+- [x] Separate Replan/Resume and fail-safe-only Override with append-only audit.
+- [x] JSON+JSONL trace, complete tool spans, outcome metrics and three evidence screenshots.
+- [x] Matched 20+20 Manual UI versus Agent Flow simulator baseline.
+- [x] Judge Mode Run Hero, Architecture, Evidence and GitHub/source-gate entrances.
 - [x] Devpost draft and three-minute video shot list.
 
 ## External prerequisites before final submission claims

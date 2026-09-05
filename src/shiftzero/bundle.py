@@ -15,7 +15,11 @@ REQUIRED_PATHS = (
     "evidence/compatibility/preflight-report.json",
     "evidence/hero-reliability/report.json",
     "evidence/hero-summary.json",
+    "evidence/baseline-comparison.json",
     "evidence/METHODOLOGY.md",
+    "evidence/screenshots/01-completed.png",
+    "evidence/screenshots/02-model-tool-call.png",
+    "evidence/screenshots/03-verified-proof.png",
     "scenarios/hero.json",
     "scenarios/evaluation_manifest.json",
     "schemas/safety-policy.json",
@@ -27,6 +31,7 @@ REQUIRED_PATHS = (
     "docs/REAL_AGV_HANDOFF.md",
     "docs/SERVERLESS_JOB.md",
     "docs/SPEC_COMPLIANCE.md",
+    "docs/AUTHORIZATION.md",
     "schemas/openapi.json",
 )
 
@@ -90,14 +95,24 @@ def _resolve_files(root: Path) -> list[Path]:
     )
     trace_paths = sorted((root / "evidence" / "sample-verified-run").glob("*/hero-run.jsonl"))
     paths.extend(trace_paths)
+    trace_json_paths = sorted(
+        (root / "evidence" / "sample-verified-run").glob("*/hero-run.json")
+    )
+    paths.extend(trace_json_paths)
     reliability_trace_paths = sorted(
         (root / "evidence" / "hero-reliability" / "runs").glob("*/hero-run.jsonl")
     )
     paths.extend(reliability_trace_paths)
+    paths.extend(
+        sorted((root / "evidence" / "hero-reliability" / "runs").glob("*/hero-run.json"))
+    )
     scenario_trace_paths = sorted(
         (root / "evidence" / "scenario-evaluation" / "runs").glob("*/hero-run.jsonl")
     )
     paths.extend(scenario_trace_paths)
+    paths.extend(
+        sorted((root / "evidence" / "scenario-evaluation" / "runs").glob("*/hero-run.json"))
+    )
     missing = [path for path in paths[: len(REQUIRED_PATHS)] if not path.is_file()]
     if missing:
         missing_text = ", ".join(path.relative_to(root).as_posix() for path in missing)
@@ -117,6 +132,10 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         (root / "evidence/hero-reliability/report.json").read_text(encoding="utf-8")
     )
     trace_paths = [path for path in files if path.name == "hero-run.jsonl"]
+    trace_json_paths = [path for path in files if path.name == "hero-run.json"]
+    screenshot_paths = [
+        path for path in files if path.parent.name == "screenshots" and path.suffix == ".png"
+    ]
     checks = {
         "scenario_count_is_100": metrics["sample_size"] == 100,
         "scenario_safety_violations_zero": metrics["safety_violation_count"] == 0,
@@ -125,6 +144,9 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         "all_included_trace_chains_valid": all(
             EvidenceRecorder.verify(path) for path in trace_paths
         ),
+        "structured_hero_json_for_every_trace": len(trace_json_paths) == len(trace_paths),
+        "three_png_screenshots_present": len(screenshot_paths) >= 3
+        and all(path.read_bytes().startswith(b"\x89PNG\r\n\x1a\n") for path in screenshot_paths),
         "required_file_count": len(files),
     }
     checks["passed"] = all(value is True for value in checks.values() if isinstance(value, bool))

@@ -60,6 +60,13 @@ class EvaluationMetrics(StrictModel):
     trace_chain_valid_count: int
     group_results: dict[str, dict[str, int | float | dict[str, int]]]
     calculation_method: str
+    units: dict[str, str] = Field(
+        default_factory=lambda: {
+            "counts": "cases",
+            "rates": "ratio_0_to_1",
+            "trace_chain": "traces",
+        }
+    )
     measurement_scope: Literal["reference_simulator"] = "reference_simulator"
 
 
@@ -144,8 +151,8 @@ def evaluate_scenarios(
         "model": "deterministic-fixture-not-a-model",
         "provider": "fixture",
         "prompt_version": "fixture-intent-v2-no-invention",
-        "tool_schema_version": "tools-v2",
-        "safety_policy_version": "safety-v1",
+        "tool_schema_version": "tools-v3",
+        "safety_policy_version": "safety-v2",
         "map_hash": canonical_hash(scenario.map),
         "simulator_version": "reference-simulator-v2",
         "seed": manifest["seed"],
@@ -598,6 +605,8 @@ def _start(
         selected_agv=plan.selected_agv,
         route=plan.nodes,
         route_version=plan.route_version,
+        map_version=plan.map_version,
+        snapshot_id=proposal.snapshot_id,
         proof_hash=proof.proof_hash,
         status=MissionStatus.APPROVED,
         idempotency_key=f"eval:{proposal.proposal_hash}",

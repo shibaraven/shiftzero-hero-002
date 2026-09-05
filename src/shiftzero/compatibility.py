@@ -69,7 +69,7 @@ def run_compatibility_gate(
                 after_repair_valid += 1
                 if all(call.repair_count == 0 for call in result.model_calls):
                     first_schema_valid += 1
-                latencies.append(sum(call.latency_ms for call in result.model_calls) / 1000)
+                latencies.append(sum(call.latency_ms for call in result.model_calls[:2]) / 1000)
                 current_consecutive += 1
                 max_consecutive = max(max_consecutive, current_consecutive)
             except Exception as exc:  # Gate must record and continue across the full matrix.
@@ -97,6 +97,12 @@ def run_compatibility_gate(
         "stale_proposal_execution_count": fault_controls["stale_proposal_execution_count"],
         "hero_max_consecutive_successes": max_consecutive,
         "intent_to_proposal_p95_seconds": round(percentile(latencies, 0.95), 6),
+        "intent_to_proposal_median_seconds": round(percentile(latencies, 0.5), 6),
+        "measurement": {
+            "sample_size": requested,
+            "unit": "seconds",
+            "method": "parse_intent latency plus propose_transport latency; recovery excluded",
+        },
     }
     thresholds = manifest["hard_thresholds"]
     thresholds_passed = {
@@ -206,6 +212,8 @@ def evaluate_fault_controls(scenario: HeroScenario) -> dict[str, Any]:
         selected_agv=plan.selected_agv,
         route=plan.nodes,
         route_version=plan.route_version,
+        map_version=plan.map_version,
+        snapshot_id=snapshot.snapshot_id,
         proof_hash=invalid_proof.proof_hash,
         status=MissionStatus.APPROVED,
         idempotency_key="dispatch:fixed-test-key",

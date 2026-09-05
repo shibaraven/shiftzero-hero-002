@@ -1,5 +1,5 @@
 {
-  "version": "tools-v2",
+  "version": "tools-v3",
   "tools": [
     {"name": "get_operational_snapshot", "type": "READ", "failure": "block_proposal"},
     {"name": "inspect_location", "type": "READ", "failure": "invalid_or_occupied"},
@@ -11,10 +11,19 @@
     {"name": "stop_mission", "type": "SAFETY", "failure": "failed_safe"},
     {"name": "get_mission_status", "type": "READ", "failure": "stale_or_unknown"},
     {"name": "replan_mission", "type": "COMPUTE", "failure": "remain_safe_stop"},
+    {"name": "propose_recovery", "type": "ADVISORY", "failure": "remain_safe_stop"},
+    {"name": "resume_mission", "type": "EXECUTE", "failure": "remain_safe_stop"},
+    {"name": "override_mission", "type": "SAFETY", "failure": "failed_safe"},
     {"name": "get_operation_metrics", "type": "READ", "failure": "incomplete"}
   ],
   "model_side_effect_permissions": [],
   "maximum_schema_repairs": 1,
+  "runtime_budgets": {
+    "maximum_retries": 2,
+    "maximum_total_inference_seconds": 45,
+    "circuit_breaker_threshold": 3,
+    "circuit_breaker_cooldown_seconds": 30
+  },
   "write_contract": {
     "idempotency_key_required": true,
     "expected_version_required": true,

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import uuid
 from pathlib import Path
+from time import perf_counter_ns
 
 from shiftzero.adapters import SimulatorAdapter
 from shiftzero.agent import IntentProposalProvider
@@ -44,6 +45,7 @@ class WorkflowController:
         operator_text: str | None = None,
         approval_actor: str = "judge@example.invalid",
     ) -> HeroRunResult:
+        run_started_ns = perf_counter_ns()
         recorder = EvidenceRecorder(self.evidence_root)
         state = WorkflowState()
         world = ReferenceWorld(self.scenario.model_copy(deep=True))
@@ -62,60 +64,59 @@ class WorkflowController:
         recorder.record("llm.intent", intent_call)
         recorder.record("intent.typed", intent)
 
-        snapshot = world.snapshot()
-        snapshot_ref = recorder.record(
-            "tool.get_operational_snapshot",
-            {
-                "tool": ToolName.GET_OPERATIONAL_SNAPSHOT,
-                "arguments_hash": canonical_hash({}),
-                "result": snapshot,
-            },
+        snapshot, snapshot_ref = recorder.call_tool(
+            kind="tool.get_operational_snapshot",
+            tool_name=ToolName.GET_OPERATIONAL_SNAPSHOT,
+            arguments={},
+            operation=world.snapshot,
         )
         state.transition(MissionStatus.OBSERVED)
         recorder.record("workflow.transition", {"state": state.current})
 
-        source = world.inspect_location(intent.source, snapshot.snapshot_id)
-        destination = world.inspect_location(intent.destination, snapshot.snapshot_id)
-        source_ref = recorder.record(
-            "tool.inspect_location",
-            {
-                "tool": ToolName.INSPECT_LOCATION,
-                "arguments": {"id": intent.source},
-                "result": source,
-            },
+        source, source_ref = recorder.call_tool(
+            kind="tool.inspect_location",
+            tool_name=ToolName.INSPECT_LOCATION,
+            arguments={"id": intent.source, "snapshot_id": snapshot.snapshot_id},
+            operation=lambda: world.inspect_location(intent.source, snapshot.snapshot_id),
         )
-        destination_ref = recorder.record(
-            "tool.inspect_location",
-            {
-                "tool": ToolName.INSPECT_LOCATION,
-                "arguments": {"id": intent.destination},
-                "result": destination,
-            },
+        destination, destination_ref = recorder.call_tool(
+            kind="tool.inspect_location",
+            tool_name=ToolName.INSPECT_LOCATION,
+            arguments={"id": intent.destination, "snapshot_id": snapshot.snapshot_id},
+            operation=lambda: world.inspect_location(intent.destination, snapshot.snapshot_id),
         )
         if not source.exists or not destination.exists:
             state.transition(MissionStatus.FAILED_SAFE)
             recorder.record("workflow.failed_safe", {"reason": "invalid location entity"})
             raise UnsafeProposal("source or destination is not present in the live snapshot")
 
-        plan = planner.plan(intent=intent, snapshot=snapshot)
-        plan_ref = recorder.record(
-            "tool.plan_transport",
-            {
-                "tool": ToolName.PLAN_TRANSPORT,
-                "arguments": intent,
-                "result": plan,
-            },
+        plan, plan_ref = recorder.call_tool(
+            kind="tool.plan_transport",
+            tool_name=ToolName.PLAN_TRANSPORT,
+            arguments={"intent": intent, "snapshot_id": snapshot.snapshot_id},
+            operation=lambda: planner.plan(intent=intent, snapshot=snapshot),
         )
         state.transition(MissionStatus.PLANNED)
         recorder.record("workflow.transition", {"state": state.current})
 
         evidence_refs = [snapshot_ref, source_ref, destination_ref, plan_ref]
-        proposal, proposal_call = self.provider.propose_transport(
-            intent=intent,
-            snapshot=snapshot,
-            plan=plan,
-            evidence_refs=evidence_refs,
+        proposal_result, _ = recorder.call_tool(
+            kind="tool.propose_transport",
+            tool_name=ToolName.PROPOSE_TRANSPORT,
+            arguments={
+                "intent": intent,
+                "snapshot_id": snapshot.snapshot_id,
+                "route_version": plan.route_version,
+                "evidence_refs": evidence_refs,
+            },
+            operation=lambda: self.provider.propose_transport(
+                intent=intent,
+                snapshot=snapshot,
+                plan=plan,
+                evidence_refs=evidence_refs,
+            ),
         )
+        proposal, proposal_call = proposal_result
         model_calls.append(proposal_call)
         recorder.record("llm.proposal", proposal_call)
         recorder.record("proposal.created", proposal)
@@ -145,6 +146,20 @@ class WorkflowController:
             state.transition(MissionStatus.REJECTED)
             raise UnsafeProposal("approval integrity validation failed")
         recorder.record("approval.granted", approval)
+        recorder.record(
+            "tool.approve_transport",
+            {
+                "tool": ToolName.APPROVE_TRANSPORT,
+                "arguments": {"proposal_id": proposal.proposal_id, "actor": approval_actor},
+                "arguments_hash": canonical_hash(
+                    {"proposal_id": proposal.proposal_id, "actor": approval_actor}
+                ),
+                "result": approval,
+                "result_hash": canonical_hash(approval),
+                "latency_ms": 0.0,
+                "error": None,
+            },
+        )
         state.transition(MissionStatus.APPROVED)
         recorder.record("workflow.transition", {"state": state.current})
 
@@ -159,11 +174,22 @@ class WorkflowController:
             selected_agv=plan.selected_agv,
             route=plan.nodes,
             route_version=plan.route_version,
+            map_version=plan.map_version,
+            snapshot_id=snapshot.snapshot_id,
             proof_hash=proof.proof_hash,
             status=MissionStatus.APPROVED,
             idempotency_key=f"dispatch:{proposal.proposal_hash}",
         )
-        mission = adapter.start(mission)
+        mission, _ = recorder.call_tool(
+            kind="tool.start_mission",
+            tool_name=ToolName.START_MISSION,
+            arguments={
+                "mission_id": mission.mission_id,
+                "idempotency_key": mission.idempotency_key,
+                "expected_status": MissionStatus.APPROVED,
+            },
+            operation=lambda: adapter.start(mission),
+        )
         recorder.record("execution.started", mission)
         state.transition(MissionStatus.EXECUTING)
         recorder.record("workflow.transition", {"state": state.current})
@@ -175,7 +201,12 @@ class WorkflowController:
         state.transition(MissionStatus.BLOCKED)
         recorder.record("workflow.transition", {"state": state.current})
 
-        stop_latency_ms = adapter.local_stop(mission.mission_id, source=obstacle.id)
+        stop_latency_ms, _ = recorder.call_tool(
+            kind="tool.stop_mission",
+            tool_name=ToolName.STOP_MISSION,
+            arguments={"mission_id": mission.mission_id, "trigger_source": obstacle.id},
+            operation=lambda: adapter.local_stop(mission.mission_id, source=obstacle.id),
+        )
         recorder.record(
             "execution.local_stop",
             {
@@ -188,17 +219,54 @@ class WorkflowController:
         state.transition(MissionStatus.SAFE_STOP)
         recorder.record("workflow.transition", {"state": state.current})
 
-        blocked_snapshot = world.snapshot()
+        blocked_snapshot, _ = recorder.call_tool(
+            kind="tool.get_operational_snapshot",
+            tool_name=ToolName.GET_OPERATIONAL_SNAPSHOT,
+            arguments={"reason": "blockage_recovery"},
+            operation=world.snapshot,
+        )
+        recovery_result, _ = recorder.call_tool(
+            kind="tool.propose_recovery",
+            tool_name=ToolName.PROPOSE_RECOVERY,
+            arguments={
+                "mission_id": mission.mission_id,
+                "goal_hash": intent.goal_hash,
+                "blocked_node_id": obstacle.node_id,
+                "snapshot_id": blocked_snapshot.snapshot_id,
+            },
+            operation=lambda: self.provider.recover_from_blockage(
+                mission_id=mission.mission_id,
+                goal_hash=intent.goal_hash,
+                blocked_node_id=obstacle.node_id,
+                snapshot=blocked_snapshot,
+            ),
+        )
+        recovery, recovery_call = recovery_result
+        model_calls.append(recovery_call)
+        recorder.record("llm.recovery", recovery_call)
+        recorder.record("recovery.intent", recovery)
+        if recovery.action != "REPLAN" or recovery.preserve_goal_hash != intent.goal_hash:
+            state.transition(MissionStatus.FAILED_SAFE)
+            raise UnsafeProposal("recovery intent did not preserve the approved goal")
         state.transition(MissionStatus.REPLANNING)
         recorder.record("workflow.transition", {"state": state.current})
         current_node = world.agvs[mission.selected_agv].node_id
-        replan = planner.plan(
-            intent=intent,
-            snapshot=blocked_snapshot,
-            start_node=current_node,
-            force_agv=mission.selected_agv,
+        replan, _ = recorder.call_tool(
+            kind="tool.replan_mission",
+            tool_name=ToolName.REPLAN_MISSION,
+            arguments={
+                "mission_id": mission.mission_id,
+                "snapshot_id": blocked_snapshot.snapshot_id,
+                "start_node": current_node,
+                "force_agv": mission.selected_agv,
+            },
+            operation=lambda: planner.plan(
+                intent=intent,
+                snapshot=blocked_snapshot,
+                start_node=current_node,
+                force_agv=mission.selected_agv,
+            ),
         )
-        recorder.record("tool.replan_mission", replan)
         replan_proof = safety.verify_replan(
             intent=intent,
             plan=replan,
@@ -220,7 +288,16 @@ class WorkflowController:
             {"state": state.current, "authorization": "equivalent-route-policy"},
         )
 
-        mission = adapter.replace_route(mission.mission_id, replan)
+        mission, _ = recorder.call_tool(
+            kind="tool.resume_mission",
+            tool_name=ToolName.RESUME_MISSION,
+            arguments={
+                "mission_id": mission.mission_id,
+                "route_version": replan.route_version,
+                "authorization": "equivalent-route-policy",
+            },
+            operation=lambda: adapter.replace_route(mission.mission_id, replan),
+        )
         recorder.record("execution.resumed", mission)
         state.transition(MissionStatus.EXECUTING)
         recorder.record("workflow.transition", {"state": state.current})
@@ -229,6 +306,7 @@ class WorkflowController:
             recorder.record("execution.telemetry", mission)
         state.transition(MissionStatus.COMPLETED)
         recorder.record("workflow.transition", {"state": state.current})
+        total_duration_ms = round((perf_counter_ns() - run_started_ns) / 1_000_000, 6)
         recorder.record(
             "outcome.completed",
             {
@@ -236,8 +314,17 @@ class WorkflowController:
                 "final_node": world.agvs[mission.selected_agv].node_id,
                 "destination_occupancy": world.locations[intent.destination].occupancy,
                 "trace_chain_valid": EvidenceRecorder.verify(recorder.path),
+                "total_duration_ms": total_duration_ms,
+                "human_interventions": 1,
+                "estimated_model_cost_usd": sum(
+                    call.estimated_cost_usd or 0 for call in model_calls
+                ),
+                "measurement_scope": "reference_simulator_fixture_provider"
+                if self.provider.provider_name == "fixture"
+                else "live_provider_reference_simulator",
             },
         )
+        recorder.export_json()
 
         return HeroRunResult(
             trace_id=recorder.trace_id,
