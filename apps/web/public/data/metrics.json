@@ -76,5 +76,10 @@
     }
   },
   "calculation_method": "100 deterministic parameterized cases: nominal missions are executed, blockages exercise static/temporary/sudden paths, unsafe cases are proof-gated, and ambiguous text is parsed by the same fixture provider used by the demo.",
+  "units": {
+    "counts": "cases",
+    "rates": "ratio_0_to_1",
+    "trace_chain": "traces"
+  },
   "measurement_scope": "reference_simulator"
 }

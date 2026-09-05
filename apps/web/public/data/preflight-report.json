@@ -13,8 +13,8 @@
     "wrong_entity_dispatch_count": 0
   },
   "gate_version": "compat-v2",
-  "generated_at": "2026-09-05T09:31:20.258637+00:00",
-  "git_commit": "9b1c9b7bfac3ff54fd01e78bdd152c8e4099e158",
+  "generated_at": "2026-09-05T12:34:08.609161+00:00",
+  "git_commit": "7e50c47162b7b1084badbab0aa44222a7501a907",
   "manifest_hash": "3b91ab7c50ee22b507f283913081bd0c63067d16d3ef2022270368a1f680a44d",
   "map_hash": "63b5d635f5fefd3c48e852c96489cf895537a74e15877752ffdf534822cd05ab",
   "metrics": {
@@ -22,7 +22,13 @@
     "duplicate_mission_count": 0,
     "first_schema_valid_rate": 1.0,
     "hero_max_consecutive_successes": 120,
-    "intent_to_proposal_p95_seconds": 0.001008,
+    "intent_to_proposal_median_seconds": 2e-6,
+    "intent_to_proposal_p95_seconds": 0.001059,
+    "measurement": {
+      "method": "parse_intent latency plus propose_transport latency; recovery excluded",
+      "sample_size": 120,
+      "unit": "seconds"
+    },
     "post_repair_schema_valid_rate": 1.0,
     "requested_runs": 120,
     "stale_proposal_execution_count": 0,
@@ -32,8 +38,8 @@
   "official_gate_passed": false,
   "provider": "fixture",
   "real_provider": false,
-  "report_hash": "8e8f4ff6ee9c00807c0645146725e00d9e2d0c9e2ae92b48645194331e4ad3a0",
-  "source_tree_hash": "2cd44eaa44daf5530398966ecdf10cfd8f51d7e6a4af6976ed9cbca6233727a1",
+  "report_hash": "dc0f6ba0fbdc1bb72ca340dbbe3c97824d0eaad678ffe654a763cd9bdd34cbbb",
+  "source_tree_hash": "4f99b2ba6caeff40e18557069817531ae110a0f5fc945897108a6930fe560fe7",
   "thresholds": {
     "duplicate_mission_count": 0,
     "first_schema_valid_rate": 0.98,

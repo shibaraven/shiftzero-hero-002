@@ -1,17 +1,17 @@
 {
   "claims_boundary": "Reference simulator evidence; not Nebius runtime or physical AGV evidence.",
-  "generated_at": "2026-09-05T09:31:17.503171+00:00",
-  "git_commit": "9b1c9b7bfac3ff54fd01e78bdd152c8e4099e158",
+  "generated_at": "2026-09-05T12:34:03.551744+00:00",
+  "git_commit": "7e50c47162b7b1084badbab0aa44222a7501a907",
   "map_hash": "63b5d635f5fefd3c48e852c96489cf895537a74e15877752ffdf534822cd05ab",
-  "metrics_hash": "ceb576ba02e566cf2d2ca0b5d9f1d3c75818e8d0786456f38b137a1688d50ce2",
+  "metrics_hash": "a8802e133c09585b7735b337fe5a45cd376d2f1fef9b186a2501b2064cb7e478",
   "model": "deterministic-fixture-not-a-model",
   "prompt_version": "fixture-intent-v2-no-invention",
   "provider": "fixture",
-  "result_hash": "506661ec36f01da9bb89375d80a01aeefd4d269107dbc5c6fe65aa3a933a0ae9",
-  "safety_policy_version": "safety-v1",
+  "result_hash": "36c7cf6b69ee9324f3d190f2268544de5368b614946924072bff2289153f09af",
+  "safety_policy_version": "safety-v2",
   "seed": 2002,
   "simulator_version": "reference-simulator-v2",
-  "source_tree_hash": "2cd44eaa44daf5530398966ecdf10cfd8f51d7e6a4af6976ed9cbca6233727a1",
+  "source_tree_hash": "4f99b2ba6caeff40e18557069817531ae110a0f5fc945897108a6930fe560fe7",
   "suite_version": "scenario-suite-v2",
-  "tool_schema_version": "tools-v2"
+  "tool_schema_version": "tools-v3"
 }
