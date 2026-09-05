@@ -609,11 +609,15 @@ class MissionService:
                 session.recorder.record("execution.telemetry", session.mission)
             session.state.transition(MissionStatus.COMPLETED)
             session.recorder.record("workflow.transition", {"state": session.state.current})
+            final_agv = session.world.agvs[session.mission.selected_agv]
+            if final_agv.pose is None:
+                raise MissionServiceError("completed mission is missing the final AGV pose")
             session.recorder.record(
                 "outcome.completed",
                 {
                     "mission_id": mission_id,
-                    "final_node": session.world.agvs[session.mission.selected_agv].node_id,
+                    "final_node": final_agv.node_id,
+                    "final_pose": final_agv.pose,
                     "destination_occupancy": session.world.locations[
                         session.intent.destination
                     ].occupancy,

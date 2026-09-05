@@ -34,6 +34,7 @@ type View = 'mission' | 'architecture' | 'evidence' | 'source';
 type ReplayDecision = 'approved' | 'rejected' | 'stopped' | null;
 
 type HeroSummary = {
+  evidence_captured_at: string;
   proposal_id: string;
   selected_agv: string;
   safety_policy_sha256: string;
@@ -44,6 +45,14 @@ type HeroSummary = {
   total_duration_ms?: number;
   human_interventions?: number;
   estimated_model_cost_usd?: number;
+  final_node: string;
+  destination_occupancy: string;
+  final_pose: {
+    node_id: string;
+    x: number;
+    y: number;
+    heading_deg: number;
+  };
   model_calls?: Array<{
     provider: string;
     model: string;
@@ -52,6 +61,34 @@ type HeroSummary = {
     latency_ms: number;
     tool_arguments_hash: string;
     tool_result_hash: string;
+  }>;
+};
+
+type JudgeLoadEvidence = {
+  measurement_scope: string;
+  sample_count: number;
+  median_ms: number;
+  p95_ms: number;
+  threshold_ms: number;
+  acceptance_passed: boolean;
+  measured_at: string;
+};
+
+type ImpactLoadModel = {
+  measurement_scope: string;
+  assumptions_are_not_measurements: boolean;
+  loads: Array<{
+    pallets_per_day: number;
+    agv_metrics: {
+      mean_utilization: number;
+      p95_queue_wait_seconds: number;
+      required_agvs_for_80_percent_buffer: number;
+      status: string;
+    };
+    operator_impact: {
+      hours_saved_per_day: number;
+      touch_time_reduction_percent: number;
+    };
   }>;
 };
 
@@ -233,6 +270,8 @@ export default function MissionConsole() {
   const [scenarioMetrics, setScenarioMetrics] =
     useState<ScenarioMetrics | null>(null);
   const [evidenceError, setEvidenceError] = useState(false);
+  const [judgeLoad, setJudgeLoad] = useState<JudgeLoadEvidence | null>(null);
+  const [impactLoad, setImpactLoad] = useState<ImpactLoadModel | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -249,6 +288,20 @@ export default function MissionConsole() {
         return response.json() as Promise<ScenarioMetrics>;
       })
       .then(setScenarioMetrics)
+      .catch(() => setEvidenceError(true));
+    fetch('/data/judge-mode-load.json')
+      .then((response) => {
+        if (!response.ok) throw new Error('Judge Mode load evidence unavailable');
+        return response.json() as Promise<JudgeLoadEvidence>;
+      })
+      .then(setJudgeLoad)
+      .catch(() => setEvidenceError(true));
+    fetch('/data/impact-load-model.json')
+      .then((response) => {
+        if (!response.ok) throw new Error('impact load model unavailable');
+        return response.json() as Promise<ImpactLoadModel>;
+      })
+      .then(setImpactLoad)
       .catch(() => setEvidenceError(true));
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -294,6 +347,13 @@ export default function MissionConsole() {
 
   return (
     <main className="min-h-screen bg-[#07111f] text-slate-100">
+      <div className="pointer-events-none fixed bottom-3 right-3 z-[70] rounded border border-amber-300/25 bg-[#07111f]/95 px-2.5 py-1.5 font-mono text-[8px] tracking-[0.08em] text-amber-100 shadow-xl backdrop-blur">
+        <span className="font-bold">MOCK / FIXTURE</span>
+        <span className="mx-1.5 text-slate-600">·</span>
+        <time dateTime={heroSummary?.evidence_captured_at}>
+          EVIDENCE UTC {heroSummary?.evidence_captured_at ?? 'LOADING'}
+        </time>
+      </div>
       <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#07111f]/90 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-[1500px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <button
@@ -351,6 +411,9 @@ export default function MissionConsole() {
             >
               <LockKeyhole className="size-3" /> LIVE GATE LOCKED
             </Badge>
+            <Badge className="hidden h-8 rounded-md border border-rose-300/25 bg-rose-300/[0.08] px-3 font-mono text-[9px] tracking-[0.12em] text-rose-200 sm:flex">
+              MOCK / FIXTURE
+            </Badge>
             <Button
               onClick={runHero}
               disabled={running}
@@ -372,7 +435,7 @@ export default function MissionConsole() {
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center justify-between gap-3 px-4 py-2.5 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 text-[11px] text-slate-400">
             <StatusDot tone="emerald" />
-            <span className="font-medium text-slate-200">Verified replay</span>
+            <span className="font-medium text-slate-200">MOCK verified replay</span>
             <span className="text-slate-700">/</span>
             <span>
               Reference simulator · deterministic fixture · no cloud key
@@ -434,6 +497,8 @@ export default function MissionConsole() {
         <EvidenceView
           heroSummary={heroSummary}
           scenarioMetrics={scenarioMetrics}
+          judgeLoad={judgeLoad}
+          impactLoad={impactLoad}
           evidenceError={evidenceError}
         />
       )}
@@ -1036,6 +1101,13 @@ function MissionBrief({
             >
               {complete ? 'VERIFIED' : 'PENDING'}
             </p>
+            {complete && heroSummary?.final_pose && (
+              <p className="mt-1 whitespace-nowrap font-mono text-[9px] text-emerald-200/75">
+                {heroSummary.final_pose.node_id} · x {heroSummary.final_pose.x.toFixed(1)} · y{' '}
+                {heroSummary.final_pose.y.toFixed(1)} · θ{' '}
+                {heroSummary.final_pose.heading_deg.toFixed(1)}°
+              </p>
+            )}
           </div>
         </div>
       </CardContent>
@@ -1176,10 +1248,14 @@ function BoundaryCard({
 function EvidenceView({
   heroSummary,
   scenarioMetrics,
+  judgeLoad,
+  impactLoad,
   evidenceError,
 }: {
   heroSummary: HeroSummary | null;
   scenarioMetrics: ScenarioMetrics | null;
+  judgeLoad: JudgeLoadEvidence | null;
+  impactLoad: ImpactLoadModel | null;
   evidenceError: boolean;
 }) {
   return (
@@ -1209,7 +1285,7 @@ function EvidenceView({
         </a>
       </div>
 
-      <div className="mb-4 grid grid-cols-2 border border-white/[0.08] bg-[#0a1828] lg:grid-cols-4">
+      <div className="mb-4 grid grid-cols-2 border border-white/[0.08] bg-[#0a1828] md:grid-cols-3 xl:grid-cols-6">
         <Metric
           value={
             scenarioMetrics
@@ -1236,6 +1312,12 @@ function EvidenceView({
           tone="violet"
         />
         <Metric value="20/20" label="Consecutive Hero runs" tone="emerald" />
+        <Metric
+          value={judgeLoad ? `${judgeLoad.p95_ms.toFixed(0)} ms` : '—'}
+          label="Judge load p95"
+          tone={judgeLoad?.acceptance_passed ? 'emerald' : 'amber'}
+        />
+        <Metric value="400–500" label="Pallets/day modeled" tone="violet" />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1.2fr_.8fr]">
@@ -1322,6 +1404,10 @@ function EvidenceView({
                 label="hero-summary.json"
               />
               <EvidenceLink
+                href="/data/screenshot-manifest.json"
+                label="screenshot-manifest.json"
+              />
+              <EvidenceLink
                 href="/data/baseline-comparison.json"
                 label="manual-vs-agent-baseline.json"
               />
@@ -1334,9 +1420,14 @@ function EvidenceView({
       <div className="mt-4 grid gap-4 lg:grid-cols-[1.15fr_.85fr]">
         <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
           <CardHeader className="border-b border-white/[0.06] px-5 py-4">
-            <CardTitle className="flex items-center gap-2 text-xs text-white">
-              <TerminalSquare className="size-4 text-violet-200" />
-              Typed model tool evidence
+            <CardTitle className="flex items-center justify-between gap-2 text-xs text-white">
+              <span className="flex items-center gap-2">
+                <TerminalSquare className="size-4 text-violet-200" />
+                Typed model tool evidence
+              </span>
+              <Badge className="rounded-sm border border-rose-300/20 bg-rose-300/[0.08] font-mono text-[8px] text-rose-200">
+                MOCK / FIXTURE
+              </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-3 p-5 sm:grid-cols-2">
@@ -1400,6 +1491,62 @@ function EvidenceView({
                 </span>
               </div>
             ))}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+          <CardHeader className="border-b border-white/[0.06] px-5 py-4">
+            <CardTitle className="flex items-center justify-between gap-3 text-xs text-white">
+              <span className="flex items-center gap-2">
+                <Zap className="size-4 text-cyan-200" /> Judge Mode first-load evidence
+              </span>
+              <Badge className="rounded-sm bg-emerald-300/10 font-mono text-[8px] text-emerald-300">
+                {judgeLoad?.acceptance_passed ? 'PASS' : 'VERIFYING'}
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-5">
+            <div className="grid grid-cols-3 gap-3">
+              <EvidenceStat label="Samples" value={judgeLoad ? `${judgeLoad.sample_count}` : '—'} />
+              <EvidenceStat label="Median" value={judgeLoad ? `${judgeLoad.median_ms.toFixed(0)} ms` : '—'} />
+              <EvidenceStat label="p95 / limit" value={judgeLoad ? `${judgeLoad.p95_ms.toFixed(0)} / ${judgeLoad.threshold_ms} ms` : '—'} />
+            </div>
+            <p className="mt-4 text-[10px] leading-5 text-slate-500">
+              Local production build · browser end-to-end load timing · one new-tab navigation plus 19 same-tab reloads.
+            </p>
+            <EvidenceLink href="/data/judge-mode-load.json" label="judge-mode-load.json" />
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+          <CardHeader className="border-b border-white/[0.06] px-5 py-4">
+            <CardTitle className="flex items-center justify-between gap-3 text-xs text-white">
+              <span className="flex items-center gap-2">
+                <Activity className="size-4 text-violet-200" /> 400–500 pallets/day stress model
+              </span>
+              <Badge className="rounded-sm bg-violet-300/10 font-mono text-[8px] text-violet-200">
+                PROJECTION · NOT PHYSICAL
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-5">
+            <div className="space-y-2">
+              {impactLoad?.loads.map((row) => (
+                <div key={row.pallets_per_day} className="grid grid-cols-[80px_1fr_auto] items-center gap-3 border-b border-white/[0.05] py-2 font-mono text-[9px]">
+                  <span className="text-slate-300">{row.pallets_per_day}/day</span>
+                  <span className="text-slate-500">
+                    util {(row.agv_metrics.mean_utilization * 100).toFixed(1)}% · p95 wait {row.agv_metrics.p95_queue_wait_seconds.toFixed(0)}s
+                  </span>
+                  <span className="text-violet-200">save {row.operator_impact.hours_saved_per_day.toFixed(1)}h*</span>
+                </div>
+              )) ?? <p className="text-xs text-slate-500">Loading projection…</p>}
+            </div>
+            <p className="mt-4 text-[10px] leading-5 text-slate-500">
+              *Seeded M/G/2 planning projection, 20 simulated days per load. Assumptions are explicit and are not observed site labor or physical throughput.
+            </p>
+            <EvidenceLink href="/data/impact-load-model.json" label="impact-load-model.json" />
           </CardContent>
         </Card>
       </div>
@@ -1511,6 +1658,17 @@ function Metric({
         {value}
       </p>
       <p className="mt-2 text-[10px] uppercase tracking-[0.12em] text-slate-600">
+        {label}
+      </p>
+    </div>
+  );
+}
+
+function EvidenceStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="border border-white/[0.06] bg-white/[0.02] p-3">
+      <p className="font-mono text-sm font-semibold text-cyan-100">{value}</p>
+      <p className="mt-1 text-[8px] uppercase tracking-[0.12em] text-slate-600">
         {label}
       </p>
     </div>

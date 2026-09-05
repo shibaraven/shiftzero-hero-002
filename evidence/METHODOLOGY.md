@@ -15,20 +15,29 @@ tamper-evident evidence. They do not demonstrate live Nebius behavior or physica
   physical 200 ms sensor-to-stop requirement.
 - Tool spans record tool name, arguments and result hashes, start/completion time, latency and
   error. Planner output records candidate count and estimated duration. Outcomes record duration,
-  human interventions, cost and measurement scope.
+  human interventions, cost, measurement scope, destination occupancy, and final `x/y/heading`
+  pose.
 - The Compatibility preflight is explicitly unofficial. The official gate remains false until the
   same test matrix runs against live Token Factory/Nemotron and its raw request evidence is stored.
+- Judge Mode first-load evidence uses browser end-to-end wall time from navigation start until the
+  page load state. The current report contains one new-tab navigation and 19 same-tab reloads of
+  the local production build; median and interpolated p95 are compared with the 5,000 ms limit.
+- The 400–500 pallets/day report is a seeded M/G/2 planning projection with 20 simulated days per
+  load point. Its availability, dwell, buffer, operator-touch and fleet assumptions are inputs,
+  not measurements. No projected labor saving or throughput is presented as a site observation.
 
 ## Reproduction
 
 Run `shiftzero export-schemas`, `shiftzero evaluate-scenarios`,
 `shiftzero verify-hero-reliability --runs 20`, `shiftzero compatibility --provider fixture`, then
-`shiftzero fair-baseline --samples 20` and `shiftzero build-evidence-bundle`. The bundle manifest
-hashes every included byte.
+`shiftzero fair-baseline --samples 20`, `shiftzero impact-load-model --sample-days 20`,
+`shiftzero build-hero-summary`, `shiftzero build-screenshot-manifest`, and
+`shiftzero build-evidence-bundle`. The bundle manifest hashes every included byte.
 
 ## Visual evidence
 
 The private Judge Mode renders JSON evidence directly. Three checked-in PNG captures show the
-COMPLETED mission, typed model-tool evidence and VERIFIED safety proof; the bundle hashes them, but
-the underlying JSON/JSONL remains the primary machine-verifiable evidence. Physical AGV video and
-live-provider screenshots are external gates and remain intentionally absent.
+COMPLETED mission, typed model-tool evidence and VERIFIED safety proof. Every capture visibly shows
+`MOCK / FIXTURE` and the UTC timestamp bound to the verified Hero trace. The screenshot manifest
+records capture time, dimensions and SHA-256; JSON/JSONL remains the primary machine-verifiable
+evidence. Physical AGV video and live-provider screenshots are external gates and remain absent.

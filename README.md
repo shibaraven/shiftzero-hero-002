@@ -43,13 +43,20 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m shiftzero.cli evaluate-scenarios
 .\.venv\Scripts\python.exe -m shiftzero.cli verify-hero-reliability --runs 20
 .\.venv\Scripts\python.exe -m shiftzero.cli fair-baseline --samples 20
+.\.venv\Scripts\python.exe -m shiftzero.cli impact-load-model --sample-days 20
 .\.venv\Scripts\python.exe -m shiftzero.cli compatibility --provider fixture --repetitions 20
 .\.venv\Scripts\python.exe -m shiftzero.cli build-hero-summary
+.\.venv\Scripts\python.exe -m shiftzero.cli build-screenshot-manifest
 .\.venv\Scripts\python.exe -m shiftzero.cli build-evidence-bundle
 ```
 
 The fixture provider is deterministic and is always labeled `fixture`; it is only for local
 development. It is never presented as Nebius runtime evidence.
+
+The checked-in impact report evaluates 400, 450, and 500 pallets/day over 20 seeded simulated
+days per load. It is explicitly a planning projection with declared cycle-time and operator-touch
+assumptions—not physical throughput or observed labor savings. Completed Hero outcomes include
+the final AGV node and `x`, `y`, and heading pose.
 
 ## Real Token Factory verification
 

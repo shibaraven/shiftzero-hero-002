@@ -100,7 +100,14 @@ class ReferenceWorld:
             node = self.nodes[agv.node_id]
             agvs.append(
                 agv.model_copy(
-                    update={"pose": Pose(node_id=node.id, x=node.x, y=node.y)},
+                    update={
+                        "pose": Pose(
+                            node_id=node.id,
+                            x=node.x,
+                            y=node.y,
+                            heading_deg=agv.pose.heading_deg if agv.pose is not None else 0,
+                        )
+                    },
                     deep=True,
                 )
             )

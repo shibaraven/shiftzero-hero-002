@@ -24,9 +24,16 @@
   and a verified SHA-256 trace chain required on every run.
 - Matched 20-sample Manual UI versus Agent Flow simulator baseline, with no labor/time savings
   claim extrapolated to physical operations.
+- Final completion evidence seals destination occupancy and AGV `x/y/heading` pose.
+- Seeded 400/450/500 pallets/day M/G/2 planning model with 20 simulated days per load, explicit
+  assumptions, fleet-buffer recommendation, and no physical throughput or labor claim.
+- Judge Mode local production-build load report with 20 browser samples and a 5,000 ms gate.
+- Three SHA-256-indexed screenshots with a permanently visible `MOCK / FIXTURE` label and UTC
+  trace timestamp.
 - Byte-reproducible, SHA-256-indexed Evidence Bundle.
 - Interactive Judge Mode website with Run Hero, Architecture, Evidence and GitHub/source-gate
-  entrances, plus typed model-tool and release-acceptance evidence.
+  entrances, explicit MOCK labeling, final pose, load evidence, impact projection, typed
+  model-tool and release-acceptance evidence.
 - Devpost draft, anonymous judge runbook, submission checklist, and three-minute video shot list.
 - Owner-private Judge Mode deployment at `https://shiftzero-hero-002.mingjen.chatgpt.site`.
 

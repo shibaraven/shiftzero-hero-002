@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from zipfile import ZipFile
@@ -13,14 +14,32 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         path = tmp_path / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(f"fixture for {relative}\n", encoding="utf-8")
-    for name in (
+    screenshot_names = (
         "01-completed.png",
         "02-model-tool-call.png",
         "03-verified-proof.png",
-    ):
+    )
+    screenshot_content = b"\x89PNG\r\n\x1a\nfixture"
+    for name in screenshot_names:
         (tmp_path / "evidence" / "screenshots" / name).write_bytes(
-            b"\x89PNG\r\n\x1a\nfixture"
+            screenshot_content
         )
+    (tmp_path / "evidence/screenshots/manifest.json").write_text(
+        json.dumps(
+            {
+                "screenshots": [
+                    {
+                        "path": f"evidence/screenshots/{name}",
+                        "sha256": hashlib.sha256(screenshot_content).hexdigest(),
+                        "visible_scope_label": "MOCK / FIXTURE",
+                        "visible_timestamp_text": "EVIDENCE UTC 2026-09-05T12:00:00Z",
+                    }
+                    for name in screenshot_names
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
     (tmp_path / "evidence/scenario-evaluation/metrics.json").write_text(
         json.dumps(
             {"sample_size": 100, "validated_count": 100, "safety_violation_count": 0}
@@ -29,6 +48,30 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
     )
     (tmp_path / "evidence/hero-reliability/report.json").write_text(
         json.dumps({"max_consecutive_passes": 20, "acceptance_passed": True}),
+        encoding="utf-8",
+    )
+    (tmp_path / "evidence/judge-mode-load.json").write_text(
+        json.dumps(
+            {
+                "acceptance_passed": True,
+                "sample_count": 20,
+                "p95_ms": 200,
+                "threshold_ms": 5000,
+            }
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "evidence/impact-load-model.json").write_text(
+        json.dumps(
+            {
+                "loads": [
+                    {"pallets_per_day": 400},
+                    {"pallets_per_day": 450},
+                    {"pallets_per_day": 500},
+                ],
+                "official_or_physical_evidence": False,
+            }
+        ),
         encoding="utf-8",
     )
     sample = EvidenceRecorder(tmp_path / "evidence/sample-verified-run")

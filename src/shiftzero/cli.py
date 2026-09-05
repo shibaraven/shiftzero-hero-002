@@ -12,8 +12,10 @@ from shiftzero.compatibility import run_compatibility_gate
 from shiftzero.config import TokenFactorySettings
 from shiftzero.evaluation import evaluate_scenarios
 from shiftzero.evidence_summary import build_hero_summary
+from shiftzero.impact import run_impact_load_model
 from shiftzero.reliability import run_hero_reliability
 from shiftzero.schema_export import export_schemas
+from shiftzero.screenshot_manifest import build_screenshot_manifest
 from shiftzero.simulator import load_default_scenario
 from shiftzero.workflow import WorkflowController
 
@@ -102,6 +104,28 @@ def main() -> None:
         default=Path("evidence/baseline-comparison.json"),
     )
 
+    impact = subparsers.add_parser(
+        "impact-load-model",
+        help="Project the 400-500 pallets/day planning envelope without physical claims",
+    )
+    impact.add_argument("--sample-days", type=int, default=20)
+    impact.add_argument(
+        "--output",
+        type=Path,
+        default=Path("evidence/impact-load-model.json"),
+    )
+
+    screenshot_manifest = subparsers.add_parser(
+        "build-screenshot-manifest",
+        help="Hash evidence screenshots and bind them to their visible UTC trace timestamp",
+    )
+    screenshot_manifest.add_argument("--root", type=Path, default=Path.cwd())
+    screenshot_manifest.add_argument(
+        "--output",
+        type=Path,
+        default=Path("evidence/screenshots/manifest.json"),
+    )
+
     args = parser.parse_args()
     scenario = load_default_scenario()
 
@@ -121,6 +145,23 @@ def main() -> None:
             scenario=scenario,
             output_path=args.output,
             samples_per_flow=args.samples,
+        )
+        print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
+        return
+
+    if args.command == "impact-load-model":
+        report = run_impact_load_model(
+            scenario=scenario,
+            output_path=args.output,
+            sample_days=args.sample_days,
+        )
+        print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
+        return
+
+    if args.command == "build-screenshot-manifest":
+        report = build_screenshot_manifest(
+            root=args.root.resolve(),
+            output_path=args.output.resolve(),
         )
         print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
         return

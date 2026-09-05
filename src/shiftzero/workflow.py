@@ -307,11 +307,15 @@ class WorkflowController:
         state.transition(MissionStatus.COMPLETED)
         recorder.record("workflow.transition", {"state": state.current})
         total_duration_ms = round((perf_counter_ns() - run_started_ns) / 1_000_000, 6)
+        final_agv = world.agvs[mission.selected_agv]
+        if final_agv.pose is None:
+            raise RuntimeError("completed mission is missing the final AGV pose")
         recorder.record(
             "outcome.completed",
             {
                 "mission_id": mission.mission_id,
-                "final_node": world.agvs[mission.selected_agv].node_id,
+                "final_node": final_agv.node_id,
+                "final_pose": final_agv.pose,
                 "destination_occupancy": world.locations[intent.destination].occupancy,
                 "trace_chain_valid": EvidenceRecorder.verify(recorder.path),
                 "total_duration_ms": total_duration_ms,

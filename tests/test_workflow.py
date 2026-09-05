@@ -49,6 +49,14 @@ def test_complete_proof_carrying_hero_loop(tmp_path: Path) -> None:
     assert outcome["total_duration_ms"] > 0
     assert outcome["human_interventions"] == 1
     assert "estimated_model_cost_usd" in outcome
+    assert outcome["final_node"] == "N12"
+    assert outcome["final_pose"] == {
+        "node_id": "N12",
+        "x": 6.0,
+        "y": 0.0,
+        "heading_deg": 315.0,
+    }
+    assert outcome["destination_occupancy"] == "P-104"
 
 
 def test_fixture_is_never_labeled_as_nebius(tmp_path: Path) -> None:

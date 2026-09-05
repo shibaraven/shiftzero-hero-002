@@ -27,7 +27,8 @@ def build_hero_summary(*, root: Path, output_path: Path) -> dict[str, Any]:
     initial_plan = _payload(events, "tool.plan_transport")["result"]
     replan = _payload(events, "tool.replan_mission")["result"]
     stop = _payload(events, "execution.local_stop")
-    outcome = _payload(events, "outcome.completed")
+    outcome_event = _event(events, "outcome.completed")
+    outcome = outcome_event["payload"]
     model_calls = [
         event["payload"]
         for event in events
@@ -36,9 +37,10 @@ def build_hero_summary(*, root: Path, output_path: Path) -> dict[str, Any]:
     policy_path = root / "schemas" / "safety-policy.json"
     trace_relative = trace_path.resolve().relative_to(root.resolve()).as_posix()
     body: dict[str, Any] = {
-        "summary_version": "hero-summary-v1",
+        "summary_version": "hero-summary-v2",
         "measurement_scope": "reference_simulator_fixture_provider",
         "official_gate_passed": False,
+        "evidence_captured_at": outcome_event["recorded_at"],
         "intent": intent,
         "proposal_id": proposal["proposal_id"],
         "mission_id": outcome["mission_id"],
@@ -62,6 +64,9 @@ def build_hero_summary(*, root: Path, output_path: Path) -> dict[str, Any]:
         "total_duration_ms": outcome["total_duration_ms"],
         "human_interventions": outcome["human_interventions"],
         "estimated_model_cost_usd": outcome["estimated_model_cost_usd"],
+        "final_node": outcome["final_node"],
+        "final_pose": outcome["final_pose"],
+        "destination_occupancy": outcome["destination_occupancy"],
         "final_status": "COMPLETED",
         "trace_id": events[0]["trace_id"],
         "trace_path": trace_relative,
@@ -88,7 +93,11 @@ def build_hero_summary(*, root: Path, output_path: Path) -> dict[str, Any]:
 
 
 def _payload(events: list[dict[str, Any]], kind: str) -> dict[str, Any]:
+    return _event(events, kind)["payload"]
+
+
+def _event(events: list[dict[str, Any]], kind: str) -> dict[str, Any]:
     try:
-        return next(event["payload"] for event in events if event["kind"] == kind)
+        return next(event for event in events if event["kind"] == kind)
     except StopIteration as exc:
         raise ValueError(f"hero trace is missing {kind}") from exc

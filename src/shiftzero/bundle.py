@@ -16,6 +16,9 @@ REQUIRED_PATHS = (
     "evidence/hero-reliability/report.json",
     "evidence/hero-summary.json",
     "evidence/baseline-comparison.json",
+    "evidence/impact-load-model.json",
+    "evidence/judge-mode-load.json",
+    "evidence/screenshots/manifest.json",
     "evidence/METHODOLOGY.md",
     "evidence/screenshots/01-completed.png",
     "evidence/screenshots/02-model-tool-call.png",
@@ -32,6 +35,7 @@ REQUIRED_PATHS = (
     "docs/SERVERLESS_JOB.md",
     "docs/SPEC_COMPLIANCE.md",
     "docs/AUTHORIZATION.md",
+    "docs/JUDGE_MODE_PERFORMANCE.md",
     "schemas/openapi.json",
 )
 
@@ -136,6 +140,16 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
     screenshot_paths = [
         path for path in files if path.parent.name == "screenshots" and path.suffix == ".png"
     ]
+    screenshot_manifest = json.loads(
+        (root / "evidence/screenshots/manifest.json").read_text(encoding="utf-8")
+    )
+    screenshot_rows = {row["path"]: row for row in screenshot_manifest["screenshots"]}
+    judge_load = json.loads(
+        (root / "evidence/judge-mode-load.json").read_text(encoding="utf-8")
+    )
+    impact_load = json.loads(
+        (root / "evidence/impact-load-model.json").read_text(encoding="utf-8")
+    )
     checks = {
         "scenario_count_is_100": metrics["sample_size"] == 100,
         "scenario_all_outcomes_valid": metrics["validated_count"] == metrics["sample_size"],
@@ -148,6 +162,24 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         "structured_hero_json_for_every_trace": len(trace_json_paths) == len(trace_paths),
         "three_png_screenshots_present": len(screenshot_paths) >= 3
         and all(path.read_bytes().startswith(b"\x89PNG\r\n\x1a\n") for path in screenshot_paths),
+        "screenshots_have_capture_manifest": all(
+            row is not None
+            and row["sha256"] == _sha256(path.read_bytes())
+            and row["visible_scope_label"] == "MOCK / FIXTURE"
+            and row["visible_timestamp_text"].startswith("EVIDENCE UTC ")
+            for path in screenshot_paths
+            if (row := screenshot_rows.get(path.relative_to(root).as_posix())) is not None
+        )
+        and len(screenshot_rows) == len(screenshot_paths),
+        "judge_mode_load_under_five_seconds": judge_load["acceptance_passed"] is True
+        and judge_load["sample_count"] >= 20
+        and judge_load["p95_ms"] < judge_load["threshold_ms"],
+        "impact_range_covers_400_to_500_pallets": {
+            row["pallets_per_day"]
+            for row in impact_load["loads"]
+        }
+        == {400, 450, 500}
+        and impact_load["official_or_physical_evidence"] is False,
         "required_file_count": len(files),
     }
     checks["passed"] = all(value is True for value in checks.values() if isinstance(value, bool))

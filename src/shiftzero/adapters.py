@@ -3,12 +3,13 @@ from __future__ import annotations
 import json
 import time
 from dataclasses import dataclass
+from math import atan2, degrees
 from pathlib import Path
 from typing import Protocol
 
 from pydantic import BaseModel, ConfigDict
 
-from shiftzero.domain import Mission, MissionStatus, RoutePlan, utc_now
+from shiftzero.domain import Mission, MissionStatus, Pose, RoutePlan, utc_now
 from shiftzero.simulator import ReferenceWorld
 
 
@@ -48,6 +49,9 @@ class SimulatorAdapter:
         agv = self.world.agvs[stored.selected_agv]
         agv.state = "EXECUTING"
         agv.current_mission_id = stored.mission_id
+        if agv.pose is None:
+            node = self.world.nodes[agv.node_id]
+            agv.pose = Pose(node_id=node.id, x=node.x, y=node.y, heading_deg=0)
         return stored.model_copy(deep=True)
 
     def advance(self, mission_id: str) -> Mission:
@@ -57,10 +61,22 @@ class SimulatorAdapter:
         next_index = min(mission.current_node_index + 1, len(mission.route) - 1)
         mission.current_node_index = next_index
         mission.updated_at = utc_now()
-        self.world.agvs[mission.selected_agv].node_id = mission.route[next_index]
+        agv = self.world.agvs[mission.selected_agv]
+        previous_node = self.world.nodes[agv.node_id]
+        next_node = self.world.nodes[mission.route[next_index]]
+        heading_deg = (
+            degrees(atan2(next_node.y - previous_node.y, next_node.x - previous_node.x))
+            + 360
+        ) % 360
+        agv.node_id = next_node.id
+        agv.pose = Pose(
+            node_id=next_node.id,
+            x=next_node.x,
+            y=next_node.y,
+            heading_deg=heading_deg,
+        )
         if next_index == len(mission.route) - 1:
             mission.status = MissionStatus.COMPLETED
-            agv = self.world.agvs[mission.selected_agv]
             agv.state = "IDLE"
             agv.current_mission_id = None
             source = self.world.locations[mission.source]

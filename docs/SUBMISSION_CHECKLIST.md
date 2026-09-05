@@ -13,7 +13,11 @@
 - [x] Signed identity/RBAC, all-write idempotency/versioning, SQLite audit and exact replay.
 - [x] Temporal collision, circular deadlock, sensor persistence and exact Digital Twin fields.
 - [x] Separate Replan/Resume and fail-safe-only Override with append-only audit.
-- [x] JSON+JSONL trace, complete tool spans, outcome metrics and three evidence screenshots.
+- [x] JSON+JSONL trace, complete tool spans, final pose, outcome metrics and three visibly
+  timestamped `MOCK / FIXTURE` evidence screenshots.
+- [x] Local production Judge Mode first-load report: 20 samples and p95 below 5,000 ms.
+- [x] Explicitly scoped 400/450/500 pallets/day planning projection with 20 simulated days per
+  load; assumptions are not represented as physical measurements.
 - [x] Matched 20+20 Manual UI versus Agent Flow simulator baseline.
 - [x] Judge Mode Run Hero, Architecture, Evidence and GitHub/source-gate entrances.
 - [x] Devpost draft and three-minute video shot list.
