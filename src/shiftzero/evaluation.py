@@ -323,7 +323,11 @@ def _blockage_case(
     world = ReferenceWorld(variant)
     intent = _hero_intent()
     if profile == "static":
-        world.add_hero_blockage()
+        obstacle = world.add_hero_blockage()
+        # A static obstruction represents a persisted observation, not a single
+        # medium-confidence sensor hit. This exercises the same debounce rule as
+        # production planning without weakening it for the evaluation suite.
+        obstacle.observation_count = 2
         snapshot = world.snapshot()
         plan, proof = _plan_and_verify(world, intent, snapshot, scenario_id)
         completed = "N09" not in plan.nodes and _dispatch_to_completion(

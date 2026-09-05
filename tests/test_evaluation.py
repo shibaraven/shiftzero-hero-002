@@ -13,7 +13,8 @@ def test_100_scenario_matrix_has_zero_safety_violations(tmp_path: Path) -> None:
         output_dir=tmp_path,
     )
     assert report.metrics.sample_size == 100
-    assert report.metrics.validated_outcome_rate >= 0.95
+    assert report.metrics.validated_count == 100
+    assert report.metrics.validated_outcome_rate == 1.0
     assert report.metrics.safety_violation_count == 0
     assert report.metrics.unsafe_plan_rejection_recall == 1.0
     rows = (tmp_path / "scenario-results.jsonl").read_text(encoding="utf-8").splitlines()

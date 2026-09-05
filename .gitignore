@@ -12,6 +12,7 @@ dist/
 build/
 *.egg-info/
 evidence/runs/
+evidence/baseline-agent-runs/
 evidence/compatibility/live-*.json
 tmp/
 /output/

@@ -138,6 +138,7 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
     ]
     checks = {
         "scenario_count_is_100": metrics["sample_size"] == 100,
+        "scenario_all_outcomes_valid": metrics["validated_count"] == metrics["sample_size"],
         "scenario_safety_violations_zero": metrics["safety_violation_count"] == 0,
         "hero_twenty_consecutive_passes": reliability["max_consecutive_passes"] >= 20,
         "hero_acceptance_passed": reliability["acceptance_passed"] is True,

@@ -55,6 +55,13 @@ type HeroSummary = {
   }>;
 };
 
+type ScenarioMetrics = {
+  sample_size: number;
+  validated_count: number;
+  safety_violation_count: number;
+  unsafe_plan_rejection_recall: number;
+};
+
 const views: Array<{ id: View; label: string }> = [
   { id: 'mission', label: 'Run Hero' },
   { id: 'architecture', label: 'Architecture' },
@@ -223,6 +230,8 @@ export default function MissionConsole() {
   const [running, setRunning] = useState(false);
   const [decision, setDecision] = useState<ReplayDecision>(null);
   const [heroSummary, setHeroSummary] = useState<HeroSummary | null>(null);
+  const [scenarioMetrics, setScenarioMetrics] =
+    useState<ScenarioMetrics | null>(null);
   const [evidenceError, setEvidenceError] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -233,6 +242,13 @@ export default function MissionConsole() {
         return response.json() as Promise<HeroSummary>;
       })
       .then(setHeroSummary)
+      .catch(() => setEvidenceError(true));
+    fetch('/data/metrics.json')
+      .then((response) => {
+        if (!response.ok) throw new Error('scenario evidence unavailable');
+        return response.json() as Promise<ScenarioMetrics>;
+      })
+      .then(setScenarioMetrics)
       .catch(() => setEvidenceError(true));
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -415,7 +431,11 @@ export default function MissionConsole() {
       )}
       {view === 'architecture' && <ArchitectureView onRun={runHero} />}
       {view === 'evidence' && (
-        <EvidenceView heroSummary={heroSummary} evidenceError={evidenceError} />
+        <EvidenceView
+          heroSummary={heroSummary}
+          scenarioMetrics={scenarioMetrics}
+          evidenceError={evidenceError}
+        />
       )}
       {view === 'source' && <SourceView />}
     </main>
@@ -1155,9 +1175,11 @@ function BoundaryCard({
 
 function EvidenceView({
   heroSummary,
+  scenarioMetrics,
   evidenceError,
 }: {
   heroSummary: HeroSummary | null;
+  scenarioMetrics: ScenarioMetrics | null;
   evidenceError: boolean;
 }) {
   return (
@@ -1188,9 +1210,31 @@ function EvidenceView({
       </div>
 
       <div className="mb-4 grid grid-cols-2 border border-white/[0.08] bg-[#0a1828] lg:grid-cols-4">
-        <Metric value="100/100" label="Valid scenario outcomes" tone="cyan" />
-        <Metric value="0" label="Safety violations" tone="emerald" />
-        <Metric value="100%" label="Unsafe-condition recall" tone="violet" />
+        <Metric
+          value={
+            scenarioMetrics
+              ? `${scenarioMetrics.validated_count}/${scenarioMetrics.sample_size}`
+              : '—'
+          }
+          label="Valid scenario outcomes"
+          tone="cyan"
+        />
+        <Metric
+          value={
+            scenarioMetrics ? `${scenarioMetrics.safety_violation_count}` : '—'
+          }
+          label="Safety violations"
+          tone="emerald"
+        />
+        <Metric
+          value={
+            scenarioMetrics
+              ? `${Math.round(scenarioMetrics.unsafe_plan_rejection_recall * 100)}%`
+              : '—'
+          }
+          label="Unsafe-condition recall"
+          tone="violet"
+        />
         <Metric value="20/20" label="Consecutive Hero runs" tone="emerald" />
       </div>
 

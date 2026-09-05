@@ -22,7 +22,10 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
             b"\x89PNG\r\n\x1a\nfixture"
         )
     (tmp_path / "evidence/scenario-evaluation/metrics.json").write_text(
-        json.dumps({"sample_size": 100, "safety_violation_count": 0}), encoding="utf-8"
+        json.dumps(
+            {"sample_size": 100, "validated_count": 100, "safety_violation_count": 0}
+        ),
+        encoding="utf-8",
     )
     (tmp_path / "evidence/hero-reliability/report.json").write_text(
         json.dumps({"max_consecutive_passes": 20, "acceptance_passed": True}),
@@ -56,4 +59,5 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         embedded = json.loads(archive.read("MANIFEST.json"))
         assert embedded["claim_scope"] == "reference_simulator_and_fixture_provider_only"
         assert len(embedded["files"]) == len(REQUIRED_PATHS) + 42
+        assert embedded["completeness_checks"]["scenario_all_outcomes_valid"] is True
         assert embedded["completeness_checks"]["passed"] is True
