@@ -172,6 +172,13 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         "all_included_trace_chains_valid": all(
             EvidenceRecorder.verify(path) for path in trace_paths
         ),
+        "typed_operation_metrics_for_every_trace": all(
+            any(
+                json.loads(line)["kind"] == "tool.get_operation_metrics"
+                for line in path.read_text(encoding="utf-8").splitlines()
+            )
+            for path in trace_paths
+        ),
         "structured_hero_json_for_every_trace": len(trace_json_paths) == len(trace_paths),
         "three_png_screenshots_present": len(screenshot_paths) >= 3
         and all(path.read_bytes().startswith(b"\x89PNG\r\n\x1a\n") for path in screenshot_paths),

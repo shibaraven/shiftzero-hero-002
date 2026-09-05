@@ -99,11 +99,21 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     sample = EvidenceRecorder(tmp_path / "evidence/sample-verified-run")
-    sample.record("fixture", {"valid": True})
+    sample.call_tool(
+        kind="tool.get_operation_metrics",
+        tool_name="get_operation_metrics",
+        arguments={"mission_id": "M-SAMPLE"},
+        operation=lambda: {"schema_version": "operation-metrics-v1", "completed": True},
+    )
     sample.export_json()
     for index in range(20):
         recorder = EvidenceRecorder(tmp_path / "evidence/hero-reliability/runs")
-        recorder.record("fixture", {"run": index})
+        recorder.call_tool(
+            kind="tool.get_operation_metrics",
+            tool_name="get_operation_metrics",
+            arguments={"mission_id": f"M-{index}"},
+            operation=lambda: {"schema_version": "operation-metrics-v1", "completed": True},
+        )
         recorder.export_json()
 
     first_zip = tmp_path / "evidence/first.zip"
@@ -128,6 +138,9 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         assert len(embedded["files"]) == len(REQUIRED_PATHS) + 42
         assert embedded["completeness_checks"]["scenario_all_outcomes_valid"] is True
         assert embedded["completeness_checks"]["third_party_inventory_complete"] is True
+        assert (
+            embedded["completeness_checks"]["typed_operation_metrics_for_every_trace"] is True
+        )
         assert embedded["completeness_checks"]["devpost_has_existing_work_section"] is True
         assert (
             embedded["completeness_checks"]["video_plan_has_continuous_65_second_physical_segment"]
