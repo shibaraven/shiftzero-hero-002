@@ -789,14 +789,14 @@ function SafetyCard({
   heroSummary: HeroSummary | null;
 }) {
   const checks = [
-    ['schema_valid', true],
-    ['robot_available', runStep >= 1],
-    ['payload_within_limit', runStep >= 4],
-    ['zones_permitted', runStep >= 4],
-    ['route_collision_free', runStep >= 4],
+    ['entity_validity', runStep >= 4],
+    ['map_consistency', runStep >= 4],
     ['battery_reserve', runStep >= 4],
-    ['destination_clear', runStep >= 4],
-    ['approval_bound', runStep >= 5],
+    ['forbidden_zone', runStep >= 4],
+    ['collision', runStep >= 4],
+    ['deadlock', runStep >= 4],
+    ['destination_occupancy', runStep >= 4],
+    ['proposal_semantics', runStep >= 4],
   ];
   return (
     <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">

@@ -23,8 +23,10 @@ REQUIRED_PATHS = (
     "schemas/tool-catalog.json",
     "docs/SAFETY_RULES.md",
     "docs/IP_BOUNDARY.md",
+    "docs/ARCHITECTURE.md",
     "docs/REAL_AGV_HANDOFF.md",
     "docs/SERVERLESS_JOB.md",
+    "docs/SPEC_COMPLIANCE.md",
     "schemas/openapi.json",
 )
 
@@ -83,6 +85,9 @@ def build_evidence_bundle(
 
 def _resolve_files(root: Path) -> list[Path]:
     paths = [root / relative for relative in REQUIRED_PATHS]
+    paths.extend(
+        path for path in sorted((root / "schemas").glob("*.json")) if path not in paths
+    )
     trace_paths = sorted((root / "evidence" / "sample-verified-run").glob("*/hero-run.jsonl"))
     paths.extend(trace_paths)
     reliability_trace_paths = sorted(
