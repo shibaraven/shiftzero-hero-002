@@ -27,8 +27,11 @@ def test_summary_serializes_typed_operation_metrics(tmp_path: Path) -> None:
 
     summary = build_hero_summary(root=tmp_path, output_path=summary_path)
 
-    assert summary["summary_version"] == "hero-summary-v3"
+    assert summary["summary_version"] == "hero-summary-v4"
     assert summary["operation_metrics"]["schema_version"] == "operation-metrics-v1"
     assert summary["operation_metrics"]["completed"] is True
     assert summary["operation_metrics"]["final_pose"]["node_id"] == "N12"
+    assert next(
+        check for check in summary["safety_checks"] if check["name"] == "approval_integrity"
+    )["passed"] is True
     assert json.loads(summary_path.read_text(encoding="utf-8")) == summary

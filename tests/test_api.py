@@ -103,6 +103,9 @@ def test_interactive_api_enforces_approval_and_completes_replan() -> None:
         headers=_authorization("executor", "executor-test"),
     )
     assert started.json()["state"] == "EXECUTING"
+    status = client.get(f"/api/missions/{mission_id}")
+    assert status.status_code == 200
+    assert status.json()["mission"]["status"] == "EXECUTING"
     stopped = client.post(
         f"/api/missions/{mission_id}/stop",
         json={
@@ -147,6 +150,11 @@ def test_interactive_api_enforces_approval_and_completes_replan() -> None:
     ]
     assert len(metrics_events) == 1
     assert metrics_events[0]["payload"]["result"]["completed"] is True
+    assert any(event["kind"] == "tool.get_mission_status" for event in trace.json())
+    proof = next(event["payload"] for event in trace.json() if event["kind"] == "safety.proof")
+    assert next(
+        check for check in proof["checks"] if check["name"] == "approval_integrity"
+    )["passed"] is True
 
 
 def test_ambiguous_fixture_intent_requires_clarification() -> None:

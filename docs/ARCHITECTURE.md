@@ -12,6 +12,11 @@ Physical     AGV/AGF, local safety controller, sensor and emergency stop
 The controller owns tool order and side effects. The Agent layer receives only the tools allowed
 for the current state. The Trust layer signs executable work; the Agent layer never does.
 
+The deterministic route proof is created before human review. The execution proof is a second,
+hash-addressed artifact that adds approval integrity after the token exists; its hash is the one
+stored on the Mission. Typed mission-status reads are recorded after start, local safe stop and
+completion so the status tool appears in the causal trace rather than only in the API catalog.
+
 Mutating API calls authenticate a short-lived HMAC bearer token and derive actor and role from its
 verified claims. Bodies cannot self-assert an approver or executor role. A SQLite WAL ledger keeps
 exact-response idempotency receipts and an append-only decision audit. Missing auth configuration,

@@ -59,8 +59,11 @@ days per load. It is explicitly a planning projection with declared cycle-time a
 assumptions—not physical throughput or observed labor savings. Completed Hero outcomes include
 the final AGV node and `x`, `y`, and heading pose.
 
-Every completed Hero trace also contains a typed `tool.get_operation_metrics` span whose result
-is validated by `operation-metrics.schema.json`. The complete resolved Python/npm dependency
+Every completed Hero trace contains all eight P0 tool spans. In particular,
+`tool.get_mission_status` records the started, safe-stop, and completed checkpoints, and the typed
+`tool.get_operation_metrics` result is validated by `operation-metrics.schema.json`. The final
+Safety Proof includes a hashed `approval_integrity` result that binds the approval actor, expiry,
+proposal hash, and mission goal before execution. The complete resolved Python/npm dependency
 inventory is generated into `THIRD_PARTY_LICENSES.json`, with exact Python pins in
 `requirements.lock` and the human-readable direct-dependency summary in
 `THIRD_PARTY_NOTICES.md`.

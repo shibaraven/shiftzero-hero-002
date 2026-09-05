@@ -38,6 +38,12 @@ type HeroSummary = {
   proposal_id: string;
   selected_agv: string;
   safety_policy_sha256: string;
+  safety_checks: Array<{
+    name: string;
+    passed: boolean;
+    detail: string;
+    evidence_hash: string;
+  }>;
   stop_latency_ms: number;
   stop_latency_kind: string;
   trace_chain_valid: boolean;
@@ -149,7 +155,7 @@ const timeline = [
   {
     state: 'VERIFIED',
     event: 'safety.proof',
-    detail: '10 deterministic rules passed',
+    detail: '11 route, policy and approval-integrity checks passed',
     tone: 'emerald',
   },
   {
@@ -163,6 +169,12 @@ const timeline = [
     event: 'mission.started',
     detail: 'Simulator accepted signed command',
     tone: 'cyan',
+  },
+  {
+    state: 'EXECUTING',
+    event: 'get_mission_status',
+    detail: 'Typed mission status and telemetry read recorded',
+    tone: 'slate',
   },
   {
     state: 'BLOCKED',
@@ -636,7 +648,9 @@ function MissionView({
           ['Success', '20 / 20', <Check key="success" className="size-3.5" />],
           [
             'Safety',
-            '10 / 10 passed',
+            heroSummary?.safety_checks
+              ? `${heroSummary.safety_checks.filter((check) => check.passed).length} / ${heroSummary.safety_checks.length} passed`
+              : 'loading',
             <ShieldCheck key="shield" className="size-3.5" />,
           ],
         ].map(([label, value, icon]) => (
@@ -954,6 +968,7 @@ function SafetyCard({
     ['deadlock', runStep >= 4],
     ['destination_occupancy', runStep >= 4],
     ['proposal_semantics', runStep >= 4],
+    ['approval_integrity', runStep >= 5],
   ];
   return (
     <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">

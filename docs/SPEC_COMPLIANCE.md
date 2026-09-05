@@ -15,6 +15,8 @@ fixture result is equivalent to Nebius or physical evidence.
 | Digital Twin core model | Complete locally | pose, pallet/location state, obstacle geometry/TTL, route windows, reservations and wait-for graph; completed outcome seals final `x/y/heading` |
 | 100-case evaluation | Complete locally | differentiated S01-S06 results and method in Evidence Bundle |
 | Preflight Evidence Bundle and reproducibility hashes | Complete locally | JSON+JSONL traces, tool latency/error/result hashes, visibly timestamped MOCK screenshots, outcome metrics and source/map/policy hashes; manifest explicitly sets `final_release_ready=false` |
+| Complete P0 typed-tool trace | Complete locally | every bundled Hero trace contains snapshot, inspection, planning, proposal, approval, mission status, replan and metrics spans; status is read at started/safe-stop/completed checkpoints |
+| Approval-integrity Safety Proof | Complete locally | execution and replan proofs contain a passing hashed check bound to proposal hash, actor, expiry and goal; bundle validation fails if it is absent |
 | P0 `get_operation_metrics` typed tool | Complete locally | completed Hero and Agent API traces contain a schema-validated `tool.get_operation_metrics` span |
 | Fair Manual vs Agent baseline | Complete locally | at least 20 matched simulator samples per flow; no physical savings claim |
 | 400–500 pallets/day impact envelope | Complete as projection | seeded M/G/2 model, 20 simulated days at 400/450/500; assumptions explicit, no physical claim |

@@ -14,7 +14,6 @@ from shiftzero.domain import (
     OperationMetrics,
     ToolName,
     canonical_hash,
-    utc_now,
 )
 from shiftzero.evidence import EvidenceRecorder
 from shiftzero.safety import SafetyEngine
@@ -124,16 +123,16 @@ class WorkflowController:
         state.transition(MissionStatus.PROPOSED)
         recorder.record("workflow.transition", {"state": state.current})
 
-        proof = safety.verify(
+        route_proof = safety.verify(
             intent=intent,
             plan=plan,
             snapshot=snapshot,
             proposal=proposal,
         )
-        recorder.record("safety.proof", proof)
-        if not proof.passed:
+        recorder.record("safety.route_proof", route_proof)
+        if not route_proof.passed:
             state.transition(MissionStatus.REJECTED)
-            recorder.record("workflow.rejected", {"proof_id": proof.proof_id})
+            recorder.record("workflow.rejected", {"proof_id": route_proof.proof_id})
             raise UnsafeProposal("deterministic safety proof failed")
         state.transition(MissionStatus.VERIFIED)
         recorder.record("workflow.transition", {"state": state.current})
@@ -143,7 +142,13 @@ class WorkflowController:
             goal_hash=intent.goal_hash,
             actor=approval_actor,
         )
-        if not approval.valid_for(proposal):
+        proof = safety.bind_approval_integrity(
+            proof=route_proof,
+            proposal=proposal,
+            approval=approval,
+        )
+        recorder.record("safety.proof", proof)
+        if not proof.passed:
             state.transition(MissionStatus.REJECTED)
             raise UnsafeProposal("approval integrity validation failed")
         recorder.record("approval.granted", approval)
@@ -194,6 +199,12 @@ class WorkflowController:
         recorder.record("execution.started", mission)
         state.transition(MissionStatus.EXECUTING)
         recorder.record("workflow.transition", {"state": state.current})
+        mission, _ = recorder.call_tool(
+            kind="tool.get_mission_status",
+            tool_name=ToolName.GET_MISSION_STATUS,
+            arguments={"mission_id": mission.mission_id, "checkpoint": "started"},
+            operation=lambda: adapter.get(mission.mission_id),
+        )
 
         mission = adapter.advance(mission.mission_id)
         recorder.record("execution.telemetry", mission)
@@ -219,6 +230,12 @@ class WorkflowController:
         )
         state.transition(MissionStatus.SAFE_STOP)
         recorder.record("workflow.transition", {"state": state.current})
+        mission, _ = recorder.call_tool(
+            kind="tool.get_mission_status",
+            tool_name=ToolName.GET_MISSION_STATUS,
+            arguments={"mission_id": mission.mission_id, "checkpoint": "safe_stop"},
+            operation=lambda: adapter.get(mission.mission_id),
+        )
 
         blocked_snapshot, _ = recorder.call_tool(
             kind="tool.get_operational_snapshot",
@@ -268,21 +285,21 @@ class WorkflowController:
                 force_agv=mission.selected_agv,
             ),
         )
-        replan_proof = safety.verify_replan(
+        replan_route_proof = safety.verify_replan(
             intent=intent,
             plan=replan,
             snapshot=blocked_snapshot,
             original_proposal=proposal,
         )
+        replan_proof = safety.bind_approval_integrity(
+            proof=replan_route_proof,
+            proposal=proposal,
+            approval=approval,
+        )
         recorder.record("safety.replan_proof", replan_proof)
         if not replan_proof.passed:
             state.transition(MissionStatus.FAILED_SAFE)
             raise UnsafeProposal("replan safety proof failed")
-        if approval.goal_hash != intent.goal_hash or not (
-            approval.issued_at <= utc_now() < approval.expires_at
-        ):
-            state.transition(MissionStatus.FAILED_SAFE)
-            raise UnsafeProposal("replan changed or outlived the approved mission goal")
         state.transition(MissionStatus.VERIFIED)
         recorder.record(
             "workflow.transition",
@@ -307,6 +324,12 @@ class WorkflowController:
             recorder.record("execution.telemetry", mission)
         state.transition(MissionStatus.COMPLETED)
         recorder.record("workflow.transition", {"state": state.current})
+        mission, _ = recorder.call_tool(
+            kind="tool.get_mission_status",
+            tool_name=ToolName.GET_MISSION_STATUS,
+            arguments={"mission_id": mission.mission_id, "checkpoint": "completed"},
+            operation=lambda: adapter.get(mission.mission_id),
+        )
         total_duration_ms = round((perf_counter_ns() - run_started_ns) / 1_000_000, 6)
         final_agv = world.agvs[mission.selected_agv]
         if final_agv.pose is None:

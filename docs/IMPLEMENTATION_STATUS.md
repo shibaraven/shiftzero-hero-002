@@ -27,6 +27,10 @@
 - Final completion evidence seals destination occupancy and AGV `x/y/heading` pose.
 - Completed missions emit a typed, schema-validated `tool.get_operation_metrics` span carrying
   the per-mission sample size, completion, duration, intervention, stop, cost and final-pose KPIs.
+- Every bundled Hero trace contains the complete eight-tool P0 catalog, including typed
+  `get_mission_status` reads at started, safe-stop and completed checkpoints.
+- Execution and equivalent-route replan proofs include a hashed `approval_integrity` result that
+  verifies the proposal hash, goal, actor and expiry before motion is authorized.
 - Seeded 400/450/500 pallets/day M/G/2 planning model with 20 simulated days per load, explicit
   assumptions, fleet-buffer recommendation, and no physical throughput or labor claim.
 - Judge Mode local production-build load report with 20 browser samples and a 5,000 ms gate.

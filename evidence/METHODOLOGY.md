@@ -17,6 +17,11 @@ tamper-evident evidence. They do not demonstrate live Nebius behavior or physica
   error. Planner output records candidate count and estimated duration. Outcomes record duration,
   human interventions, cost, measurement scope, destination occupancy, and final `x/y/heading`
   pose.
+- Every bundled Hero trace must contain all eight P0 tools. `get_mission_status` is sampled at the
+  started, safe-stop and completed checkpoints so status is evidence, not merely a catalog entry.
+- The route-only proof is recorded separately as `safety.route_proof`. Execution is authorized
+  only after `safety.proof` adds a passing, hashed `approval_integrity` check binding the approval
+  actor, expiry, proposal hash and mission goal. Replan proof repeats that integrity check.
 - Immediately before the outcome is sealed, the controller calls the typed
   `get_operation_metrics` read tool. Its `operation-metrics-v1` result records one completed
   mission, duration, interventions, stop timing, model cost and final pose; the trace stores its

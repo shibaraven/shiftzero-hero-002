@@ -61,6 +61,28 @@ def test_complete_proof_carrying_hero_loop(tmp_path: Path) -> None:
     assert metrics_event["payload"]["result"]["schema_version"] == "operation-metrics-v1"
     assert metrics_event["payload"]["result"]["completed"] is True
     assert metrics_event["payload"]["result"]["final_pose"]["heading_deg"] == 315.0
+    status_events = [event for event in events if event["kind"] == "tool.get_mission_status"]
+    assert [event["payload"]["arguments"]["checkpoint"] for event in status_events] == [
+        "started",
+        "safe_stop",
+        "completed",
+    ]
+    assert [event["payload"]["result"]["status"] for event in status_events] == [
+        "EXECUTING",
+        "SAFE_STOP",
+        "COMPLETED",
+    ]
+    proof = next(event["payload"] for event in events if event["kind"] == "safety.proof")
+    approval_check = next(
+        check for check in proof["checks"] if check["name"] == "approval_integrity"
+    )
+    assert approval_check["passed"] is True
+    replan_proof = next(
+        event["payload"] for event in events if event["kind"] == "safety.replan_proof"
+    )
+    assert next(
+        check for check in replan_proof["checks"] if check["name"] == "approval_integrity"
+    )["passed"] is True
 
 
 def test_fixture_is_never_labeled_as_nebius(tmp_path: Path) -> None:

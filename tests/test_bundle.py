@@ -8,6 +8,36 @@ from zipfile import ZipFile
 from shiftzero.bundle import REQUIRED_PATHS, build_evidence_bundle
 from shiftzero.evidence import EvidenceRecorder
 
+P0_TOOL_SPAN_KINDS = (
+    "tool.get_operational_snapshot",
+    "tool.inspect_location",
+    "tool.plan_transport",
+    "tool.propose_transport",
+    "tool.approve_transport",
+    "tool.get_mission_status",
+    "tool.replan_mission",
+    "tool.get_operation_metrics",
+)
+
+
+def _record_complete_hero_evidence(recorder: EvidenceRecorder, mission_id: str) -> None:
+    for kind in P0_TOOL_SPAN_KINDS:
+        tool_name = kind.removeprefix("tool.")
+        recorder.call_tool(
+            kind=kind,
+            tool_name=tool_name,
+            arguments={"mission_id": mission_id},
+            operation=lambda name=tool_name: {"tool": name, "completed": True},
+        )
+    approval_check = {
+        "name": "approval_integrity",
+        "passed": True,
+        "detail": "proposal hash, actor and expiry verified",
+        "evidence_hash": "fixture-proof-hash",
+    }
+    recorder.record("safety.proof", {"checks": [approval_check]})
+    recorder.record("safety.replan_proof", {"checks": [approval_check]})
+
 
 def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
     for relative in REQUIRED_PATHS:
@@ -104,21 +134,11 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     sample = EvidenceRecorder(tmp_path / "evidence/sample-verified-run")
-    sample.call_tool(
-        kind="tool.get_operation_metrics",
-        tool_name="get_operation_metrics",
-        arguments={"mission_id": "M-SAMPLE"},
-        operation=lambda: {"schema_version": "operation-metrics-v1", "completed": True},
-    )
+    _record_complete_hero_evidence(sample, "M-SAMPLE")
     sample.export_json()
     for index in range(20):
         recorder = EvidenceRecorder(tmp_path / "evidence/hero-reliability/runs")
-        recorder.call_tool(
-            kind="tool.get_operation_metrics",
-            tool_name="get_operation_metrics",
-            arguments={"mission_id": f"M-{index}"},
-            operation=lambda: {"schema_version": "operation-metrics-v1", "completed": True},
-        )
+        _record_complete_hero_evidence(recorder, f"M-{index}")
         recorder.export_json()
 
     first_zip = tmp_path / "evidence/first.zip"
@@ -139,7 +159,7 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
     assert first["official_gate_passed"] is False
     with ZipFile(first_zip) as archive:
         embedded = json.loads(archive.read("MANIFEST.json"))
-        assert embedded["bundle_version"] == "hero002-preflight-evidence-v3"
+        assert embedded["bundle_version"] == "hero002-preflight-evidence-v4"
         assert embedded["evidence_class"] == "preflight_fixture"
         assert embedded["claim_scope"] == "reference_simulator_and_fixture_provider_only"
         assert embedded["final_release_ready"] is False
@@ -148,6 +168,15 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         assert embedded["completeness_checks"]["third_party_inventory_complete"] is True
         assert (
             embedded["completeness_checks"]["typed_operation_metrics_for_every_trace"] is True
+        )
+        assert embedded["completeness_checks"]["p0_tool_spans_for_every_trace"] is True
+        assert (
+            embedded["completeness_checks"]["approval_integrity_in_every_safety_proof"]
+            is True
+        )
+        assert (
+            embedded["completeness_checks"]["approval_integrity_in_every_replan_proof"]
+            is True
         )
         assert embedded["completeness_checks"]["devpost_has_existing_work_section"] is True
         assert (

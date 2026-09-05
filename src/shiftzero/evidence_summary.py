@@ -40,7 +40,7 @@ def build_hero_summary(*, root: Path, output_path: Path) -> dict[str, Any]:
     policy_path = root / "schemas" / "safety-policy.json"
     trace_relative = trace_path.resolve().relative_to(root.resolve()).as_posix()
     body: dict[str, Any] = {
-        "summary_version": "hero-summary-v3",
+        "summary_version": "hero-summary-v4",
         "measurement_scope": "reference_simulator_fixture_provider",
         "official_gate_passed": False,
         "evidence_captured_at": outcome_event["recorded_at"],
@@ -56,6 +56,7 @@ def build_hero_summary(*, root: Path, output_path: Path) -> dict[str, Any]:
         "safety_proof_hash": proof["proof_hash"],
         "safety_policy_version": proof["policy_version"],
         "safety_policy_sha256": hashlib.sha256(policy_path.read_bytes()).hexdigest(),
+        "safety_checks": proof["checks"],
         "approval": {
             "token_id": approval["token_id"],
             "actor": approval["actor"],

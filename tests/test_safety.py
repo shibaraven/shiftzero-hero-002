@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from shiftzero.agent import FixtureProvider
-from shiftzero.domain import MissionIntent, RouteReservation, TransportProposal
+from shiftzero.domain import ApprovalToken, MissionIntent, RouteReservation, TransportProposal
 from shiftzero.safety import SafetyEngine
 from shiftzero.simulator import DeterministicPlanner, ReferenceWorld, load_default_scenario
 
@@ -29,6 +29,49 @@ def test_nominal_proposal_passes_all_safety_checks() -> None:
     proof = SafetyEngine().verify(intent=intent, plan=plan, snapshot=snapshot, proposal=proposal)
     assert proof.passed
     assert all(check.passed for check in proof.checks)
+
+
+def test_execution_proof_seals_approval_integrity() -> None:
+    _, snapshot, intent, plan, proposal = _proposal_setup()
+    engine = SafetyEngine()
+    route_proof = engine.verify(
+        intent=intent, plan=plan, snapshot=snapshot, proposal=proposal
+    )
+    approval = ApprovalToken.issue(
+        proposal_hash=proposal.proposal_hash,
+        goal_hash=intent.goal_hash,
+        actor="safety-test",
+    )
+    proof = engine.bind_approval_integrity(
+        proof=route_proof,
+        proposal=proposal,
+        approval=approval,
+    )
+    check = next(check for check in proof.checks if check.name == "approval_integrity")
+    assert proof.passed
+    assert check.passed
+    assert "actor=safety-test" in check.detail
+
+
+def test_execution_proof_rejects_tampered_approval() -> None:
+    _, snapshot, intent, plan, proposal = _proposal_setup()
+    engine = SafetyEngine()
+    route_proof = engine.verify(
+        intent=intent, plan=plan, snapshot=snapshot, proposal=proposal
+    )
+    approval = ApprovalToken.issue(
+        proposal_hash=proposal.proposal_hash,
+        goal_hash=intent.goal_hash,
+        actor="safety-test",
+    ).model_copy(update={"actor": "tampered-actor"})
+    proof = engine.bind_approval_integrity(
+        proof=route_proof,
+        proposal=proposal,
+        approval=approval,
+    )
+    check = next(check for check in proof.checks if check.name == "approval_integrity")
+    assert not proof.passed
+    assert not check.passed
 
 
 def test_schema_valid_wrong_entity_is_rejected() -> None:

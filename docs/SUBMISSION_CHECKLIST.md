@@ -13,8 +13,10 @@
 - [x] Signed identity/RBAC, all-write idempotency/versioning, SQLite audit and exact replay.
 - [x] Temporal collision, circular deadlock, sensor persistence and exact Digital Twin fields.
 - [x] Separate Replan/Resume and fail-safe-only Override with append-only audit.
-- [x] JSON+JSONL trace, complete tool spans, final pose, outcome metrics and three visibly
+- [x] JSON+JSONL trace, all eight P0 tool spans, final pose, outcome metrics and three visibly
   timestamped `MOCK / FIXTURE` preflight screenshots.
+- [x] `get_mission_status` trace evidence at started, safe-stop and completed checkpoints.
+- [x] Execution and replan Safety Proofs contain a passing hashed `approval_integrity` check.
 - [x] Fixture screenshots are machine-marked `preflight_fixture` and fail the final evidence gate.
 - [x] Local production Judge Mode first-load report: 20 samples and p95 below 5,000 ms.
 - [x] Explicitly scoped 400/450/500 pallets/day planning projection with 20 simulated days per

@@ -17,3 +17,8 @@ Policy version: `safety-v2`. Failure is closed by default. Unknown or stale data
 pass. The local stop path is independent of the cloud and has priority over mission completion.
 Obstacle TTL is enforced. A confidence of at least 0.9 causes immediate treatment as active;
 medium-confidence observations require at least two observations to filter isolated false positives.
+
+The controller records a route-only `safety.route_proof` before human review. After approval, it
+issues the execution `safety.proof` with all route checks plus `approval_integrity`; the Mission
+stores that final proof hash. Equivalent-route replans repeat the approval-integrity check before
+Resume. A missing, changed or expired approval therefore produces a failed proof and no motion.

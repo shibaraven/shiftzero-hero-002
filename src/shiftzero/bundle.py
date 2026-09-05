@@ -7,7 +7,19 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 from shiftzero.evidence import EvidenceRecorder
 
-BUNDLE_VERSION = "hero002-preflight-evidence-v3"
+BUNDLE_VERSION = "hero002-preflight-evidence-v4"
+P0_TOOL_SPAN_KINDS = frozenset(
+    {
+        "tool.get_operational_snapshot",
+        "tool.inspect_location",
+        "tool.plan_transport",
+        "tool.propose_transport",
+        "tool.approve_transport",
+        "tool.get_mission_status",
+        "tool.replan_mission",
+        "tool.get_operation_metrics",
+    }
+)
 REQUIRED_PATHS = (
     "LICENSE",
     "PRE_EXISTING_WORK.md",
@@ -167,6 +179,21 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
     )
     devpost = (root / "docs/DEVPOST_DRAFT.md").read_text(encoding="utf-8")
     video_shotlist = (root / "docs/VIDEO_SHOTLIST.md").read_text(encoding="utf-8")
+    trace_events = {
+        path: [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+        for path in trace_paths
+    }
+
+    def proof_has_approval_integrity(events: list[dict[str, object]], kind: str) -> bool:
+        return any(
+            event["kind"] == kind
+            and any(
+                check.get("name") == "approval_integrity" and check.get("passed") is True
+                for check in event["payload"]["checks"]
+            )
+            for event in events
+        )
+
     checks: dict[str, object] = {
         "scenario_count_is_100": metrics["sample_size"] == 100,
         "scenario_all_outcomes_valid": metrics["validated_count"] == metrics["sample_size"],
@@ -178,9 +205,21 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         ),
         "typed_operation_metrics_for_every_trace": all(
             any(
-                json.loads(line)["kind"] == "tool.get_operation_metrics"
-                for line in path.read_text(encoding="utf-8").splitlines()
+                event["kind"] == "tool.get_operation_metrics"
+                for event in trace_events[path]
             )
+            for path in trace_paths
+        ),
+        "p0_tool_spans_for_every_trace": all(
+            {event["kind"] for event in trace_events[path]} >= P0_TOOL_SPAN_KINDS
+            for path in trace_paths
+        ),
+        "approval_integrity_in_every_safety_proof": all(
+            proof_has_approval_integrity(trace_events[path], "safety.proof")
+            for path in trace_paths
+        ),
+        "approval_integrity_in_every_replan_proof": all(
+            proof_has_approval_integrity(trace_events[path], "safety.replan_proof")
             for path in trace_paths
         ),
         "structured_hero_json_for_every_trace": len(trace_json_paths) == len(trace_paths),
@@ -241,6 +280,9 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         "hero_acceptance_passed",
         "all_included_trace_chains_valid",
         "typed_operation_metrics_for_every_trace",
+        "p0_tool_spans_for_every_trace",
+        "approval_integrity_in_every_safety_proof",
+        "approval_integrity_in_every_replan_proof",
         "structured_hero_json_for_every_trace",
         "three_png_screenshots_present",
         "screenshots_have_capture_manifest",

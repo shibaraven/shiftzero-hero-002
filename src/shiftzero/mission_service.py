@@ -204,7 +204,7 @@ class MissionService:
                 proposal=proposal,
             )
             session.proof = proof
-            session.recorder.record("safety.proof", proof)
+            session.recorder.record("safety.route_proof", proof)
             if not proof.passed:
                 session.state.transition(MissionStatus.REJECTED)
                 raise MissionServiceError("deterministic safety proof rejected the proposal")
@@ -247,7 +247,16 @@ class MissionService:
                     actor_role=actor_role,
                 ),
             )
-            if not approval.valid_for(session.proposal):
+            if session.proof is None:
+                raise MissionServiceError("proposal has no deterministic route proof")
+            proof = SafetyEngine().bind_approval_integrity(
+                proof=session.proof,
+                proposal=session.proposal,
+                approval=approval,
+            )
+            session.proof = proof
+            session.recorder.record("safety.proof", proof)
+            if not proof.passed:
                 raise MissionServiceError("approval integrity check failed")
             session.approval = approval
             session.recorder.record("approval.granted", approval)
@@ -533,18 +542,20 @@ class MissionService:
                 ),
             )
             session.replan = plan
-            proof = SafetyEngine().verify_replan(
+            route_proof = SafetyEngine().verify_replan(
                 intent=session.intent,
                 plan=plan,
                 snapshot=snapshot,
                 original_proposal=session.proposal,
             )
+            proof = SafetyEngine().bind_approval_integrity(
+                proof=route_proof,
+                proposal=session.proposal,
+                approval=session.approval,
+            )
             session.replan_proof = proof
             session.recorder.record("safety.replan_proof", proof)
-            if not proof.passed or not (
-                session.approval.goal_hash == session.intent.goal_hash
-                and session.approval.issued_at <= utc_now() < session.approval.expires_at
-            ):
+            if not proof.passed:
                 session.state.transition(MissionStatus.FAILED_SAFE)
                 raise MissionServiceError("equivalent-route replan proof or approval scope failed")
             session.state.transition(MissionStatus.VERIFIED)

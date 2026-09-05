@@ -5,6 +5,7 @@ from datetime import timedelta
 
 from shiftzero.domain import (
     AgvState,
+    ApprovalToken,
     MissionIntent,
     OperationalSnapshot,
     RoutePlan,
@@ -169,6 +170,32 @@ class SafetyEngine:
             plan=plan,
             snapshot=snapshot,
             proposal=transient,
+        )
+
+    def bind_approval_integrity(
+        self,
+        *,
+        proof: SafetyProof,
+        proposal: TransportProposal,
+        approval: ApprovalToken,
+    ) -> SafetyProof:
+        """Seal a route proof with the human approval required for execution."""
+        checks = [check for check in proof.checks if check.name != "approval_integrity"]
+        checks.append(
+            self._check(
+                "approval_integrity",
+                approval.valid_for(proposal),
+                (
+                    f"proposal_hash={approval.proposal_hash}; actor={approval.actor}; "
+                    f"expires_at={approval.expires_at.isoformat()}"
+                ),
+            )
+        )
+        return SafetyProof.issue(
+            proposal_id=proof.proposal_id,
+            route_version=proof.route_version,
+            snapshot_id=proof.snapshot_id,
+            checks=checks,
         )
 
     def _battery_ok(self, agv: AgvState | None, plan: RoutePlan) -> bool:
