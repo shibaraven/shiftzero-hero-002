@@ -1,0 +1,116 @@
+{
+  "assumptions_are_not_measurements": true,
+  "conclusion": {
+    "capacity_note": "Two nominal AGVs are modeled. A third AGV is recommended wherever the 80% utilization buffer calculation requires it; validate all assumptions with site telemetry before making an operational claim.",
+    "operator_hours_saved_per_day_range": [
+      7.0,
+      8.75
+    ],
+    "range_evaluated": "400-500 pallets/day"
+  },
+  "generated_at": "2026-09-05T13:12:53.824980+00:00",
+  "inputs": {
+    "assumptions": {
+      "active_agvs": 2,
+      "agent_operator_touch_seconds_per_mission": 12,
+      "availability_factor": 0.85,
+      "hero_replan_route": [
+        "N01",
+        "N04",
+        "N05",
+        "N10",
+        "N12"
+      ],
+      "manual_operator_touch_seconds_per_mission": 75,
+      "nominal_cycle_seconds": 156.9,
+      "operating_hours_per_day": 16,
+      "pickup_dropoff_seconds": 90.0,
+      "return_and_buffer_seconds": 58.0,
+      "route_distance_m": 8.9,
+      "route_travel_seconds": 8.9,
+      "service_time_variation_percent": 15,
+      "target_max_average_agv_utilization": 0.8
+    },
+    "daily_loads": [
+      400,
+      450,
+      500
+    ],
+    "sample_days_per_load": 20,
+    "scenario_id": "hero-001",
+    "scenario_sha256": "d884213103745d6955a810bb7e8e030cbe8a7064fc4513ef492e67b2729c409b"
+  },
+  "loads": [
+    {
+      "agv_metrics": {
+        "active_agvs": 2,
+        "completion_rate_within_operating_day": 1.0,
+        "max_end_of_day_backlog": 0,
+        "mean_utilization": 0.641032,
+        "median_queue_wait_seconds": 0.0,
+        "p95_queue_wait_seconds": 282.593,
+        "required_agvs_for_80_percent_buffer": 2,
+        "status": "MODELED_CAPACITY_OK"
+      },
+      "operator_impact": {
+        "agent_touch_hours_per_day": 1.333,
+        "basis": "declared planning assumptions, not observed site labor",
+        "hours_saved_per_day": 7.0,
+        "manual_touch_hours_per_day": 8.333,
+        "touch_time_reduction_percent": 84.0
+      },
+      "pallets_per_day": 400,
+      "sample_days": 20,
+      "simulated_missions": 8000
+    },
+    {
+      "agv_metrics": {
+        "active_agvs": 2,
+        "completion_rate_within_operating_day": 1.0,
+        "max_end_of_day_backlog": 0,
+        "mean_utilization": 0.720107,
+        "median_queue_wait_seconds": 49.046,
+        "p95_queue_wait_seconds": 408.856,
+        "required_agvs_for_80_percent_buffer": 2,
+        "status": "CAPACITY_BUFFER_RECOMMENDED"
+      },
+      "operator_impact": {
+        "agent_touch_hours_per_day": 1.5,
+        "basis": "declared planning assumptions, not observed site labor",
+        "hours_saved_per_day": 7.875,
+        "manual_touch_hours_per_day": 9.375,
+        "touch_time_reduction_percent": 84.0
+      },
+      "pallets_per_day": 450,
+      "sample_days": 20,
+      "simulated_missions": 9000
+    },
+    {
+      "agv_metrics": {
+        "active_agvs": 2,
+        "completion_rate_within_operating_day": 1.0,
+        "max_end_of_day_backlog": 0,
+        "mean_utilization": 0.801098,
+        "median_queue_wait_seconds": 102.409,
+        "p95_queue_wait_seconds": 568.279,
+        "required_agvs_for_80_percent_buffer": 3,
+        "status": "CAPACITY_BUFFER_RECOMMENDED"
+      },
+      "operator_impact": {
+        "agent_touch_hours_per_day": 1.667,
+        "basis": "declared planning assumptions, not observed site labor",
+        "hours_saved_per_day": 8.75,
+        "manual_touch_hours_per_day": 10.417,
+        "touch_time_reduction_percent": 84.0
+      },
+      "pallets_per_day": 500,
+      "sample_days": 20,
+      "simulated_missions": 10000
+    }
+  ],
+  "measurement_scope": "planning_projection_reference_map_not_physical_measurement",
+  "method": "Seeded discrete-event M/G/2 queue simulation. Each load uses 20 independent simulated operating days, exponential inter-arrival spacing normalized to one shift, and +/-15% service-time sensitivity. Operator-touch impact is a direct calculation from the declared manual and agent assumptions.",
+  "model_hash": "25699764d569c15e8c2e7a95efac54e9a45510be216049ba7efc2dea5414a868",
+  "model_version": "warehouse-impact-load-v1",
+  "official_or_physical_evidence": false
+}
