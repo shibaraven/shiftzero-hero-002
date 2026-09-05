@@ -1,8 +1,8 @@
 {
   "agent_flow": {
     "duration_ms": {
-      "median": 42.23665,
-      "p95": 45.1857
+      "median": 42.56085,
+      "p95": 46.2274
     },
     "failure_count": 0,
     "failure_rate": 0.0,
@@ -14,12 +14,12 @@
   },
   "baseline_version": "manual-vs-agent-v1",
   "claims_boundary": "No labor or time savings claim is made from this in-process simulator baseline. Final claims require measured physical operations under matched conditions.",
-  "generated_at": "2026-09-05T13:43:45.004016+00:00",
-  "git_commit": "20fd4436a0a638824104e30b6948afdf62029706",
+  "generated_at": "2026-09-05T14:25:03.000750+00:00",
+  "git_commit": "9e2d98f2b413d02f5373f633ed635630d65c90d6",
   "manual_flow": {
     "duration_ms": {
-      "median": 1.9501,
-      "p95": 2.6902
+      "median": 1.8763,
+      "p95": 2.8503
     },
     "failure_count": 0,
     "failure_rate": 0.0,
@@ -31,277 +31,277 @@
   },
   "measurement_scope": "in_process_reference_simulator_fixture_provider",
   "method": "Both flows use the same map, AGV, pallet, destination, injected blockage and deterministic planner. Manual Flow explicitly performs inspect, approve, stop, replan and resume decisions; Agent Flow requires one approval.",
-  "report_hash": "00bb47666f8eb813fdad14a1bf6a8c38984e6acf0c0b72914dbc6f9e759aa42a",
+  "report_hash": "6d9a250749c0108f105fb31bd11af4873ef8ceb9630aa94522506f06c2ce10ac",
   "same_conditions": true,
   "sample_size_per_flow": 20,
   "samples": {
     "agent": [
       {
         "completed": true,
-        "duration_ms": 42.8165,
+        "duration_ms": 43.8171,
         "human_interventions": 1,
         "sample": 1,
-        "trace_id": "TR-50D697519EA4"
+        "trace_id": "TR-EB24158B0A47"
       },
       {
         "completed": true,
-        "duration_ms": 43.5446,
+        "duration_ms": 42.5962,
         "human_interventions": 1,
         "sample": 2,
-        "trace_id": "TR-89698403B99D"
+        "trace_id": "TR-5B9719B4A1F8"
       },
       {
         "completed": true,
-        "duration_ms": 41.4275,
+        "duration_ms": 46.2274,
         "human_interventions": 1,
         "sample": 3,
-        "trace_id": "TR-F86678498349"
+        "trace_id": "TR-D1FEAA4C28EC"
       },
       {
         "completed": true,
-        "duration_ms": 44.8939,
+        "duration_ms": 53.8044,
         "human_interventions": 1,
         "sample": 4,
-        "trace_id": "TR-6F1C18D08C88"
+        "trace_id": "TR-AEFC4F5F87AB"
       },
       {
         "completed": true,
-        "duration_ms": 42.102,
+        "duration_ms": 43.1758,
         "human_interventions": 1,
         "sample": 5,
-        "trace_id": "TR-ADD8554795E2"
+        "trace_id": "TR-808786C0434A"
       },
       {
         "completed": true,
-        "duration_ms": 40.1671,
+        "duration_ms": 44.0156,
         "human_interventions": 1,
         "sample": 6,
-        "trace_id": "TR-67279A79CA75"
+        "trace_id": "TR-81EB8902A68A"
       },
       {
         "completed": true,
-        "duration_ms": 38.3216,
+        "duration_ms": 40.4067,
         "human_interventions": 1,
         "sample": 7,
-        "trace_id": "TR-7E36022C0742"
+        "trace_id": "TR-E573310ACCF3"
       },
       {
         "completed": true,
-        "duration_ms": 38.0975,
+        "duration_ms": 44.8301,
         "human_interventions": 1,
         "sample": 8,
-        "trace_id": "TR-66F876ACE858"
+        "trace_id": "TR-30650050AA1E"
       },
       {
         "completed": true,
-        "duration_ms": 45.1857,
+        "duration_ms": 41.1211,
         "human_interventions": 1,
         "sample": 9,
-        "trace_id": "TR-2532ABF88763"
+        "trace_id": "TR-68D28F7006DB"
       },
       {
         "completed": true,
-        "duration_ms": 45.0128,
+        "duration_ms": 41.4808,
         "human_interventions": 1,
         "sample": 10,
-        "trace_id": "TR-293AB6BA774A"
+        "trace_id": "TR-AE26EB86A771"
       },
       {
         "completed": true,
-        "duration_ms": 46.0652,
+        "duration_ms": 40.3304,
         "human_interventions": 1,
         "sample": 11,
-        "trace_id": "TR-6C790002A0E7"
+        "trace_id": "TR-E0FD6AC107FF"
       },
       {
         "completed": true,
-        "duration_ms": 42.8992,
+        "duration_ms": 41.7882,
         "human_interventions": 1,
         "sample": 12,
-        "trace_id": "TR-3896E3ACD397"
+        "trace_id": "TR-2D5FB337135F"
       },
       {
         "completed": true,
-        "duration_ms": 42.3713,
+        "duration_ms": 45.4499,
         "human_interventions": 1,
         "sample": 13,
-        "trace_id": "TR-C36A129813A8"
+        "trace_id": "TR-2DCC966F5FEF"
       },
       {
         "completed": true,
-        "duration_ms": 43.0198,
+        "duration_ms": 41.677,
         "human_interventions": 1,
         "sample": 14,
-        "trace_id": "TR-8CCBA17E22F7"
+        "trace_id": "TR-412DD75DE2C9"
       },
       {
         "completed": true,
-        "duration_ms": 41.4761,
+        "duration_ms": 40.5553,
         "human_interventions": 1,
         "sample": 15,
-        "trace_id": "TR-E7E2974F00AF"
+        "trace_id": "TR-C3F56E31653B"
       },
       {
         "completed": true,
-        "duration_ms": 40.5254,
+        "duration_ms": 41.9977,
         "human_interventions": 1,
         "sample": 16,
-        "trace_id": "TR-282392D2418F"
+        "trace_id": "TR-5C64688B2C91"
       },
       {
         "completed": true,
-        "duration_ms": 39.6451,
+        "duration_ms": 42.5255,
         "human_interventions": 1,
         "sample": 17,
-        "trace_id": "TR-045847AB7A2A"
+        "trace_id": "TR-6162B4DC00F6"
       },
       {
         "completed": true,
-        "duration_ms": 40.1338,
+        "duration_ms": 44.4719,
         "human_interventions": 1,
         "sample": 18,
-        "trace_id": "TR-602E7CC678B9"
+        "trace_id": "TR-3A4A6BAD29EA"
       },
       {
         "completed": true,
-        "duration_ms": 43.6445,
+        "duration_ms": 41.5714,
         "human_interventions": 1,
         "sample": 19,
-        "trace_id": "TR-88FE8BF4D899"
+        "trace_id": "TR-BF5DFD1C787D"
       },
       {
         "completed": true,
-        "duration_ms": 41.4707,
+        "duration_ms": 44.8279,
         "human_interventions": 1,
         "sample": 20,
-        "trace_id": "TR-B6993C93A844"
+        "trace_id": "TR-87C76939F710"
       }
     ],
     "manual": [
       {
         "completed": true,
-        "duration_ms": 1.9694,
+        "duration_ms": 1.9051,
         "human_interventions": 5,
         "sample": 1
       },
       {
         "completed": true,
-        "duration_ms": 1.9241,
+        "duration_ms": 1.8233,
         "human_interventions": 5,
         "sample": 2
       },
       {
         "completed": true,
-        "duration_ms": 2.1782,
+        "duration_ms": 2.905,
         "human_interventions": 5,
         "sample": 3
       },
       {
         "completed": true,
-        "duration_ms": 2.6902,
+        "duration_ms": 2.2459,
         "human_interventions": 5,
         "sample": 4
       },
       {
         "completed": true,
-        "duration_ms": 2.0547,
+        "duration_ms": 1.9044,
         "human_interventions": 5,
         "sample": 5
       },
       {
         "completed": true,
-        "duration_ms": 1.735,
+        "duration_ms": 1.8603,
         "human_interventions": 5,
         "sample": 6
       },
       {
         "completed": true,
-        "duration_ms": 2.6163,
+        "duration_ms": 1.9193,
         "human_interventions": 5,
         "sample": 7
       },
       {
         "completed": true,
-        "duration_ms": 2.004,
+        "duration_ms": 2.0096,
         "human_interventions": 5,
         "sample": 8
       },
       {
         "completed": true,
-        "duration_ms": 2.196,
+        "duration_ms": 1.7644,
         "human_interventions": 5,
         "sample": 9
       },
       {
         "completed": true,
-        "duration_ms": 2.7671,
+        "duration_ms": 1.743,
         "human_interventions": 5,
         "sample": 10
       },
       {
         "completed": true,
-        "duration_ms": 2.5093,
+        "duration_ms": 1.7479,
         "human_interventions": 5,
         "sample": 11
       },
       {
         "completed": true,
-        "duration_ms": 2.588,
+        "duration_ms": 2.8503,
         "human_interventions": 5,
         "sample": 12
       },
       {
         "completed": true,
-        "duration_ms": 1.8373,
+        "duration_ms": 1.9377,
         "human_interventions": 5,
         "sample": 13
       },
       {
         "completed": true,
-        "duration_ms": 1.8058,
+        "duration_ms": 1.8277,
         "human_interventions": 5,
         "sample": 14
       },
       {
         "completed": true,
-        "duration_ms": 1.8308,
+        "duration_ms": 1.8316,
         "human_interventions": 5,
         "sample": 15
       },
       {
         "completed": true,
-        "duration_ms": 1.8609,
+        "duration_ms": 1.7773,
         "human_interventions": 5,
         "sample": 16
       },
       {
         "completed": true,
-        "duration_ms": 1.7628,
+        "duration_ms": 1.7754,
         "human_interventions": 5,
         "sample": 17
       },
       {
         "completed": true,
-        "duration_ms": 1.8724,
+        "duration_ms": 1.8798,
         "human_interventions": 5,
         "sample": 18
       },
       {
         "completed": true,
-        "duration_ms": 1.9308,
+        "duration_ms": 1.9782,
         "human_interventions": 5,
         "sample": 19
       },
       {
         "completed": true,
-        "duration_ms": 1.8813,
+        "duration_ms": 1.8728,
         "human_interventions": 5,
         "sample": 20
       }
     ]
   },
   "scenario_id": "hero-001",
-  "source_tree_hash": "4d7fbb20513711dd40bcb7805aca89251717d14b48be1be367520fe65ca02be2",
+  "source_tree_hash": "30aab463a9c4b86453b8efd8ef5e677e875b23f4300ffdd332decd40e3cb0c25",
   "units": {
     "duration": "milliseconds",
     "failure_rate": "ratio_0_to_1",

@@ -1,14 +1,14 @@
 {
   "approval": {
     "actor": "reliability-run-001",
-    "expires_at": "2026-09-05T13:58:43.804460Z",
-    "issued_at": "2026-09-05T13:43:43.804460Z",
-    "token_id": "APR-CA122B41C2"
+    "expires_at": "2026-09-05T14:39:54.579417Z",
+    "issued_at": "2026-09-05T14:24:54.579417Z",
+    "token_id": "APR-1B9F5F3E87"
   },
   "claims_boundary": "All values come from a deterministic fixture/reference-simulator trace. No physical stop-latency or live Nebius claim is made.",
   "destination_occupancy": "P-104",
   "estimated_model_cost_usd": 0.0,
-  "evidence_captured_at": "2026-09-05T13:43:43.833241+00:00",
+  "evidence_captured_at": "2026-09-05T14:24:54.603630+00:00",
   "final_node": "N12",
   "final_pose": {
     "heading_deg": 315.0,
@@ -35,56 +35,33 @@
     "source": "INBOUND-01"
   },
   "measurement_scope": "reference_simulator_fixture_provider",
-  "mission_id": "M-DEEDB194F4",
+  "mission_id": "M-F1BE6CA011",
   "model_calls": [
     {
-      "completed_at": "2026-09-05T13:43:43.795946Z",
+      "completed_at": "2026-09-05T14:24:54.574084Z",
       "estimated_cost_usd": null,
       "fallback_state": null,
       "finish_reason": null,
       "http_status": null,
       "inference_budget_ms": 1000.0,
       "input_tokens": null,
-      "latency_ms": 0.001,
+      "latency_ms": 1.348,
       "model": "deterministic-fixture-not-a-model",
       "output_tokens": null,
       "provider": "fixture",
       "rate_limit_remaining": null,
       "rate_limit_reset": null,
       "repair_count": 0,
-      "request_id": "FIXTURE-CCE6BFA0",
+      "request_id": "FIXTURE-32F11D72",
       "retry_count": 0,
-      "started_at": "2026-09-05T13:43:43.795946Z",
+      "started_at": "2026-09-05T14:24:54.572736Z",
       "timed_out": false,
       "tool_arguments_hash": "2b57fbd9e421ce96fe71ae24c86400352f7aae15c90868351949332a283b0588",
       "tool_name": "parse_mission_intent",
       "tool_result_hash": "2b57fbd9e421ce96fe71ae24c86400352f7aae15c90868351949332a283b0588"
     },
     {
-      "completed_at": "2026-09-05T13:43:43.801452Z",
-      "estimated_cost_usd": null,
-      "fallback_state": null,
-      "finish_reason": null,
-      "http_status": null,
-      "inference_budget_ms": 1000.0,
-      "input_tokens": null,
-      "latency_ms": 1.003,
-      "model": "deterministic-fixture-not-a-model",
-      "output_tokens": null,
-      "provider": "fixture",
-      "rate_limit_remaining": null,
-      "rate_limit_reset": null,
-      "repair_count": 0,
-      "request_id": "FIXTURE-BBA3A3E2",
-      "retry_count": 0,
-      "started_at": "2026-09-05T13:43:43.800449Z",
-      "timed_out": false,
-      "tool_arguments_hash": "6bf592ae74a1162560b7bb3ea9fd2cf44c60caaeffd6681f275c8e7f7b67f622",
-      "tool_name": "propose_transport",
-      "tool_result_hash": "6bf592ae74a1162560b7bb3ea9fd2cf44c60caaeffd6681f275c8e7f7b67f622"
-    },
-    {
-      "completed_at": "2026-09-05T13:43:43.810308Z",
+      "completed_at": "2026-09-05T14:24:54.578117Z",
       "estimated_cost_usd": null,
       "fallback_state": null,
       "finish_reason": null,
@@ -98,13 +75,36 @@
       "rate_limit_remaining": null,
       "rate_limit_reset": null,
       "repair_count": 0,
-      "request_id": "FIXTURE-5B9E6904",
+      "request_id": "FIXTURE-F8364067",
       "retry_count": 0,
-      "started_at": "2026-09-05T13:43:43.810308Z",
+      "started_at": "2026-09-05T14:24:54.578117Z",
       "timed_out": false,
-      "tool_arguments_hash": "3bba6195568423f4658dd23671b448c9489deea1b8435db7990f923c304685e8",
+      "tool_arguments_hash": "c1e448d0d65be864b9d1794ca4415b2bddc27069edb6895a4fd4c2c31ba4135e",
+      "tool_name": "propose_transport",
+      "tool_result_hash": "c1e448d0d65be864b9d1794ca4415b2bddc27069edb6895a4fd4c2c31ba4135e"
+    },
+    {
+      "completed_at": "2026-09-05T14:24:54.587127Z",
+      "estimated_cost_usd": null,
+      "fallback_state": null,
+      "finish_reason": null,
+      "http_status": null,
+      "inference_budget_ms": 1000.0,
+      "input_tokens": null,
+      "latency_ms": 0.001,
+      "model": "deterministic-fixture-not-a-model",
+      "output_tokens": null,
+      "provider": "fixture",
+      "rate_limit_remaining": null,
+      "rate_limit_reset": null,
+      "repair_count": 0,
+      "request_id": "FIXTURE-969DC1CF",
+      "retry_count": 0,
+      "started_at": "2026-09-05T14:24:54.587127Z",
+      "timed_out": false,
+      "tool_arguments_hash": "891dbba445f4388c9d13b08e0a122f16e48a2fbbc49c0a716ac54a40d1d4bd68",
       "tool_name": "propose_recovery",
-      "tool_result_hash": "3bba6195568423f4658dd23671b448c9489deea1b8435db7990f923c304685e8"
+      "tool_result_hash": "891dbba445f4388c9d13b08e0a122f16e48a2fbbc49c0a716ac54a40d1d4bd68"
     }
   ],
   "official_gate_passed": false,
@@ -122,14 +122,14 @@
     "final_status": "COMPLETED",
     "human_interventions": 1,
     "measurement_scope": "reference_simulator_fixture_provider",
-    "mission_id": "M-DEEDB194F4",
+    "mission_id": "M-F1BE6CA011",
     "sample_size": 1,
     "schema_version": "operation-metrics-v1",
     "stop_latency_kind": "simulated_process",
-    "stop_latency_ms": 0.0425,
-    "total_duration_ms": 24.9863
+    "stop_latency_ms": 0.0502,
+    "total_duration_ms": 21.5201
   },
-  "proposal_id": "TP-03BD28F600",
+  "proposal_id": "TP-60A79074CF",
   "replan_route": [
     "N04",
     "N05",
@@ -137,10 +137,78 @@
     "N12"
   ],
   "replan_route_version": "route-d8c9119af45a",
+  "safety_checks": [
+    {
+      "detail": "live entities and pallet source",
+      "evidence_hash": "a670b97275963a5e41f095a0bd77fdfe99f096892fcf46417dc263a343545b58",
+      "name": "entity_validity",
+      "passed": true
+    },
+    {
+      "detail": "snapshot/map/proposal versions",
+      "evidence_hash": "45ea650ff262f8577668beab0232b9ee9e335bc6546736aabb7e25b9693e5985",
+      "name": "map_consistency",
+      "passed": true
+    },
+    {
+      "detail": "post-mission reserve >= 20%",
+      "evidence_hash": "3144e29989e85588cd6688dfef1c8e3cc436843513e8d0799c8a1d23554257d4",
+      "name": "battery_reserve",
+      "passed": true
+    },
+    {
+      "detail": "AGV allowed on every route node",
+      "evidence_hash": "58d0f453063fdf126ca92088a9f07b0c398f8c7e4996c49934122c2864ce390c",
+      "name": "vehicle_type",
+      "passed": true
+    },
+    {
+      "detail": "hits=[]",
+      "evidence_hash": "6deffc62cf4a5551db52d4c8be6cba7efabdd36e72de029a3673482a1633d675",
+      "name": "forbidden_zone",
+      "passed": true
+    },
+    {
+      "detail": "obstacle_hits=[]; temporal_conflicts=[]",
+      "evidence_hash": "9a541378106b5b2560faabaf948084e8ca7d209d9bbae3dd21eb7c3c0de8474b",
+      "name": "collision",
+      "passed": true
+    },
+    {
+      "detail": "reservation_conflicts=[]",
+      "evidence_hash": "73178e1796b2101283ba6bb5b8787e1508340500393d862285fb4a2feff27704",
+      "name": "reservation_availability",
+      "passed": true
+    },
+    {
+      "detail": "circular_wait=False; wait_for={}",
+      "evidence_hash": "f1b664e266e9d6c58c120dc33a8e180202bf248549fd3bf38f982858e267ca57",
+      "name": "deadlock",
+      "passed": true
+    },
+    {
+      "detail": "destination can receive pallet",
+      "evidence_hash": "75b1567ee7844c0ecdef390c3cb6fb7b7cda0125a110338a7649ac7c69fe9dfd",
+      "name": "destination_occupancy",
+      "passed": true
+    },
+    {
+      "detail": "proposal matches deterministic plan and live intent",
+      "evidence_hash": "f99fbab08b5a03af50d09d01b16fdee5a3bfae4a609c1a176f2ee0620a773a1f",
+      "name": "proposal_semantics",
+      "passed": true
+    },
+    {
+      "detail": "proposal_hash=8d805be1fb4019ba1cc7b56cad6c29a4fbbe2d2b533ab45a174d3d0487a68759; actor=reliability-run-001; expires_at=2026-09-05T14:39:54.579417+00:00",
+      "evidence_hash": "6c1bd7f302feee6735e7b055ba8e7272f61df349d9a1f27364c40e66e55260f3",
+      "name": "approval_integrity",
+      "passed": true
+    }
+  ],
   "safety_policy_sha256": "7df7c37a947b28e3b255eb69cb79768c003e1207db570b14343cdcff137890a0",
   "safety_policy_version": "safety-v2",
-  "safety_proof_hash": "5136b208ad3f67852c80e16f2f6aa8d50c962534430a1c39cee6100de8732d5b",
-  "safety_proof_id": "SP-C3828D6B94",
+  "safety_proof_hash": "44bd8fb79c04f97de9303b653a9cd0f56fc1e494a7db61eb762a6362fad52477",
+  "safety_proof_id": "SP-D175E67CFE",
   "selected_agv": "AGV-03",
   "state_history": [
     "OBSERVED",
@@ -157,12 +225,12 @@
     "COMPLETED"
   ],
   "stop_latency_kind": "simulated_process",
-  "stop_latency_ms": 0.0425,
-  "summary_hash": "ceef2627a1b00fcd1e6efa40e526eaac85caddfd3f2869e1e8dc5361896cbb03",
-  "summary_version": "hero-summary-v3",
-  "total_duration_ms": 24.9863,
+  "stop_latency_ms": 0.0502,
+  "summary_hash": "bc23a434fefe61f66782a88d18cc6fa29378dc5c0902cbe5b2bd993a56aa0501",
+  "summary_version": "hero-summary-v4",
+  "total_duration_ms": 21.5201,
   "trace_chain_valid": true,
-  "trace_id": "TR-7035A0085815",
-  "trace_path": "evidence/hero-reliability/runs/TR-7035A0085815/hero-run.jsonl",
-  "trace_sha256": "fa4af271bf89b47f207e461f2e69df29f4305158b79cf29aecea0d28ef081e3e"
+  "trace_id": "TR-DB50AF24217E",
+  "trace_path": "evidence/hero-reliability/runs/TR-DB50AF24217E/hero-run.jsonl",
+  "trace_sha256": "957ac6068206135f4fdaaf2f96c29ba56bd5e86023c288b5e22aeb8e9b761043"
 }

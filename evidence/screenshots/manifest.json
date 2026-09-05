@@ -1,7 +1,7 @@
 {
   "evidence_class": "preflight_fixture",
   "final_submission_eligible": false,
-  "manifest_hash": "b9a2fde075e761193b54ff6f81b90963f82dc3d82ee614489d1ad9fa423d10b2",
+  "manifest_hash": "964a5ff2e2cdf42838dc7096621a5e178e61f6ba766a098def9a5110ce27fdb2",
   "manifest_version": "evidence-screenshots-v1",
   "measurement_scope": "local_production_build_reference_simulator_fixture_provider",
   "prohibited_use": "These images must not be submitted or described as real Nebius/runtime evidence.",
@@ -10,33 +10,33 @@
   "replacement_required_after_live_gate": true,
   "screenshots": [
     {
-      "bytes": 378118,
-      "captured_at_utc": "2026-09-05T13:14:03.106000+00:00",
+      "bytes": 347798,
+      "captured_at_utc": "2026-09-05T14:25:29.137184+00:00",
       "height_px": 712,
       "path": "evidence/screenshots/01-completed.png",
-      "sha256": "ffa55ffec6701170e65b6c4dc57ca0f8b20d67d93ca7979b72f14cf7ec22d2e5",
+      "sha256": "f4f03992c0428da7962ee94f2d0dc36085d99b89dd2e28fac2811a1f8c7ea816",
       "visible_scope_label": "MOCK / FIXTURE",
-      "visible_timestamp_text": "EVIDENCE UTC 2026-09-05T13:43:43.833241+00:00",
+      "visible_timestamp_text": "EVIDENCE UTC 2026-09-05T14:24:54.603630+00:00",
       "width_px": 1265
     },
     {
-      "bytes": 274160,
-      "captured_at_utc": "2026-09-05T13:14:03.107000+00:00",
+      "bytes": 249637,
+      "captured_at_utc": "2026-09-05T14:25:29.170055+00:00",
       "height_px": 712,
       "path": "evidence/screenshots/02-model-tool-call.png",
-      "sha256": "554db062f3eee3b08e31d85b52bfea73ef9db7e7e883a06e725ea050de27fd7d",
+      "sha256": "01bb3135746abfad85b0e2b36c001bb070c6588afc22f6ae7e9969663792b5da",
       "visible_scope_label": "MOCK / FIXTURE",
-      "visible_timestamp_text": "EVIDENCE UTC 2026-09-05T13:43:43.833241+00:00",
+      "visible_timestamp_text": "EVIDENCE UTC 2026-09-05T14:24:54.603630+00:00",
       "width_px": 1265
     },
     {
-      "bytes": 404452,
-      "captured_at_utc": "2026-09-05T13:14:03.107000+00:00",
+      "bytes": 332854,
+      "captured_at_utc": "2026-09-05T14:25:29.208332+00:00",
       "height_px": 712,
       "path": "evidence/screenshots/03-verified-proof.png",
-      "sha256": "c80c1fb78f58193da9cf94656d50bf6091d8d7373d14bf35850f32ecd23cd178",
+      "sha256": "0a539a21d1ab6156a607f5b83e7f6c2b47aea8e7f654d6ca825f2e89cfdb7ef4",
       "visible_scope_label": "MOCK / FIXTURE",
-      "visible_timestamp_text": "EVIDENCE UTC 2026-09-05T13:43:43.833241+00:00",
+      "visible_timestamp_text": "EVIDENCE UTC 2026-09-05T14:24:54.603630+00:00",
       "width_px": 1265
     }
   ],
