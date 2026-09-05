@@ -14,7 +14,7 @@ fixture result is equivalent to Nebius or physical evidence.
 | API idempotency and optimistic concurrency | Complete locally | every write requires key/version; SQLite exact-response receipts survive process replacement |
 | Digital Twin core model | Complete locally | pose, pallet/location state, obstacle geometry/TTL, route windows, reservations and wait-for graph; completed outcome seals final `x/y/heading` |
 | 100-case evaluation | Complete locally | differentiated S01-S06 results and method in Evidence Bundle |
-| Evidence Bundle and reproducibility hashes | Complete locally | JSON+JSONL traces, tool latency/error/result hashes, visibly timestamped MOCK screenshots, outcome metrics and source/map/policy hashes |
+| Preflight Evidence Bundle and reproducibility hashes | Complete locally | JSON+JSONL traces, tool latency/error/result hashes, visibly timestamped MOCK screenshots, outcome metrics and source/map/policy hashes; manifest explicitly sets `final_release_ready=false` |
 | P0 `get_operation_metrics` typed tool | Complete locally | completed Hero and Agent API traces contain a schema-validated `tool.get_operation_metrics` span |
 | Fair Manual vs Agent baseline | Complete locally | at least 20 matched simulator samples per flow; no physical savings claim |
 | 400–500 pallets/day impact envelope | Complete as projection | seeded M/G/2 model, 20 simulated days at 400/450/500; assumptions explicit, no physical claim |
@@ -22,6 +22,7 @@ fixture result is equivalent to Nebius or physical evidence.
 | Six variants x 20 Compatibility preflight | Complete locally, unofficial | fixture report remains `official_gate_passed=false` |
 | Real Token Factory/Nemotron trace | Key-gated | `NEBIUS_API_KEY` plus provider receipt required |
 | Official Compatibility Gate | Key-gated | must run 120 live calls; fixture cannot unlock it |
+| Final three competition screenshots | Key + hardware-gated | current PNGs are `preflight_fixture`; `validate-final-evidence` rejects them until a passing live gate, exact receipts, `LIVE / NEBIUS` labels and replacement hashes exist |
 | Serverless Jobs deployment | Account-gated | job contract/CLI complete; project, registry and storage target required |
 | Real AGV adapter | Gate + hardware-gated | interface and handoff complete; OEM protocol/safety approval absent |
 | Physical sensor-to-stop under 200 ms | Hardware-gated | simulator timings are never presented as physical timings |

@@ -80,6 +80,16 @@ The compatibility command executes six intent variants 20 times each. Only a rep
 with the real `nebius_token_factory` provider can set `official_gate_passed=true`. Missing
 credentials fail closed; there is no silent mock fallback.
 
+The checked-in screenshots are preflight-only `MOCK / FIXTURE` captures. They cannot be promoted
+to final evidence. After the live gate and physical capture, validate their provider receipts,
+hashes, UTC timestamps and visible `LIVE / NEBIUS` labels with:
+
+```powershell
+.\.venv\Scripts\python.exe -m shiftzero.cli validate-final-evidence
+```
+
+See `docs/FINAL_EVIDENCE_CAPTURE.md` for the exact three-file replacement procedure.
+
 Official API references: [Token Factory function calling](https://docs.tokenfactory.nebius.com/ai-models-inference/function-calling)
 and the [Nebius Nemotron 3 Super guide](https://github.com/nebius/token-factory-cookbook/blob/main/models/nemotron/nemotron3-super-120B.md).
 

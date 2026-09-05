@@ -1,7 +1,13 @@
 {
-  "manifest_hash": "7775549a4dd6e7e1991ac7bda0321c9912896fda55c583f5c9189c2503edc827",
+  "evidence_class": "preflight_fixture",
+  "final_submission_eligible": false,
+  "manifest_hash": "b9a2fde075e761193b54ff6f81b90963f82dc3d82ee614489d1ad9fa423d10b2",
   "manifest_version": "evidence-screenshots-v1",
   "measurement_scope": "local_production_build_reference_simulator_fixture_provider",
+  "prohibited_use": "These images must not be submitted or described as real Nebius/runtime evidence.",
+  "provider": "fixture",
+  "real_provider": false,
+  "replacement_required_after_live_gate": true,
   "screenshots": [
     {
       "bytes": 378118,
@@ -10,7 +16,7 @@
       "path": "evidence/screenshots/01-completed.png",
       "sha256": "ffa55ffec6701170e65b6c4dc57ca0f8b20d67d93ca7979b72f14cf7ec22d2e5",
       "visible_scope_label": "MOCK / FIXTURE",
-      "visible_timestamp_text": "EVIDENCE UTC 2026-09-05T13:12:51.023861+00:00",
+      "visible_timestamp_text": "EVIDENCE UTC 2026-09-05T13:43:43.833241+00:00",
       "width_px": 1265
     },
     {
@@ -20,7 +26,7 @@
       "path": "evidence/screenshots/02-model-tool-call.png",
       "sha256": "554db062f3eee3b08e31d85b52bfea73ef9db7e7e883a06e725ea050de27fd7d",
       "visible_scope_label": "MOCK / FIXTURE",
-      "visible_timestamp_text": "EVIDENCE UTC 2026-09-05T13:12:51.023861+00:00",
+      "visible_timestamp_text": "EVIDENCE UTC 2026-09-05T13:43:43.833241+00:00",
       "width_px": 1265
     },
     {
@@ -30,7 +36,7 @@
       "path": "evidence/screenshots/03-verified-proof.png",
       "sha256": "c80c1fb78f58193da9cf94656d50bf6091d8d7373d14bf35850f32ecd23cd178",
       "visible_scope_label": "MOCK / FIXTURE",
-      "visible_timestamp_text": "EVIDENCE UTC 2026-09-05T13:12:51.023861+00:00",
+      "visible_timestamp_text": "EVIDENCE UTC 2026-09-05T13:43:43.833241+00:00",
       "width_px": 1265
     }
   ],

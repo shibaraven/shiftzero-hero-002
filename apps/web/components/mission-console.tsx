@@ -107,6 +107,13 @@ type ScenarioMetrics = {
   unsafe_plan_rejection_recall: number;
 };
 
+type ScreenshotEvidence = {
+  evidence_class: string;
+  final_submission_eligible: boolean;
+  real_provider: boolean;
+  replacement_required_after_live_gate: boolean;
+};
+
 const views: Array<{ id: View; label: string }> = [
   { id: 'mission', label: 'Run Hero' },
   { id: 'architecture', label: 'Architecture' },
@@ -280,6 +287,8 @@ export default function MissionConsole() {
   const [evidenceError, setEvidenceError] = useState(false);
   const [judgeLoad, setJudgeLoad] = useState<JudgeLoadEvidence | null>(null);
   const [impactLoad, setImpactLoad] = useState<ImpactLoadModel | null>(null);
+  const [screenshotEvidence, setScreenshotEvidence] =
+    useState<ScreenshotEvidence | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -310,6 +319,13 @@ export default function MissionConsole() {
         return response.json() as Promise<ImpactLoadModel>;
       })
       .then(setImpactLoad)
+      .catch(() => setEvidenceError(true));
+    fetch('/data/screenshot-manifest.json')
+      .then((response) => {
+        if (!response.ok) throw new Error('screenshot evidence unavailable');
+        return response.json() as Promise<ScreenshotEvidence>;
+      })
+      .then(setScreenshotEvidence)
       .catch(() => setEvidenceError(true));
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -507,6 +523,7 @@ export default function MissionConsole() {
           scenarioMetrics={scenarioMetrics}
           judgeLoad={judgeLoad}
           impactLoad={impactLoad}
+          screenshotEvidence={screenshotEvidence}
           evidenceError={evidenceError}
         />
       )}
@@ -1258,12 +1275,14 @@ function EvidenceView({
   scenarioMetrics,
   judgeLoad,
   impactLoad,
+  screenshotEvidence,
   evidenceError,
 }: {
   heroSummary: HeroSummary | null;
   scenarioMetrics: ScenarioMetrics | null;
   judgeLoad: JudgeLoadEvidence | null;
   impactLoad: ImpactLoadModel | null;
+  screenshotEvidence: ScreenshotEvidence | null;
   evidenceError: boolean;
 }) {
   return (
@@ -1495,7 +1514,7 @@ function EvidenceView({
             {[
               ['A05', '100-scenario simulator suite', 'PASS', 'emerald'],
               ['A03', '20 consecutive Hero replays', 'SIMULATOR', 'cyan'],
-              ['A01–A02', 'Live Nebius + official gate', 'KEY GATED', 'amber'],
+              ['A01–A02', 'Live Nebius + final recapture', 'KEY GATED', 'amber'],
               ['A06–A07', 'Physical stop and AGV loop', 'HARDWARE', 'amber'],
               [
                 'A09–A12',
@@ -1582,14 +1601,21 @@ function EvidenceView({
           <LockKeyhole className="mt-0.5 size-4 shrink-0 text-amber-200" />
           <div>
             <p className="text-xs font-semibold text-amber-100">
-              Official Gate intentionally remains closed
+              Final evidence gate intentionally remains closed
             </p>
             <p className="mt-1 text-[11px] leading-5 text-slate-500">
-              These metrics prove the reference simulator and fixture-provider
-              path only. Live Nemotron tool calling and physical AGV claims
-              require an API key, recorded provider receipts and a passing
-              Compatibility Gate.
+              {screenshotEvidence?.final_submission_eligible
+                ? 'The three screenshots are bound to a passing live-provider gate and are eligible for final review.'
+                : 'The three current PNGs are preflight-only MOCK / FIXTURE captures. They cannot satisfy A01 or final submission and must be replaced after the live Compatibility Gate passes.'}
             </p>
+            <Badge
+              variant="outline"
+              className="mt-3 border-amber-300/20 bg-amber-300/[0.06] font-mono text-[9px] text-amber-200"
+            >
+              {screenshotEvidence?.final_submission_eligible
+                ? 'FINAL LIVE EVIDENCE'
+                : 'RECAPTURE REQUIRED'}
+            </Badge>
           </div>
         </div>
       </div>

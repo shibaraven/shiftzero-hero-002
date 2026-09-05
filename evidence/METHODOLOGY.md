@@ -44,4 +44,8 @@ The private Judge Mode renders JSON evidence directly. Three checked-in PNG capt
 COMPLETED mission, typed model-tool evidence and VERIFIED safety proof. Every capture visibly shows
 `MOCK / FIXTURE` and the UTC timestamp bound to the verified Hero trace. The screenshot manifest
 records capture time, dimensions and SHA-256; JSON/JSONL remains the primary machine-verifiable
-evidence. Physical AGV video and live-provider screenshots are external gates and remain absent.
+evidence. The manifest classifies them as `preflight_fixture`, marks them ineligible for final
+submission and requires replacement after the live gate. `validate-final-evidence` fails closed
+until all three replacement images carry `LIVE / NEBIUS`, UTC timestamps, exact hashes and a real
+provider receipt backed by `official_gate_passed=true`. Physical AGV video and live-provider
+screenshots are external gates and remain absent.

@@ -14,7 +14,8 @@
 - [x] Temporal collision, circular deadlock, sensor persistence and exact Digital Twin fields.
 - [x] Separate Replan/Resume and fail-safe-only Override with append-only audit.
 - [x] JSON+JSONL trace, complete tool spans, final pose, outcome metrics and three visibly
-  timestamped `MOCK / FIXTURE` evidence screenshots.
+  timestamped `MOCK / FIXTURE` preflight screenshots.
+- [x] Fixture screenshots are machine-marked `preflight_fixture` and fail the final evidence gate.
 - [x] Local production Judge Mode first-load report: 20 samples and p95 below 5,000 ms.
 - [x] Explicitly scoped 400/450/500 pallets/day planning projection with 20 simulated days per
   load; assumptions are not represented as physical measurements.
@@ -34,6 +35,8 @@
 - [ ] Register and inject `NEBIUS_API_KEY` without committing it.
 - [ ] Record a real forced Nemotron tool call with provider/model receipt.
 - [ ] Pass the official Token Factory Compatibility Gate and archive the live report.
+- [ ] Replace all three preflight screenshots with one correlated `LIVE / NEBIUS` capture set and
+      make `validate-final-evidence` exit successfully.
 - [ ] Publish the Git repository and add its immutable revision URL.
 - [ ] Explicitly authorize public access for the owner-private Judge Mode deployment.
 - [ ] Verify Judge Mode in an anonymous/private browser session.

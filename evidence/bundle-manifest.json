@@ -1,18 +1,21 @@
 {
-  "bundle_bytes": 1626727,
+  "bundle_bytes": 1628629,
   "bundle_path": "evidence/HERO002-evidence-bundle.zip",
-  "bundle_sha256": "4f5a7a85a0b902ff14a47f26dcf16a3c6c9553d33be02ede05ab64fbd09de1b3",
-  "bundle_version": "hero002-evidence-v2",
+  "bundle_sha256": "7297e023eb9470852f5bf697456551e86eb7fd7c8387addc963e454905435a70",
+  "bundle_version": "hero002-preflight-evidence-v3",
   "claim_scope": "reference_simulator_and_fixture_provider_only",
   "completeness_checks": {
     "all_included_trace_chains_valid": true,
     "devpost_has_existing_work_section": true,
+    "final_real_screenshots_ready": false,
+    "fixture_screenshots_are_preflight_only": true,
     "hero_acceptance_passed": true,
     "hero_twenty_consecutive_passes": true,
     "impact_range_covers_400_to_500_pallets": true,
     "judge_mode_load_under_five_seconds": true,
-    "passed": true,
-    "required_file_count": 105,
+    "local_preflight_passed": true,
+    "passed": false,
+    "required_file_count": 106,
     "scenario_all_outcomes_valid": true,
     "scenario_count_is_100": true,
     "scenario_safety_violations_zero": true,
@@ -23,6 +26,7 @@
     "typed_operation_metrics_for_every_trace": true,
     "video_plan_has_continuous_65_second_physical_segment": true
   },
+  "evidence_class": "preflight_fixture",
   "files": [
     {
       "bytes": 10857,
@@ -35,9 +39,9 @@
       "sha256": "c1873b5c09013202962379f8b81f090b29c71e9b3bddcb0a495d3a867a7108b5"
     },
     {
-      "bytes": 5808,
+      "bytes": 6238,
       "path": "README.md",
-      "sha256": "0d98b39448c5835682edbd91a45f65bdfe52c7672f153418d4a795d7227a8f3c"
+      "sha256": "166b3efa34f9a0add3e6b615d92949c64e40ec69a65b0b920c14a59885cf9aba"
     },
     {
       "bytes": 192322,
@@ -65,6 +69,11 @@
       "sha256": "60b27fc0717d8e800c0fc4d03dd1a74f6dc9926deb3e387a33f007ff19872279"
     },
     {
+      "bytes": 1969,
+      "path": "docs/FINAL_EVIDENCE_CAPTURE.md",
+      "sha256": "ad2d357a67faed9a44512f9855e554c631ed8fc5968192b5846f33f2dbf2beee"
+    },
+    {
       "bytes": 1278,
       "path": "docs/IP_BOUNDARY.md",
       "sha256": "dfc32e793220dfd912e1a89ebdb2d0c2e02478404d91e7a97c73e9e026b70a7c"
@@ -90,9 +99,9 @@
       "sha256": "702be6a9b53aa0fca269ed7805918a1e63831737c39a2a2675052cb12dc8c534"
     },
     {
-      "bytes": 3889,
+      "bytes": 4190,
       "path": "docs/SPEC_COMPLIANCE.md",
-      "sha256": "af3517800d9e8723a46c70ec87f132cd1432b86ce20365278615b1370324f5f4"
+      "sha256": "d04a9600514e92cb1c30afa76b9782e4cf61e586fca9fba254dacfbd837c8356"
     },
     {
       "bytes": 3641,
@@ -100,9 +109,9 @@
       "sha256": "d5b88baf8372fdcd6aa226cefe7551ea906e6ae963f784cadec5ea9d1d754cb7"
     },
     {
-      "bytes": 3263,
+      "bytes": 3598,
       "path": "evidence/METHODOLOGY.md",
-      "sha256": "cbb048d71ca362802bd138c560c51cd7778c38eae9c21832a0d932bc98913826"
+      "sha256": "696e15e1615fffab6fbde9bf69befc73ee299d4d37e8165dbb88850b59bdcee6"
     },
     {
       "bytes": 7571,
@@ -465,9 +474,9 @@
       "sha256": "c80c1fb78f58193da9cf94656d50bf6091d8d7373d14bf35850f32ecd23cd178"
     },
     {
-      "bytes": 1559,
+      "bytes": 1841,
       "path": "evidence/screenshots/manifest.json",
-      "sha256": "21b84b565c2187acb954a0359a5c936ac49798591f2a6d01fcf4eb8e475a964d"
+      "sha256": "38b07046c3cd58b52deae138a08a79eb088924926a465e9cb5b7c563cb7efe0a"
     },
     {
       "bytes": 590,
@@ -550,5 +559,6 @@
       "sha256": "2d0125c069ce32fd5671d9ae12ab74b470add5dc365233ec87510c32f02be175"
     }
   ],
+  "final_release_ready": false,
   "official_gate_passed": false
 }

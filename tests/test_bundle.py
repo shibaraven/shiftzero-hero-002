@@ -25,6 +25,11 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
     (tmp_path / "evidence/screenshots/manifest.json").write_text(
         json.dumps(
             {
+                "evidence_class": "preflight_fixture",
+                "final_submission_eligible": False,
+                "provider": "fixture",
+                "real_provider": False,
+                "replacement_required_after_live_gate": True,
                 "screenshots": [
                     {
                         "path": f"evidence/screenshots/{name}",
@@ -134,7 +139,10 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
     assert first["official_gate_passed"] is False
     with ZipFile(first_zip) as archive:
         embedded = json.loads(archive.read("MANIFEST.json"))
+        assert embedded["bundle_version"] == "hero002-preflight-evidence-v3"
+        assert embedded["evidence_class"] == "preflight_fixture"
         assert embedded["claim_scope"] == "reference_simulator_and_fixture_provider_only"
+        assert embedded["final_release_ready"] is False
         assert len(embedded["files"]) == len(REQUIRED_PATHS) + 42
         assert embedded["completeness_checks"]["scenario_all_outcomes_valid"] is True
         assert embedded["completeness_checks"]["third_party_inventory_complete"] is True
@@ -146,4 +154,6 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
             embedded["completeness_checks"]["video_plan_has_continuous_65_second_physical_segment"]
             is True
         )
-        assert embedded["completeness_checks"]["passed"] is True
+        assert embedded["completeness_checks"]["local_preflight_passed"] is True
+        assert embedded["completeness_checks"]["final_real_screenshots_ready"] is False
+        assert embedded["completeness_checks"]["passed"] is False

@@ -7,7 +7,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 from shiftzero.evidence import EvidenceRecorder
 
-BUNDLE_VERSION = "hero002-evidence-v2"
+BUNDLE_VERSION = "hero002-preflight-evidence-v3"
 REQUIRED_PATHS = (
     "LICENSE",
     "PRE_EXISTING_WORK.md",
@@ -43,6 +43,7 @@ REQUIRED_PATHS = (
     "docs/AUTHORIZATION.md",
     "docs/JUDGE_MODE_PERFORMANCE.md",
     "docs/DEVPOST_DRAFT.md",
+    "docs/FINAL_EVIDENCE_CAPTURE.md",
     "docs/VIDEO_SHOTLIST.md",
     "schemas/openapi.json",
 )
@@ -64,11 +65,14 @@ def build_evidence_bundle(
         }
         for path in files
     ]
+    completeness_checks = _completeness_checks(root, files)
     embedded_manifest: dict[str, object] = {
         "bundle_version": BUNDLE_VERSION,
+        "evidence_class": "preflight_fixture",
         "claim_scope": "reference_simulator_and_fixture_provider_only",
         "official_gate_passed": False,
-        "completeness_checks": _completeness_checks(root, files),
+        "final_release_ready": completeness_checks["passed"],
+        "completeness_checks": completeness_checks,
         "files": entries,
     }
     manifest_bytes = (
@@ -163,7 +167,7 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
     )
     devpost = (root / "docs/DEVPOST_DRAFT.md").read_text(encoding="utf-8")
     video_shotlist = (root / "docs/VIDEO_SHOTLIST.md").read_text(encoding="utf-8")
-    checks = {
+    checks: dict[str, object] = {
         "scenario_count_is_100": metrics["sample_size"] == 100,
         "scenario_all_outcomes_valid": metrics["validated_count"] == metrics["sample_size"],
         "scenario_safety_violations_zero": metrics["safety_violation_count"] == 0,
@@ -191,6 +195,22 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
             if (row := screenshot_rows.get(path.relative_to(root).as_posix())) is not None
         )
         and len(screenshot_rows) == len(screenshot_paths),
+        "fixture_screenshots_are_preflight_only": (
+            screenshot_manifest.get("evidence_class") == "preflight_fixture"
+            and screenshot_manifest.get("final_submission_eligible") is False
+            and screenshot_manifest.get("real_provider") is False
+            and screenshot_manifest.get("replacement_required_after_live_gate") is True
+        ),
+        "final_real_screenshots_ready": (
+            screenshot_manifest.get("evidence_class") == "final_competition"
+            and screenshot_manifest.get("final_submission_eligible") is True
+            and screenshot_manifest.get("real_provider") is True
+            and screenshot_manifest.get("provider") == "nebius_token_factory"
+            and all(
+                row.get("visible_scope_label") == "LIVE / NEBIUS"
+                for row in screenshot_manifest["screenshots"]
+            )
+        ),
         "judge_mode_load_under_five_seconds": judge_load["acceptance_passed"] is True
         and judge_load["sample_count"] >= 20
         and judge_load["p95_ms"] < judge_load["threshold_ms"],
@@ -213,7 +233,29 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         ),
         "required_file_count": len(files),
     }
-    checks["passed"] = all(value is True for value in checks.values() if isinstance(value, bool))
+    local_preflight_checks = (
+        "scenario_count_is_100",
+        "scenario_all_outcomes_valid",
+        "scenario_safety_violations_zero",
+        "hero_twenty_consecutive_passes",
+        "hero_acceptance_passed",
+        "all_included_trace_chains_valid",
+        "typed_operation_metrics_for_every_trace",
+        "structured_hero_json_for_every_trace",
+        "three_png_screenshots_present",
+        "screenshots_have_capture_manifest",
+        "fixture_screenshots_are_preflight_only",
+        "judge_mode_load_under_five_seconds",
+        "impact_range_covers_400_to_500_pallets",
+        "third_party_inventory_complete",
+        "devpost_has_existing_work_section",
+        "video_plan_has_continuous_65_second_physical_segment",
+    )
+    checks["local_preflight_passed"] = all(checks[name] is True for name in local_preflight_checks)
+    checks["passed"] = (
+        checks["local_preflight_passed"] is True
+        and checks["final_real_screenshots_ready"] is True
+    )
     return checks
 
 

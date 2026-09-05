@@ -16,7 +16,10 @@ from shiftzero.impact import run_impact_load_model
 from shiftzero.license_inventory import build_license_inventory
 from shiftzero.reliability import run_hero_reliability
 from shiftzero.schema_export import export_schemas
-from shiftzero.screenshot_manifest import build_screenshot_manifest
+from shiftzero.screenshot_manifest import (
+    build_screenshot_manifest,
+    validate_final_screenshot_manifest,
+)
 from shiftzero.simulator import load_default_scenario
 from shiftzero.workflow import WorkflowController
 
@@ -127,6 +130,22 @@ def main() -> None:
         default=Path("evidence/screenshots/manifest.json"),
     )
 
+    final_evidence = subparsers.add_parser(
+        "validate-final-evidence",
+        help="Fail closed unless screenshots are backed by an official live Nebius gate",
+    )
+    final_evidence.add_argument("--root", type=Path, default=Path.cwd())
+    final_evidence.add_argument(
+        "--manifest",
+        type=Path,
+        default=Path("evidence/screenshots/manifest.json"),
+    )
+    final_evidence.add_argument(
+        "--compatibility-report",
+        type=Path,
+        default=Path("evidence/compatibility/live-gate.json"),
+    )
+
     licenses = subparsers.add_parser(
         "build-license-inventory",
         help="Freeze Python packages and inventory Python/npm licenses and sources",
@@ -180,6 +199,17 @@ def main() -> None:
             output_path=args.output.resolve(),
         )
         print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
+        return
+
+    if args.command == "validate-final-evidence":
+        report = validate_final_screenshot_manifest(
+            root=args.root.resolve(),
+            manifest_path=args.manifest.resolve(),
+            compatibility_report_path=args.compatibility_report.resolve(),
+        )
+        print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
+        if not report["passed"]:
+            raise SystemExit(2)
         return
 
     if args.command == "build-license-inventory":

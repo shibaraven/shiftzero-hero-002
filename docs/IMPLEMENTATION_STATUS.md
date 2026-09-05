@@ -32,6 +32,8 @@
 - Judge Mode local production-build load report with 20 browser samples and a 5,000 ms gate.
 - Three SHA-256-indexed screenshots with a permanently visible `MOCK / FIXTURE` label and UTC
   trace timestamp.
+- Fail-closed final screenshot validator. The checked-in fixture captures are explicitly
+  `preflight_fixture`, never submission-eligible, and require replacement after the live gate.
 - Byte-reproducible, SHA-256-indexed Evidence Bundle.
 - Interactive Judge Mode website with Run Hero, Architecture, Evidence and GitHub/source-gate
   entrances, explicit MOCK labeling, final pose, load evidence, impact projection, typed
@@ -53,6 +55,8 @@
    release is a separate exposure decision rather than a local engineering task.
 4. Physical video, anonymous-access verification, and Devpost submission require the final public
    URLs and hardware/test evidence.
+5. The current three screenshots are preflight layout/evidence checks only. Final capture cannot
+   pass until the live Compatibility Gate, real provider receipt and physical result exist.
 
 ## Deferred external evidence
 
