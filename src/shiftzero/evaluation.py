@@ -307,9 +307,7 @@ def _blockage_case(
             unsafe_labeled=False,
             unsafe_rejected=False,
             route_version=result.replan_route_version,
-            trace_path=str(
-                trace_path.resolve().relative_to(Path(__file__).resolve().parents[2]).as_posix()
-            ),
+            trace_path=_portable_trace_path(trace_path, output_dir),
             trace_chain_valid=trace_valid,
             state_history=result.state_history,
             detail="sensor event triggered local simulator stop, proof-gated replan and completion",
@@ -648,6 +646,14 @@ def _proof_detail(proof: SafetyProof) -> str:
     return "; ".join(
         f"{check.name}={'PASS' if check.passed else 'FAIL'}" for check in proof.checks
     )
+
+
+def _portable_trace_path(trace_path: Path, output_dir: Path) -> str:
+    root = Path(__file__).resolve().parents[2]
+    resolved = trace_path.resolve()
+    if resolved.is_relative_to(root):
+        return resolved.relative_to(root).as_posix()
+    return resolved.relative_to(output_dir.resolve()).as_posix()
 
 
 def _git_commit(root: Path) -> str:

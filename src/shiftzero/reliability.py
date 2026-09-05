@@ -66,7 +66,7 @@ def run_hero_reliability(
                 "run": index,
                 "passed": passed,
                 "trace_id": result.trace_id,
-                "trace_path": trace_path.resolve().relative_to(root.resolve()).as_posix(),
+                "trace_path": _portable_trace_path(trace_path, root, output_dir),
                 "trace_sha256": hashlib.sha256(trace_path.read_bytes()).hexdigest(),
                 "trace_chain_valid": trace_valid,
                 "state_path_valid": state_path_valid,
@@ -124,3 +124,10 @@ def _distribution(values: list[float]) -> dict[str, float]:
         "p95": round(ordered[p95_index], 6),
         "max": round(ordered[-1], 6),
     }
+
+
+def _portable_trace_path(trace_path: Path, root: Path, output_dir: Path) -> str:
+    resolved = trace_path.resolve()
+    if resolved.is_relative_to(root.resolve()):
+        return resolved.relative_to(root.resolve()).as_posix()
+    return resolved.relative_to(output_dir.resolve()).as_posix()
