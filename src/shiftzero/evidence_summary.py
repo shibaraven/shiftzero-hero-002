@@ -14,7 +14,7 @@ def build_hero_summary(*, root: Path, output_path: Path) -> dict[str, Any]:
     reliability = json.loads(reliability_path.read_text(encoding="utf-8"))
     if not reliability["runs"]:
         raise ValueError("hero reliability report contains no runs")
-    trace_path = Path(reliability["runs"][0]["trace_path"])
+    trace_path = root / reliability["runs"][0]["trace_path"]
     if not trace_path.is_file():
         raise FileNotFoundError(f"hero trace does not exist: {trace_path}")
     if not EvidenceRecorder.verify(trace_path):

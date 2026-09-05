@@ -37,6 +37,7 @@ def run_hero_reliability(
 ) -> dict[str, Any]:
     if runs < 1:
         raise ValueError("runs must be positive")
+    root = Path(__file__).resolve().parents[2]
     output_dir.mkdir(parents=True, exist_ok=True)
     records: list[dict[str, Any]] = []
     consecutive = 0
@@ -65,7 +66,7 @@ def run_hero_reliability(
                 "run": index,
                 "passed": passed,
                 "trace_id": result.trace_id,
-                "trace_path": str(trace_path.resolve()),
+                "trace_path": trace_path.resolve().relative_to(root.resolve()).as_posix(),
                 "trace_sha256": hashlib.sha256(trace_path.read_bytes()).hexdigest(),
                 "trace_chain_valid": trace_valid,
                 "state_path_valid": state_path_valid,
@@ -81,7 +82,6 @@ def run_hero_reliability(
     stop_latencies = [record["stop_latency_ms"] for record in records]
     wall_latencies = [record["wall_latency_ms"] for record in records]
     passed_count = sum(record["passed"] for record in records)
-    root = Path(__file__).resolve().parents[2]
     body: dict[str, Any] = {
         "report_version": "hero-reliability-v1",
         "generated_at": datetime.now(UTC).isoformat(),

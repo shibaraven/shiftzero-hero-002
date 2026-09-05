@@ -127,7 +127,7 @@ def evaluate_scenarios(
         trace_chain_valid_count=sum(bool(result.trace_chain_valid) for result in traced),
         group_results=group_results,
         calculation_method=(
-            "100 deterministic cases with distinct parameters: nominal missions are executed, "
+            "100 deterministic parameterized cases: nominal missions are executed, "
             "blockages exercise static/temporary/sudden paths, unsafe cases are proof-gated, "
             "and ambiguous text is parsed by the same fixture provider used by the demo."
         ),
@@ -307,7 +307,9 @@ def _blockage_case(
             unsafe_labeled=False,
             unsafe_rejected=False,
             route_version=result.replan_route_version,
-            trace_path=str(trace_path.resolve()),
+            trace_path=str(
+                trace_path.resolve().relative_to(Path(__file__).resolve().parents[2]).as_posix()
+            ),
             trace_chain_valid=trace_valid,
             state_history=result.state_history,
             detail="sensor event triggered local simulator stop, proof-gated replan and completion",
@@ -417,6 +419,7 @@ def _battery_case(
         group_id="S03",
         group_name=group_name,
         condition={
+            "case_index": index,
             "primary_battery_percent": world.agvs["AGV-03"].battery_percent,
             "alternate_available": alternate_available,
             "alternate_battery_percent": world.agvs["AGV-07"].battery_percent,
@@ -449,7 +452,7 @@ def _destination_case(
                 "S04",
                 group_name,
                 expected,
-                {"reachable": False, "occupancy": None},
+                {"case_index": index, "reachable": False, "occupancy": None},
                 "HOLD_UNREACHABLE",
                 str(exc),
             )
@@ -462,7 +465,7 @@ def _destination_case(
         scenario_id=scenario_id,
         group_id="S04",
         group_name=group_name,
-        condition={"reachable": True, "occupancy": occupant},
+        condition={"case_index": index, "reachable": True, "occupancy": occupant},
         expected=expected,
         observed="HOLD_OCCUPIED" if not proof.passed else "UNSAFE_DISPATCH",
         validated=not proof.passed,
@@ -512,7 +515,7 @@ def _ambiguous_case(
         "Move P-104 from INBOUND-01",
         "Please move the pallet",
     )
-    text = variants[(index - 1) % len(variants)]
+    text = f"{variants[(index - 1) % len(variants)]} (case {index:02d})"
     try:
         FixtureProvider().parse_intent(text)
     except NeedsInputError as exc:
