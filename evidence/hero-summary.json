@@ -1,14 +1,14 @@
 {
   "approval": {
     "actor": "reliability-run-001",
-    "expires_at": "2026-09-05T13:27:51.004051Z",
-    "issued_at": "2026-09-05T13:12:51.004051Z",
-    "token_id": "APR-89B9779A6D"
+    "expires_at": "2026-09-05T13:58:43.804460Z",
+    "issued_at": "2026-09-05T13:43:43.804460Z",
+    "token_id": "APR-CA122B41C2"
   },
   "claims_boundary": "All values come from a deterministic fixture/reference-simulator trace. No physical stop-latency or live Nebius claim is made.",
   "destination_occupancy": "P-104",
-  "estimated_model_cost_usd": 0,
-  "evidence_captured_at": "2026-09-05T13:12:51.023861+00:00",
+  "estimated_model_cost_usd": 0.0,
+  "evidence_captured_at": "2026-09-05T13:43:43.833241+00:00",
   "final_node": "N12",
   "final_pose": {
     "heading_deg": 315.0,
@@ -35,10 +35,10 @@
     "source": "INBOUND-01"
   },
   "measurement_scope": "reference_simulator_fixture_provider",
-  "mission_id": "M-33D99D8A37",
+  "mission_id": "M-DEEDB194F4",
   "model_calls": [
     {
-      "completed_at": "2026-09-05T13:12:50.998320Z",
+      "completed_at": "2026-09-05T13:43:43.795946Z",
       "estimated_cost_usd": null,
       "fallback_state": null,
       "finish_reason": null,
@@ -52,39 +52,39 @@
       "rate_limit_remaining": null,
       "rate_limit_reset": null,
       "repair_count": 0,
-      "request_id": "FIXTURE-FC08C6F0",
+      "request_id": "FIXTURE-CCE6BFA0",
       "retry_count": 0,
-      "started_at": "2026-09-05T13:12:50.998320Z",
+      "started_at": "2026-09-05T13:43:43.795946Z",
       "timed_out": false,
       "tool_arguments_hash": "2b57fbd9e421ce96fe71ae24c86400352f7aae15c90868351949332a283b0588",
       "tool_name": "parse_mission_intent",
       "tool_result_hash": "2b57fbd9e421ce96fe71ae24c86400352f7aae15c90868351949332a283b0588"
     },
     {
-      "completed_at": "2026-09-05T13:12:51.002048Z",
+      "completed_at": "2026-09-05T13:43:43.801452Z",
       "estimated_cost_usd": null,
       "fallback_state": null,
       "finish_reason": null,
       "http_status": null,
       "inference_budget_ms": 1000.0,
       "input_tokens": null,
-      "latency_ms": 0.001,
+      "latency_ms": 1.003,
       "model": "deterministic-fixture-not-a-model",
       "output_tokens": null,
       "provider": "fixture",
       "rate_limit_remaining": null,
       "rate_limit_reset": null,
       "repair_count": 0,
-      "request_id": "FIXTURE-0AC7CDD6",
+      "request_id": "FIXTURE-BBA3A3E2",
       "retry_count": 0,
-      "started_at": "2026-09-05T13:12:51.002048Z",
+      "started_at": "2026-09-05T13:43:43.800449Z",
       "timed_out": false,
-      "tool_arguments_hash": "d9fe7461322476f1fbc76125c93e34cc5f03ffb84a122488f3835d8f9a0cae49",
+      "tool_arguments_hash": "6bf592ae74a1162560b7bb3ea9fd2cf44c60caaeffd6681f275c8e7f7b67f622",
       "tool_name": "propose_transport",
-      "tool_result_hash": "d9fe7461322476f1fbc76125c93e34cc5f03ffb84a122488f3835d8f9a0cae49"
+      "tool_result_hash": "6bf592ae74a1162560b7bb3ea9fd2cf44c60caaeffd6681f275c8e7f7b67f622"
     },
     {
-      "completed_at": "2026-09-05T13:12:51.008061Z",
+      "completed_at": "2026-09-05T13:43:43.810308Z",
       "estimated_cost_usd": null,
       "fallback_state": null,
       "finish_reason": null,
@@ -98,17 +98,38 @@
       "rate_limit_remaining": null,
       "rate_limit_reset": null,
       "repair_count": 0,
-      "request_id": "FIXTURE-7CD049F4",
+      "request_id": "FIXTURE-5B9E6904",
       "retry_count": 0,
-      "started_at": "2026-09-05T13:12:51.008061Z",
+      "started_at": "2026-09-05T13:43:43.810308Z",
       "timed_out": false,
-      "tool_arguments_hash": "a95b7434ee98b9ca96d70a3e2c5c2178241efa7d69ba267ebf9b16730984a120",
+      "tool_arguments_hash": "3bba6195568423f4658dd23671b448c9489deea1b8435db7990f923c304685e8",
       "tool_name": "propose_recovery",
-      "tool_result_hash": "a95b7434ee98b9ca96d70a3e2c5c2178241efa7d69ba267ebf9b16730984a120"
+      "tool_result_hash": "3bba6195568423f4658dd23671b448c9489deea1b8435db7990f923c304685e8"
     }
   ],
   "official_gate_passed": false,
-  "proposal_id": "TP-A8E0CE90A6",
+  "operation_metrics": {
+    "completed": true,
+    "destination_occupancy": "P-104",
+    "estimated_model_cost_usd": 0.0,
+    "final_node": "N12",
+    "final_pose": {
+      "heading_deg": 315.0,
+      "node_id": "N12",
+      "x": 6.0,
+      "y": 0.0
+    },
+    "final_status": "COMPLETED",
+    "human_interventions": 1,
+    "measurement_scope": "reference_simulator_fixture_provider",
+    "mission_id": "M-DEEDB194F4",
+    "sample_size": 1,
+    "schema_version": "operation-metrics-v1",
+    "stop_latency_kind": "simulated_process",
+    "stop_latency_ms": 0.0425,
+    "total_duration_ms": 24.9863
+  },
+  "proposal_id": "TP-03BD28F600",
   "replan_route": [
     "N04",
     "N05",
@@ -118,8 +139,8 @@
   "replan_route_version": "route-d8c9119af45a",
   "safety_policy_sha256": "7df7c37a947b28e3b255eb69cb79768c003e1207db570b14343cdcff137890a0",
   "safety_policy_version": "safety-v2",
-  "safety_proof_hash": "b528fa612e1f1b961cbbcac82474ad3a63892be0edbd19e724070ea5874f0c57",
-  "safety_proof_id": "SP-9F8475F584",
+  "safety_proof_hash": "5136b208ad3f67852c80e16f2f6aa8d50c962534430a1c39cee6100de8732d5b",
+  "safety_proof_id": "SP-C3828D6B94",
   "selected_agv": "AGV-03",
   "state_history": [
     "OBSERVED",
@@ -136,12 +157,12 @@
     "COMPLETED"
   ],
   "stop_latency_kind": "simulated_process",
-  "stop_latency_ms": 0.0311,
-  "summary_hash": "109921a25a0c3478e10487f0f0cb215cb5993c3770dd6228748cc508beb5097d",
-  "summary_version": "hero-summary-v2",
-  "total_duration_ms": 16.1492,
+  "stop_latency_ms": 0.0425,
+  "summary_hash": "ceef2627a1b00fcd1e6efa40e526eaac85caddfd3f2869e1e8dc5361896cbb03",
+  "summary_version": "hero-summary-v3",
+  "total_duration_ms": 24.9863,
   "trace_chain_valid": true,
-  "trace_id": "TR-B3735EBB925E",
-  "trace_path": "evidence/hero-reliability/runs/TR-B3735EBB925E/hero-run.jsonl",
-  "trace_sha256": "d64fb6937401dc3cfa12b9a376aba1eb014f1f58ce0c7359ff328462b920baa8"
+  "trace_id": "TR-7035A0085815",
+  "trace_path": "evidence/hero-reliability/runs/TR-7035A0085815/hero-run.jsonl",
+  "trace_sha256": "fa4af271bf89b47f207e461f2e69df29f4305158b79cf29aecea0d28ef081e3e"
 }

@@ -16,7 +16,10 @@
             "type": "string"
           }
         },
-        "required": ["idempotency_key", "expected_version"],
+        "required": [
+          "idempotency_key",
+          "expected_version"
+        ],
         "title": "ApprovalRequest",
         "type": "object"
       },
@@ -35,7 +38,10 @@
             "type": "string"
           }
         },
-        "required": ["idempotency_key", "expected_version"],
+        "required": [
+          "idempotency_key",
+          "expected_version"
+        ],
         "title": "ExistingResourceWrite",
         "type": "object"
       },
@@ -79,12 +85,18 @@
           },
           "provider": {
             "default": "fixture",
-            "enum": ["fixture", "nebius"],
+            "enum": [
+              "fixture",
+              "nebius"
+            ],
             "title": "Provider",
             "type": "string"
           }
         },
-        "required": ["idempotency_key", "expected_version"],
+        "required": [
+          "idempotency_key",
+          "expected_version"
+        ],
         "title": "HeroRunRequest",
         "type": "object"
       },
@@ -137,7 +149,10 @@
             "type": "array"
           },
           "stop_latency_kind": {
-            "enum": ["simulated_process", "physical_edge"],
+            "enum": [
+              "simulated_process",
+              "physical_edge"
+            ],
             "title": "Stop Latency Kind",
             "type": "string"
           },
@@ -188,12 +203,19 @@
           },
           "provider": {
             "default": "fixture",
-            "enum": ["fixture", "nebius"],
+            "enum": [
+              "fixture",
+              "nebius"
+            ],
             "title": "Provider",
             "type": "string"
           }
         },
-        "required": ["idempotency_key", "expected_version", "operator_text"],
+        "required": [
+          "idempotency_key",
+          "expected_version",
+          "operator_text"
+        ],
         "title": "IntentRequest",
         "type": "object"
       },
@@ -411,7 +433,11 @@
             "type": "string"
           }
         },
-        "required": ["idempotency_key", "expected_version", "reason"],
+        "required": [
+          "idempotency_key",
+          "expected_version",
+          "reason"
+        ],
         "title": "OverrideRequest",
         "type": "object"
       },
@@ -434,7 +460,11 @@
             "type": "string"
           }
         },
-        "required": ["idempotency_key", "expected_version", "intent_id"],
+        "required": [
+          "idempotency_key",
+          "expected_version",
+          "intent_id"
+        ],
         "title": "ProposalRequest",
         "type": "object"
       },
@@ -459,7 +489,11 @@
             "type": "string"
           }
         },
-        "required": ["idempotency_key", "expected_version", "reason"],
+        "required": [
+          "idempotency_key",
+          "expected_version",
+          "reason"
+        ],
         "title": "RejectRequest",
         "type": "object"
       },
@@ -489,7 +523,10 @@
             "type": "string"
           }
         },
-        "required": ["idempotency_key", "expected_version"],
+        "required": [
+          "idempotency_key",
+          "expected_version"
+        ],
         "title": "ReplanRequest",
         "type": "object"
       },
@@ -508,7 +545,10 @@
             "type": "string"
           }
         },
-        "required": ["idempotency_key", "expected_version"],
+        "required": [
+          "idempotency_key",
+          "expected_version"
+        ],
         "title": "StartRequest",
         "type": "object"
       },
@@ -534,7 +574,10 @@
             "type": "string"
           }
         },
-        "required": ["idempotency_key", "expected_version"],
+        "required": [
+          "idempotency_key",
+          "expected_version"
+        ],
         "title": "StopRequest",
         "type": "object"
       },
@@ -570,7 +613,11 @@
             "type": "string"
           }
         },
-        "required": ["loc", "msg", "type"],
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
         "title": "ValidationError",
         "type": "object"
       }

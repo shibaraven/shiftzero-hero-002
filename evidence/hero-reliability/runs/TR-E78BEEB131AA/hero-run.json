@@ -1,0 +1,1724 @@
+{
+  "generated_at": "2026-09-05T13:43:44.023013+00:00",
+  "spans": [
+    {
+      "kind": "intent.received",
+      "payload": {
+        "operator_id": "reliability-run-004",
+        "operator_text": "Move pallet P-104 from INBOUND-01 to RACK-A12 using an available AGV while avoiding human-only zones.",
+        "state": "INTENT"
+      },
+      "previous_hash": "GENESIS",
+      "recorded_at": "2026-09-05T13:43:43.985808+00:00",
+      "sequence": 1,
+      "span_hash": "0fbd21a5130301d64103f482c7d4186c7aed273145638f5d57ab7c8948c8ec6b",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "llm.intent",
+      "payload": {
+        "completed_at": "2026-09-05T13:43:43.985808Z",
+        "estimated_cost_usd": null,
+        "fallback_state": null,
+        "finish_reason": null,
+        "http_status": null,
+        "inference_budget_ms": 1000.0,
+        "input_tokens": null,
+        "latency_ms": 0.001,
+        "model": "deterministic-fixture-not-a-model",
+        "output_tokens": null,
+        "provider": "fixture",
+        "rate_limit_remaining": null,
+        "rate_limit_reset": null,
+        "repair_count": 0,
+        "request_id": "FIXTURE-E2A5A4F3",
+        "retry_count": 0,
+        "started_at": "2026-09-05T13:43:43.985808Z",
+        "timed_out": false,
+        "tool_arguments_hash": "2b57fbd9e421ce96fe71ae24c86400352f7aae15c90868351949332a283b0588",
+        "tool_name": "parse_mission_intent",
+        "tool_result_hash": "2b57fbd9e421ce96fe71ae24c86400352f7aae15c90868351949332a283b0588"
+      },
+      "previous_hash": "0fbd21a5130301d64103f482c7d4186c7aed273145638f5d57ab7c8948c8ec6b",
+      "recorded_at": "2026-09-05T13:43:43.985808+00:00",
+      "sequence": 2,
+      "span_hash": "1ad03d8fa4fc0009d54c2661ff539160e31bf105e8f1928aa703b81e77802fac",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "intent.typed",
+      "payload": {
+        "constraints": [
+          "avoid-human-zone"
+        ],
+        "destination": "RACK-A12",
+        "pallet_id": "P-104",
+        "requested_agv": null,
+        "source": "INBOUND-01"
+      },
+      "previous_hash": "1ad03d8fa4fc0009d54c2661ff539160e31bf105e8f1928aa703b81e77802fac",
+      "recorded_at": "2026-09-05T13:43:43.986825+00:00",
+      "sequence": 3,
+      "span_hash": "771353ea717a2db9fc37ec606e3ad276cd7aa924e8259ac9cd433bf1fab0edfc",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "tool.get_operational_snapshot",
+      "payload": {
+        "arguments": {},
+        "arguments_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "completed_at": "2026-09-05T13:43:43.986825Z",
+        "error": null,
+        "latency_ms": 0.2718,
+        "result": {
+          "agvs": [
+            {
+              "battery_percent": 82.0,
+              "capabilities": [
+                "pallet"
+              ],
+              "current_mission_id": null,
+              "id": "AGV-03",
+              "load_id": null,
+              "node_id": "N01",
+              "pose": {
+                "heading_deg": 0.0,
+                "node_id": "N01",
+                "x": 0.0,
+                "y": 0.0
+              },
+              "state": "IDLE"
+            },
+            {
+              "battery_percent": 16.0,
+              "capabilities": [
+                "pallet"
+              ],
+              "current_mission_id": null,
+              "id": "AGV-07",
+              "load_id": null,
+              "node_id": "N10",
+              "pose": {
+                "heading_deg": 0.0,
+                "node_id": "N10",
+                "x": 4.0,
+                "y": 2.0
+              },
+              "state": "CHARGING"
+            }
+          ],
+          "captured_at": "2026-09-05T13:43:43.986825Z",
+          "edges": [
+            {
+              "direction": "bidirectional",
+              "from_node": "N01",
+              "length_m": 2.0,
+              "reservation_group": "R1",
+              "speed_limit_mps": 1.0,
+              "to_node": "N04"
+            },
+            {
+              "direction": "bidirectional",
+              "from_node": "N04",
+              "length_m": 2.0,
+              "reservation_group": "R2",
+              "speed_limit_mps": 1.0,
+              "to_node": "N09"
+            },
+            {
+              "direction": "bidirectional",
+              "from_node": "N09",
+              "length_m": 2.0,
+              "reservation_group": "R3",
+              "speed_limit_mps": 1.0,
+              "to_node": "N12"
+            },
+            {
+              "direction": "bidirectional",
+              "from_node": "N04",
+              "length_m": 2.0,
+              "reservation_group": "R4",
+              "speed_limit_mps": 1.0,
+              "to_node": "N05"
+            },
+            {
+              "direction": "bidirectional",
+              "from_node": "N05",
+              "length_m": 2.0,
+              "reservation_group": "R5",
+              "speed_limit_mps": 1.0,
+              "to_node": "N10"
+            },
+            {
+              "direction": "bidirectional",
+              "from_node": "N10",
+              "length_m": 2.9,
+              "reservation_group": "R6",
+              "speed_limit_mps": 1.0,
+              "to_node": "N12"
+            },
+            {
+              "direction": "bidirectional",
+              "from_node": "N04",
+              "length_m": 1.5,
+              "reservation_group": "RH",
+              "speed_limit_mps": 0.5,
+              "to_node": "H01"
+            },
+            {
+              "direction": "bidirectional",
+              "from_node": "H01",
+              "length_m": 3.5,
+              "reservation_group": "RH",
+              "speed_limit_mps": 0.5,
+              "to_node": "N12"
+            }
+          ],
+          "locations": [
+            {
+              "id": "INBOUND-01",
+              "kind": "INBOUND",
+              "node_id": "N01",
+              "occupancy": "P-104",
+              "pallet_id": "P-104",
+              "reachable": true
+            },
+            {
+              "id": "RACK-A12",
+              "kind": "RACK",
+              "node_id": "N12",
+              "occupancy": null,
+              "pallet_id": null,
+              "reachable": true
+            }
+          ],
+          "map_version": "map-v1",
+          "nodes": [
+            {
+              "allowed_vehicle_types": [
+                "AGV"
+              ],
+              "capacity": 1,
+              "id": "N01",
+              "x": 0.0,
+              "y": 0.0,
+              "zone": "inbound"
+            },
+            {
+              "allowed_vehicle_types": [
+                "AGV"
+              ],
+              "capacity": 1,
+              "id": "N04",
+              "x": 2.0,
+              "y": 0.0,
+              "zone": "travel"
+            },
+            {
+              "allowed_vehicle_types": [
+                "AGV"
+              ],
+              "capacity": 1,
+              "id": "N05",
+              "x": 2.0,
+              "y": 2.0,
+              "zone": "travel"
+            },
+            {
+              "allowed_vehicle_types": [
+                "AGV"
+              ],
+              "capacity": 1,
+              "id": "N09",
+              "x": 4.0,
+              "y": 0.0,
+              "zone": "travel"
+            },
+            {
+              "allowed_vehicle_types": [
+                "AGV"
+              ],
+              "capacity": 1,
+              "id": "N10",
+              "x": 4.0,
+              "y": 2.0,
+              "zone": "travel"
+            },
+            {
+              "allowed_vehicle_types": [
+                "AGV"
+              ],
+              "capacity": 1,
+              "id": "N12",
+              "x": 6.0,
+              "y": 0.0,
+              "zone": "rack"
+            },
+            {
+              "allowed_vehicle_types": [
+                "AGV"
+              ],
+              "capacity": 0,
+              "id": "H01",
+              "x": 3.0,
+              "y": 1.0,
+              "zone": "human-only"
+            }
+          ],
+          "obstacles": [],
+          "pallets": [
+            {
+              "id": "P-104",
+              "location_id": "INBOUND-01"
+            }
+          ],
+          "reserved_groups": {},
+          "route_reservations": [],
+          "snapshot_id": "SNAP-0001",
+          "wait_for": {}
+        },
+        "result_hash": "44f48398675f59df270c5fd7311afffaa36bef21741246fc76fed921e060e275",
+        "started_at": "2026-09-05T13:43:43.986825Z",
+        "tool": "get_operational_snapshot"
+      },
+      "previous_hash": "771353ea717a2db9fc37ec606e3ad276cd7aa924e8259ac9cd433bf1fab0edfc",
+      "recorded_at": "2026-09-05T13:43:43.986825+00:00",
+      "sequence": 4,
+      "span_hash": "b26d8af52de64d24bea22cd4c06fdaf43aff4698c9f06036811c1a138a4c6694",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "workflow.transition",
+      "payload": {
+        "state": "OBSERVED"
+      },
+      "previous_hash": "b26d8af52de64d24bea22cd4c06fdaf43aff4698c9f06036811c1a138a4c6694",
+      "recorded_at": "2026-09-05T13:43:43.988189+00:00",
+      "sequence": 5,
+      "span_hash": "702aeec97742e07670c5906015e48860936c24a9ce508e2acbca3ecb2c911fd7",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "tool.inspect_location",
+      "payload": {
+        "arguments": {
+          "id": "INBOUND-01",
+          "snapshot_id": "SNAP-0001"
+        },
+        "arguments_hash": "ef0e97446199b78b8224fea47f698af2600f90bcd0666350291d9492157ac19e",
+        "completed_at": "2026-09-05T13:43:43.988189Z",
+        "error": null,
+        "latency_ms": 0.0483,
+        "result": {
+          "exists": true,
+          "location_id": "INBOUND-01",
+          "node_id": "N01",
+          "occupancy": "P-104",
+          "snapshot_id": "SNAP-0001"
+        },
+        "result_hash": "f85f6166f29798944ef4e2961284588b9ddd05f6945b7a925d65072ff7240eca",
+        "started_at": "2026-09-05T13:43:43.988189Z",
+        "tool": "inspect_location"
+      },
+      "previous_hash": "702aeec97742e07670c5906015e48860936c24a9ce508e2acbca3ecb2c911fd7",
+      "recorded_at": "2026-09-05T13:43:43.988189+00:00",
+      "sequence": 6,
+      "span_hash": "cf3b6209184b0d3bf7348ad017b881bae46d3da2656b36635e72814ea10bd2ac",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "tool.inspect_location",
+      "payload": {
+        "arguments": {
+          "id": "RACK-A12",
+          "snapshot_id": "SNAP-0001"
+        },
+        "arguments_hash": "10f947a24297723822306fda063019a1be261784eb4ce26235ed3e696b04f878",
+        "completed_at": "2026-09-05T13:43:43.988189Z",
+        "error": null,
+        "latency_ms": 0.0388,
+        "result": {
+          "exists": true,
+          "location_id": "RACK-A12",
+          "node_id": "N12",
+          "occupancy": null,
+          "snapshot_id": "SNAP-0001"
+        },
+        "result_hash": "cd7cc841176eb2aa530f5d3e2b73a34c44c156e395fee40ac88d0f0b91cccff3",
+        "started_at": "2026-09-05T13:43:43.988189Z",
+        "tool": "inspect_location"
+      },
+      "previous_hash": "cf3b6209184b0d3bf7348ad017b881bae46d3da2656b36635e72814ea10bd2ac",
+      "recorded_at": "2026-09-05T13:43:43.988189+00:00",
+      "sequence": 7,
+      "span_hash": "a48dc3e84bebb606615f0b831b8ea4d381078ac7f105d1bedc5ce49128490965",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "tool.plan_transport",
+      "payload": {
+        "arguments": {
+          "intent": {
+            "constraints": [
+              "avoid-human-zone"
+            ],
+            "destination": "RACK-A12",
+            "pallet_id": "P-104",
+            "requested_agv": null,
+            "source": "INBOUND-01"
+          },
+          "snapshot_id": "SNAP-0001"
+        },
+        "arguments_hash": "56317a38ad7ba7043752e93faab7eb4585fc5f3edfe4c7b2b58b52b0c1538dc1",
+        "completed_at": "2026-09-05T13:43:43.988189Z",
+        "error": null,
+        "latency_ms": 0.1183,
+        "result": {
+          "candidate_count": 1,
+          "cost": 6.0,
+          "distance_m": 6.0,
+          "estimated_duration_seconds": 6.0,
+          "estimated_energy_percent": 4.5,
+          "map_version": "map-v1",
+          "nodes": [
+            "N01",
+            "N04",
+            "N09",
+            "N12"
+          ],
+          "reservation_groups": [
+            "R1",
+            "R2",
+            "R3"
+          ],
+          "route_version": "route-44000c8e3339",
+          "selected_agv": "AGV-03"
+        },
+        "result_hash": "922d526dfd6635e8734456b03fd29673a69a086e4077a950f27a05f12d10ed97",
+        "started_at": "2026-09-05T13:43:43.988189Z",
+        "tool": "plan_transport"
+      },
+      "previous_hash": "a48dc3e84bebb606615f0b831b8ea4d381078ac7f105d1bedc5ce49128490965",
+      "recorded_at": "2026-09-05T13:43:43.988189+00:00",
+      "sequence": 8,
+      "span_hash": "b42562d5f44b6032cd0907dd99c963944d6e031c4fed372e66e1cc1891b128d4",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "workflow.transition",
+      "payload": {
+        "state": "PLANNED"
+      },
+      "previous_hash": "b42562d5f44b6032cd0907dd99c963944d6e031c4fed372e66e1cc1891b128d4",
+      "recorded_at": "2026-09-05T13:43:43.989400+00:00",
+      "sequence": 9,
+      "span_hash": "34fe5083b4c6bd015c8fee85eb10ea234fbbeded55e59865cafdd5d0e902046e",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "tool.propose_transport",
+      "payload": {
+        "arguments": {
+          "evidence_refs": [
+            "trace:TR-E78BEEB131AA:4:b26d8af52de64d24bea22cd4c06fdaf43aff4698c9f06036811c1a138a4c6694",
+            "trace:TR-E78BEEB131AA:6:cf3b6209184b0d3bf7348ad017b881bae46d3da2656b36635e72814ea10bd2ac",
+            "trace:TR-E78BEEB131AA:7:a48dc3e84bebb606615f0b831b8ea4d381078ac7f105d1bedc5ce49128490965",
+            "trace:TR-E78BEEB131AA:8:b42562d5f44b6032cd0907dd99c963944d6e031c4fed372e66e1cc1891b128d4"
+          ],
+          "intent": {
+            "constraints": [
+              "avoid-human-zone"
+            ],
+            "destination": "RACK-A12",
+            "pallet_id": "P-104",
+            "requested_agv": null,
+            "source": "INBOUND-01"
+          },
+          "route_version": "route-44000c8e3339",
+          "snapshot_id": "SNAP-0001"
+        },
+        "arguments_hash": "4bb8bfe04358ca13dff5a59705da3aad2f0f55d20ff30e2f368a2f695e9eff60",
+        "completed_at": "2026-09-05T13:43:43.989400Z",
+        "error": null,
+        "latency_ms": 0.2601,
+        "result": [
+          {
+            "created_at": "2026-09-05T13:43:43.989400Z",
+            "evidence_refs": [
+              "trace:TR-E78BEEB131AA:4:b26d8af52de64d24bea22cd4c06fdaf43aff4698c9f06036811c1a138a4c6694",
+              "trace:TR-E78BEEB131AA:6:cf3b6209184b0d3bf7348ad017b881bae46d3da2656b36635e72814ea10bd2ac",
+              "trace:TR-E78BEEB131AA:7:a48dc3e84bebb606615f0b831b8ea4d381078ac7f105d1bedc5ce49128490965",
+              "trace:TR-E78BEEB131AA:8:b42562d5f44b6032cd0907dd99c963944d6e031c4fed372e66e1cc1891b128d4"
+            ],
+            "map_version": "map-v1",
+            "mission_goal": {
+              "constraints": [
+                "avoid-human-zone"
+              ],
+              "destination": "RACK-A12",
+              "pallet_id": "P-104",
+              "requested_agv": null,
+              "source": "INBOUND-01"
+            },
+            "proposal_hash": "0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+            "proposal_id": "TP-12E3A9DD6D",
+            "route": [
+              "N01",
+              "N04",
+              "N09",
+              "N12"
+            ],
+            "route_version": "route-44000c8e3339",
+            "selected_agv": "AGV-03",
+            "snapshot_id": "SNAP-0001",
+            "status": "PROPOSED"
+          },
+          {
+            "completed_at": "2026-09-05T13:43:43.989400Z",
+            "estimated_cost_usd": null,
+            "fallback_state": null,
+            "finish_reason": null,
+            "http_status": null,
+            "inference_budget_ms": 1000.0,
+            "input_tokens": null,
+            "latency_ms": 0.001,
+            "model": "deterministic-fixture-not-a-model",
+            "output_tokens": null,
+            "provider": "fixture",
+            "rate_limit_remaining": null,
+            "rate_limit_reset": null,
+            "repair_count": 0,
+            "request_id": "FIXTURE-34A77667",
+            "retry_count": 0,
+            "started_at": "2026-09-05T13:43:43.989400Z",
+            "timed_out": false,
+            "tool_arguments_hash": "8fd881daf4ad58d00d409bcf39374688deeea5520c632d0e9a0418d120383eec",
+            "tool_name": "propose_transport",
+            "tool_result_hash": "8fd881daf4ad58d00d409bcf39374688deeea5520c632d0e9a0418d120383eec"
+          }
+        ],
+        "result_hash": "0d5bd8dac0b9acce0a8f0786f0aba43fdee6589c7a76dbaacb72e337f999546f",
+        "started_at": "2026-09-05T13:43:43.989400Z",
+        "tool": "propose_transport"
+      },
+      "previous_hash": "34fe5083b4c6bd015c8fee85eb10ea234fbbeded55e59865cafdd5d0e902046e",
+      "recorded_at": "2026-09-05T13:43:43.989400+00:00",
+      "sequence": 10,
+      "span_hash": "2928182e6e8ffb7b02c6f0d51491cdd11dfe0d1ea0bfd839f4eaca101510850d",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "llm.proposal",
+      "payload": {
+        "completed_at": "2026-09-05T13:43:43.989400Z",
+        "estimated_cost_usd": null,
+        "fallback_state": null,
+        "finish_reason": null,
+        "http_status": null,
+        "inference_budget_ms": 1000.0,
+        "input_tokens": null,
+        "latency_ms": 0.001,
+        "model": "deterministic-fixture-not-a-model",
+        "output_tokens": null,
+        "provider": "fixture",
+        "rate_limit_remaining": null,
+        "rate_limit_reset": null,
+        "repair_count": 0,
+        "request_id": "FIXTURE-34A77667",
+        "retry_count": 0,
+        "started_at": "2026-09-05T13:43:43.989400Z",
+        "timed_out": false,
+        "tool_arguments_hash": "8fd881daf4ad58d00d409bcf39374688deeea5520c632d0e9a0418d120383eec",
+        "tool_name": "propose_transport",
+        "tool_result_hash": "8fd881daf4ad58d00d409bcf39374688deeea5520c632d0e9a0418d120383eec"
+      },
+      "previous_hash": "2928182e6e8ffb7b02c6f0d51491cdd11dfe0d1ea0bfd839f4eaca101510850d",
+      "recorded_at": "2026-09-05T13:43:43.989400+00:00",
+      "sequence": 11,
+      "span_hash": "c464fdcb18082265717f5dd19a18d598275ffd3a4bac54e3200070d7d44f1952",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "proposal.created",
+      "payload": {
+        "created_at": "2026-09-05T13:43:43.989400Z",
+        "evidence_refs": [
+          "trace:TR-E78BEEB131AA:4:b26d8af52de64d24bea22cd4c06fdaf43aff4698c9f06036811c1a138a4c6694",
+          "trace:TR-E78BEEB131AA:6:cf3b6209184b0d3bf7348ad017b881bae46d3da2656b36635e72814ea10bd2ac",
+          "trace:TR-E78BEEB131AA:7:a48dc3e84bebb606615f0b831b8ea4d381078ac7f105d1bedc5ce49128490965",
+          "trace:TR-E78BEEB131AA:8:b42562d5f44b6032cd0907dd99c963944d6e031c4fed372e66e1cc1891b128d4"
+        ],
+        "map_version": "map-v1",
+        "mission_goal": {
+          "constraints": [
+            "avoid-human-zone"
+          ],
+          "destination": "RACK-A12",
+          "pallet_id": "P-104",
+          "requested_agv": null,
+          "source": "INBOUND-01"
+        },
+        "proposal_hash": "0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+        "proposal_id": "TP-12E3A9DD6D",
+        "route": [
+          "N01",
+          "N04",
+          "N09",
+          "N12"
+        ],
+        "route_version": "route-44000c8e3339",
+        "selected_agv": "AGV-03",
+        "snapshot_id": "SNAP-0001",
+        "status": "PROPOSED"
+      },
+      "previous_hash": "c464fdcb18082265717f5dd19a18d598275ffd3a4bac54e3200070d7d44f1952",
+      "recorded_at": "2026-09-05T13:43:43.990525+00:00",
+      "sequence": 12,
+      "span_hash": "c7ead313f2b7b844b26e5e974ec17fc5ac8b14776f4204364d489d7f06735737",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "workflow.transition",
+      "payload": {
+        "state": "PROPOSED"
+      },
+      "previous_hash": "c7ead313f2b7b844b26e5e974ec17fc5ac8b14776f4204364d489d7f06735737",
+      "recorded_at": "2026-09-05T13:43:43.990525+00:00",
+      "sequence": 13,
+      "span_hash": "2b1fb5c649bb92286927b09692e1c50207b94d6f2d9b512aa39f3fd8efb88225",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "safety.proof",
+      "payload": {
+        "checks": [
+          {
+            "detail": "live entities and pallet source",
+            "evidence_hash": "a670b97275963a5e41f095a0bd77fdfe99f096892fcf46417dc263a343545b58",
+            "name": "entity_validity",
+            "passed": true
+          },
+          {
+            "detail": "snapshot/map/proposal versions",
+            "evidence_hash": "45ea650ff262f8577668beab0232b9ee9e335bc6546736aabb7e25b9693e5985",
+            "name": "map_consistency",
+            "passed": true
+          },
+          {
+            "detail": "post-mission reserve >= 20%",
+            "evidence_hash": "3144e29989e85588cd6688dfef1c8e3cc436843513e8d0799c8a1d23554257d4",
+            "name": "battery_reserve",
+            "passed": true
+          },
+          {
+            "detail": "AGV allowed on every route node",
+            "evidence_hash": "58d0f453063fdf126ca92088a9f07b0c398f8c7e4996c49934122c2864ce390c",
+            "name": "vehicle_type",
+            "passed": true
+          },
+          {
+            "detail": "hits=[]",
+            "evidence_hash": "6deffc62cf4a5551db52d4c8be6cba7efabdd36e72de029a3673482a1633d675",
+            "name": "forbidden_zone",
+            "passed": true
+          },
+          {
+            "detail": "obstacle_hits=[]; temporal_conflicts=[]",
+            "evidence_hash": "9a541378106b5b2560faabaf948084e8ca7d209d9bbae3dd21eb7c3c0de8474b",
+            "name": "collision",
+            "passed": true
+          },
+          {
+            "detail": "reservation_conflicts=[]",
+            "evidence_hash": "73178e1796b2101283ba6bb5b8787e1508340500393d862285fb4a2feff27704",
+            "name": "reservation_availability",
+            "passed": true
+          },
+          {
+            "detail": "circular_wait=False; wait_for={}",
+            "evidence_hash": "f1b664e266e9d6c58c120dc33a8e180202bf248549fd3bf38f982858e267ca57",
+            "name": "deadlock",
+            "passed": true
+          },
+          {
+            "detail": "destination can receive pallet",
+            "evidence_hash": "75b1567ee7844c0ecdef390c3cb6fb7b7cda0125a110338a7649ac7c69fe9dfd",
+            "name": "destination_occupancy",
+            "passed": true
+          },
+          {
+            "detail": "proposal matches deterministic plan and live intent",
+            "evidence_hash": "f99fbab08b5a03af50d09d01b16fdee5a3bfae4a609c1a176f2ee0620a773a1f",
+            "name": "proposal_semantics",
+            "passed": true
+          }
+        ],
+        "created_at": "2026-09-05T13:43:43.991528Z",
+        "passed": true,
+        "policy_version": "safety-v2",
+        "proof_hash": "f36c0f109f53521a6af9d6cc182f9be2f7f4e5d3737e54f5fb17c0fe47e55617",
+        "proof_id": "SP-76A7591D35",
+        "proposal_id": "TP-12E3A9DD6D",
+        "route_version": "route-44000c8e3339",
+        "snapshot_id": "SNAP-0001"
+      },
+      "previous_hash": "2b1fb5c649bb92286927b09692e1c50207b94d6f2d9b512aa39f3fd8efb88225",
+      "recorded_at": "2026-09-05T13:43:43.991528+00:00",
+      "sequence": 14,
+      "span_hash": "40cddc060fa7f2bb42a42cbee6ad871f8a05d556f258f742d682e68505012444",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "workflow.transition",
+      "payload": {
+        "state": "VERIFIED"
+      },
+      "previous_hash": "40cddc060fa7f2bb42a42cbee6ad871f8a05d556f258f742d682e68505012444",
+      "recorded_at": "2026-09-05T13:43:43.991528+00:00",
+      "sequence": 15,
+      "span_hash": "b4177176ca6a9cfa8143fa811fdfe3d852ad3a5fdce558617579272cbf1e1f43",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "approval.granted",
+      "payload": {
+        "actor": "reliability-run-004",
+        "actor_role": "approver",
+        "approval_hash": "a8081c0fb13038e82e14b61cc289a8c5a7a180b42b6788f9fa28ae54ac552174",
+        "expires_at": "2026-09-05T13:58:43.991528Z",
+        "goal_hash": "4fb2429699b7bebbfce1b82fd23d5889733d86ed1bb322c3601e3026ba8cb8a5",
+        "issued_at": "2026-09-05T13:43:43.991528Z",
+        "proposal_hash": "0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+        "token_id": "APR-137C3B26F5"
+      },
+      "previous_hash": "b4177176ca6a9cfa8143fa811fdfe3d852ad3a5fdce558617579272cbf1e1f43",
+      "recorded_at": "2026-09-05T13:43:43.991528+00:00",
+      "sequence": 16,
+      "span_hash": "b5a57de3f64f10f5efac523388fedfd058a3b523cffd64b3ac411280b6c42546",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "tool.approve_transport",
+      "payload": {
+        "arguments": {
+          "actor": "reliability-run-004",
+          "proposal_id": "TP-12E3A9DD6D"
+        },
+        "arguments_hash": "c5b69e539244e123230d2047efab156424ea1351682cd71fce4c0260990c33d4",
+        "error": null,
+        "latency_ms": 0.0,
+        "result": {
+          "actor": "reliability-run-004",
+          "actor_role": "approver",
+          "approval_hash": "a8081c0fb13038e82e14b61cc289a8c5a7a180b42b6788f9fa28ae54ac552174",
+          "expires_at": "2026-09-05T13:58:43.991528Z",
+          "goal_hash": "4fb2429699b7bebbfce1b82fd23d5889733d86ed1bb322c3601e3026ba8cb8a5",
+          "issued_at": "2026-09-05T13:43:43.991528Z",
+          "proposal_hash": "0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+          "token_id": "APR-137C3B26F5"
+        },
+        "result_hash": "57537573f835211d7608a2701fff52c7f45c5cfa818283a8879e547f84e5db6a",
+        "tool": "approve_transport"
+      },
+      "previous_hash": "b5a57de3f64f10f5efac523388fedfd058a3b523cffd64b3ac411280b6c42546",
+      "recorded_at": "2026-09-05T13:43:43.991528+00:00",
+      "sequence": 17,
+      "span_hash": "ec862c927f724a91ec10684587b3841045607944bfc5cf0bb1f091f457d33c0f",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "workflow.transition",
+      "payload": {
+        "state": "APPROVED"
+      },
+      "previous_hash": "ec862c927f724a91ec10684587b3841045607944bfc5cf0bb1f091f457d33c0f",
+      "recorded_at": "2026-09-05T13:43:43.992703+00:00",
+      "sequence": 18,
+      "span_hash": "10ed9c24d7576573a63969691c59dd18e144c13b8ac5556e480feaa359dc963b",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "tool.start_mission",
+      "payload": {
+        "arguments": {
+          "expected_status": "APPROVED",
+          "idempotency_key": "dispatch:0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+          "mission_id": "M-5FFB42980B"
+        },
+        "arguments_hash": "60160317d4984eaa7baa691b283ccb283348ec214af9ebe0f1bb75540d7be2d1",
+        "completed_at": "2026-09-05T13:43:43.992703Z",
+        "error": null,
+        "latency_ms": 0.2131,
+        "result": {
+          "created_at": "2026-09-05T13:43:43.992703Z",
+          "current_node_index": 0,
+          "destination": "RACK-A12",
+          "goal_hash": "4fb2429699b7bebbfce1b82fd23d5889733d86ed1bb322c3601e3026ba8cb8a5",
+          "idempotency_key": "dispatch:0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+          "map_version": "map-v1",
+          "mission_id": "M-5FFB42980B",
+          "pallet_id": "P-104",
+          "proof_hash": "f36c0f109f53521a6af9d6cc182f9be2f7f4e5d3737e54f5fb17c0fe47e55617",
+          "proposal_hash": "0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+          "proposal_id": "TP-12E3A9DD6D",
+          "route": [
+            "N01",
+            "N04",
+            "N09",
+            "N12"
+          ],
+          "route_version": "route-44000c8e3339",
+          "selected_agv": "AGV-03",
+          "snapshot_id": "SNAP-0001",
+          "source": "INBOUND-01",
+          "status": "EXECUTING",
+          "updated_at": "2026-09-05T13:43:43.992703Z",
+          "version": 1
+        },
+        "result_hash": "7466370959b9a689bd001807f67a4361ed38ca62995d24ea5455c81d66d14101",
+        "started_at": "2026-09-05T13:43:43.992703Z",
+        "tool": "start_mission"
+      },
+      "previous_hash": "10ed9c24d7576573a63969691c59dd18e144c13b8ac5556e480feaa359dc963b",
+      "recorded_at": "2026-09-05T13:43:43.992703+00:00",
+      "sequence": 19,
+      "span_hash": "214426eb6bd4700d5421b6dabcaeaf078934ab65cc1ba466ebedc3bf81cbf018",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "execution.started",
+      "payload": {
+        "created_at": "2026-09-05T13:43:43.992703Z",
+        "current_node_index": 0,
+        "destination": "RACK-A12",
+        "goal_hash": "4fb2429699b7bebbfce1b82fd23d5889733d86ed1bb322c3601e3026ba8cb8a5",
+        "idempotency_key": "dispatch:0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+        "map_version": "map-v1",
+        "mission_id": "M-5FFB42980B",
+        "pallet_id": "P-104",
+        "proof_hash": "f36c0f109f53521a6af9d6cc182f9be2f7f4e5d3737e54f5fb17c0fe47e55617",
+        "proposal_hash": "0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+        "proposal_id": "TP-12E3A9DD6D",
+        "route": [
+          "N01",
+          "N04",
+          "N09",
+          "N12"
+        ],
+        "route_version": "route-44000c8e3339",
+        "selected_agv": "AGV-03",
+        "snapshot_id": "SNAP-0001",
+        "source": "INBOUND-01",
+        "status": "EXECUTING",
+        "updated_at": "2026-09-05T13:43:43.992703Z",
+        "version": 1
+      },
+      "previous_hash": "214426eb6bd4700d5421b6dabcaeaf078934ab65cc1ba466ebedc3bf81cbf018",
+      "recorded_at": "2026-09-05T13:43:43.993704+00:00",
+      "sequence": 20,
+      "span_hash": "a421582499e6372a180e33ae4b0465a8d0a916b439c705a79726949709348fc7",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "workflow.transition",
+      "payload": {
+        "state": "EXECUTING"
+      },
+      "previous_hash": "a421582499e6372a180e33ae4b0465a8d0a916b439c705a79726949709348fc7",
+      "recorded_at": "2026-09-05T13:43:43.993704+00:00",
+      "sequence": 21,
+      "span_hash": "1bd162fd76fe8075d15c40665695245434a6977e5e501c09037f6914c9d58d1e",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "execution.telemetry",
+      "payload": {
+        "created_at": "2026-09-05T13:43:43.992703Z",
+        "current_node_index": 1,
+        "destination": "RACK-A12",
+        "goal_hash": "4fb2429699b7bebbfce1b82fd23d5889733d86ed1bb322c3601e3026ba8cb8a5",
+        "idempotency_key": "dispatch:0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+        "map_version": "map-v1",
+        "mission_id": "M-5FFB42980B",
+        "pallet_id": "P-104",
+        "proof_hash": "f36c0f109f53521a6af9d6cc182f9be2f7f4e5d3737e54f5fb17c0fe47e55617",
+        "proposal_hash": "0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+        "proposal_id": "TP-12E3A9DD6D",
+        "route": [
+          "N01",
+          "N04",
+          "N09",
+          "N12"
+        ],
+        "route_version": "route-44000c8e3339",
+        "selected_agv": "AGV-03",
+        "snapshot_id": "SNAP-0001",
+        "source": "INBOUND-01",
+        "status": "EXECUTING",
+        "updated_at": "2026-09-05T13:43:43.993704Z",
+        "version": 1
+      },
+      "previous_hash": "1bd162fd76fe8075d15c40665695245434a6977e5e501c09037f6914c9d58d1e",
+      "recorded_at": "2026-09-05T13:43:43.993704+00:00",
+      "sequence": 22,
+      "span_hash": "438bc421071f38a751e718b2e1229d838b0eb413d00c52117f7e41dd667047aa",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "sensor.aisle_blocked",
+      "payload": {
+        "confidence": 0.99,
+        "first_seen": "2026-09-05T13:43:43.993704Z",
+        "geometry": {
+          "coordinates": [
+            4.0,
+            0.0
+          ],
+          "type": "Point"
+        },
+        "id": "OBS-HERO",
+        "last_seen": "2026-09-05T13:43:43.993704Z",
+        "node_id": "N09",
+        "observation_count": 1,
+        "source": "reference_simulator",
+        "ttl_seconds": 30.0
+      },
+      "previous_hash": "438bc421071f38a751e718b2e1229d838b0eb413d00c52117f7e41dd667047aa",
+      "recorded_at": "2026-09-05T13:43:43.994707+00:00",
+      "sequence": 23,
+      "span_hash": "824c2e05f6686c4d2a9cd90fd64a691b83b4c122bdbee0ac1ed91cbe50d58f20",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "workflow.transition",
+      "payload": {
+        "state": "BLOCKED"
+      },
+      "previous_hash": "824c2e05f6686c4d2a9cd90fd64a691b83b4c122bdbee0ac1ed91cbe50d58f20",
+      "recorded_at": "2026-09-05T13:43:43.994707+00:00",
+      "sequence": 24,
+      "span_hash": "e42043f517effd29042515fb8df3ed2ed5f8462572830277b9fc38b2df6977a3",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "tool.stop_mission",
+      "payload": {
+        "arguments": {
+          "mission_id": "M-5FFB42980B",
+          "trigger_source": "OBS-HERO"
+        },
+        "arguments_hash": "2929f17bf97c95a083613675afb5f47710367a41be0a2b3fb461b8534f391afc",
+        "completed_at": "2026-09-05T13:43:43.994707Z",
+        "error": null,
+        "latency_ms": 0.0527,
+        "result": 0.0196,
+        "result_hash": "27cf34dc3fe905091a32032478219b2081e67df971f381b81ba9c9b731431143",
+        "started_at": "2026-09-05T13:43:43.994707Z",
+        "tool": "stop_mission"
+      },
+      "previous_hash": "e42043f517effd29042515fb8df3ed2ed5f8462572830277b9fc38b2df6977a3",
+      "recorded_at": "2026-09-05T13:43:43.994707+00:00",
+      "sequence": 25,
+      "span_hash": "ddfef8ee415bd28a206b2c3b44a260f31d8fd582443a2c9735f89276bf6606e0",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "execution.local_stop",
+      "payload": {
+        "latency_ms": 0.0196,
+        "measurement_kind": "simulated_process",
+        "mission_id": "M-5FFB42980B",
+        "trigger_source": "OBS-HERO"
+      },
+      "previous_hash": "ddfef8ee415bd28a206b2c3b44a260f31d8fd582443a2c9735f89276bf6606e0",
+      "recorded_at": "2026-09-05T13:43:43.994707+00:00",
+      "sequence": 26,
+      "span_hash": "554fb75363446f759ad5aa33043680905b0e45ec3b01301722015eb252e6be0e",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "workflow.transition",
+      "payload": {
+        "state": "SAFE_STOP"
+      },
+      "previous_hash": "554fb75363446f759ad5aa33043680905b0e45ec3b01301722015eb252e6be0e",
+      "recorded_at": "2026-09-05T13:43:43.995710+00:00",
+      "sequence": 27,
+      "span_hash": "533a997da387d56ab0de1a6c7949690c6de8a5949e27d4784ae8cdd50e9db0ec",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "tool.get_operational_snapshot",
+      "payload": {
+        "arguments": {
+          "reason": "blockage_recovery"
+        },
+        "arguments_hash": "f905c2b6587e89ee32ba8b0e4f4d6a2e8e328267ab5dcf4ffdb3bc62f90dee8e",
+        "completed_at": "2026-09-05T13:43:43.995710Z",
+        "error": null,
+        "latency_ms": 0.3894,
+        "result": {
+          "agvs": [
+            {
+              "battery_percent": 82.0,
+              "capabilities": [
+                "pallet"
+              ],
+              "current_mission_id": "M-5FFB42980B",
+              "id": "AGV-03",
+              "load_id": null,
+              "node_id": "N04",
+              "pose": {
+                "heading_deg": 0.0,
+                "node_id": "N04",
+                "x": 2.0,
+                "y": 0.0
+              },
+              "state": "STOPPED"
+            },
+            {
+              "battery_percent": 16.0,
+              "capabilities": [
+                "pallet"
+              ],
+              "current_mission_id": null,
+              "id": "AGV-07",
+              "load_id": null,
+              "node_id": "N10",
+              "pose": {
+                "heading_deg": 0.0,
+                "node_id": "N10",
+                "x": 4.0,
+                "y": 2.0
+              },
+              "state": "CHARGING"
+            }
+          ],
+          "captured_at": "2026-09-05T13:43:43.995710Z",
+          "edges": [
+            {
+              "direction": "bidirectional",
+              "from_node": "N01",
+              "length_m": 2.0,
+              "reservation_group": "R1",
+              "speed_limit_mps": 1.0,
+              "to_node": "N04"
+            },
+            {
+              "direction": "bidirectional",
+              "from_node": "N04",
+              "length_m": 2.0,
+              "reservation_group": "R2",
+              "speed_limit_mps": 1.0,
+              "to_node": "N09"
+            },
+            {
+              "direction": "bidirectional",
+              "from_node": "N09",
+              "length_m": 2.0,
+              "reservation_group": "R3",
+              "speed_limit_mps": 1.0,
+              "to_node": "N12"
+            },
+            {
+              "direction": "bidirectional",
+              "from_node": "N04",
+              "length_m": 2.0,
+              "reservation_group": "R4",
+              "speed_limit_mps": 1.0,
+              "to_node": "N05"
+            },
+            {
+              "direction": "bidirectional",
+              "from_node": "N05",
+              "length_m": 2.0,
+              "reservation_group": "R5",
+              "speed_limit_mps": 1.0,
+              "to_node": "N10"
+            },
+            {
+              "direction": "bidirectional",
+              "from_node": "N10",
+              "length_m": 2.9,
+              "reservation_group": "R6",
+              "speed_limit_mps": 1.0,
+              "to_node": "N12"
+            },
+            {
+              "direction": "bidirectional",
+              "from_node": "N04",
+              "length_m": 1.5,
+              "reservation_group": "RH",
+              "speed_limit_mps": 0.5,
+              "to_node": "H01"
+            },
+            {
+              "direction": "bidirectional",
+              "from_node": "H01",
+              "length_m": 3.5,
+              "reservation_group": "RH",
+              "speed_limit_mps": 0.5,
+              "to_node": "N12"
+            }
+          ],
+          "locations": [
+            {
+              "id": "INBOUND-01",
+              "kind": "INBOUND",
+              "node_id": "N01",
+              "occupancy": "P-104",
+              "pallet_id": "P-104",
+              "reachable": true
+            },
+            {
+              "id": "RACK-A12",
+              "kind": "RACK",
+              "node_id": "N12",
+              "occupancy": null,
+              "pallet_id": null,
+              "reachable": true
+            }
+          ],
+          "map_version": "map-v1",
+          "nodes": [
+            {
+              "allowed_vehicle_types": [
+                "AGV"
+              ],
+              "capacity": 1,
+              "id": "N01",
+              "x": 0.0,
+              "y": 0.0,
+              "zone": "inbound"
+            },
+            {
+              "allowed_vehicle_types": [
+                "AGV"
+              ],
+              "capacity": 1,
+              "id": "N04",
+              "x": 2.0,
+              "y": 0.0,
+              "zone": "travel"
+            },
+            {
+              "allowed_vehicle_types": [
+                "AGV"
+              ],
+              "capacity": 1,
+              "id": "N05",
+              "x": 2.0,
+              "y": 2.0,
+              "zone": "travel"
+            },
+            {
+              "allowed_vehicle_types": [
+                "AGV"
+              ],
+              "capacity": 1,
+              "id": "N09",
+              "x": 4.0,
+              "y": 0.0,
+              "zone": "travel"
+            },
+            {
+              "allowed_vehicle_types": [
+                "AGV"
+              ],
+              "capacity": 1,
+              "id": "N10",
+              "x": 4.0,
+              "y": 2.0,
+              "zone": "travel"
+            },
+            {
+              "allowed_vehicle_types": [
+                "AGV"
+              ],
+              "capacity": 1,
+              "id": "N12",
+              "x": 6.0,
+              "y": 0.0,
+              "zone": "rack"
+            },
+            {
+              "allowed_vehicle_types": [
+                "AGV"
+              ],
+              "capacity": 0,
+              "id": "H01",
+              "x": 3.0,
+              "y": 1.0,
+              "zone": "human-only"
+            }
+          ],
+          "obstacles": [
+            {
+              "confidence": 0.99,
+              "first_seen": "2026-09-05T13:43:43.993704Z",
+              "geometry": {
+                "coordinates": [
+                  4.0,
+                  0.0
+                ],
+                "type": "Point"
+              },
+              "id": "OBS-HERO",
+              "last_seen": "2026-09-05T13:43:43.993704Z",
+              "node_id": "N09",
+              "observation_count": 1,
+              "source": "reference_simulator",
+              "ttl_seconds": 30.0
+            }
+          ],
+          "pallets": [
+            {
+              "id": "P-104",
+              "location_id": "INBOUND-01"
+            }
+          ],
+          "reserved_groups": {},
+          "route_reservations": [],
+          "snapshot_id": "SNAP-0002",
+          "wait_for": {}
+        },
+        "result_hash": "e2d737fde87ae3ecc286cba31e7974534ee3e1effb0518d25f220508c492eccc",
+        "started_at": "2026-09-05T13:43:43.995710Z",
+        "tool": "get_operational_snapshot"
+      },
+      "previous_hash": "533a997da387d56ab0de1a6c7949690c6de8a5949e27d4784ae8cdd50e9db0ec",
+      "recorded_at": "2026-09-05T13:43:43.996215+00:00",
+      "sequence": 28,
+      "span_hash": "650206882722a348fcf722a5c334be20dfd1d122a5477305ea602d4ee7f0d441",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "tool.propose_recovery",
+      "payload": {
+        "arguments": {
+          "blocked_node_id": "N09",
+          "goal_hash": "4fb2429699b7bebbfce1b82fd23d5889733d86ed1bb322c3601e3026ba8cb8a5",
+          "mission_id": "M-5FFB42980B",
+          "snapshot_id": "SNAP-0002"
+        },
+        "arguments_hash": "5976c9db6d785a1a19b33bd74a03eaf51f45d75ea63b80f48ed97055799453f3",
+        "completed_at": "2026-09-05T13:43:43.996215Z",
+        "error": null,
+        "latency_ms": 0.1521,
+        "result": [
+          {
+            "action": "REPLAN",
+            "blocked_node_id": "N09",
+            "mission_id": "M-5FFB42980B",
+            "preserve_goal_hash": "4fb2429699b7bebbfce1b82fd23d5889733d86ed1bb322c3601e3026ba8cb8a5",
+            "reason": "verified obstacle at N09 in SNAP-0002",
+            "requested_tools": [
+              "replan_mission"
+            ]
+          },
+          {
+            "completed_at": "2026-09-05T13:43:43.996215Z",
+            "estimated_cost_usd": null,
+            "fallback_state": null,
+            "finish_reason": null,
+            "http_status": null,
+            "inference_budget_ms": 1000.0,
+            "input_tokens": null,
+            "latency_ms": 0.001,
+            "model": "deterministic-fixture-not-a-model",
+            "output_tokens": null,
+            "provider": "fixture",
+            "rate_limit_remaining": null,
+            "rate_limit_reset": null,
+            "repair_count": 0,
+            "request_id": "FIXTURE-7D1F7E01",
+            "retry_count": 0,
+            "started_at": "2026-09-05T13:43:43.996215Z",
+            "timed_out": false,
+            "tool_arguments_hash": "37ee6e23d9040f069b9d9c6e8a52fcba67f34693bdbe056d9ce4d1197198b9f5",
+            "tool_name": "propose_recovery",
+            "tool_result_hash": "37ee6e23d9040f069b9d9c6e8a52fcba67f34693bdbe056d9ce4d1197198b9f5"
+          }
+        ],
+        "result_hash": "1eafdb571f7bdb1e50bd1e4ce6a7b7ab3d8d22dd434e93bcd96310264875c2bc",
+        "started_at": "2026-09-05T13:43:43.996215Z",
+        "tool": "propose_recovery"
+      },
+      "previous_hash": "650206882722a348fcf722a5c334be20dfd1d122a5477305ea602d4ee7f0d441",
+      "recorded_at": "2026-09-05T13:43:43.996215+00:00",
+      "sequence": 29,
+      "span_hash": "f1163d415a2394d1e545abdc58e51d572850979b941dfef2207b968ca6c261e8",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "llm.recovery",
+      "payload": {
+        "completed_at": "2026-09-05T13:43:43.996215Z",
+        "estimated_cost_usd": null,
+        "fallback_state": null,
+        "finish_reason": null,
+        "http_status": null,
+        "inference_budget_ms": 1000.0,
+        "input_tokens": null,
+        "latency_ms": 0.001,
+        "model": "deterministic-fixture-not-a-model",
+        "output_tokens": null,
+        "provider": "fixture",
+        "rate_limit_remaining": null,
+        "rate_limit_reset": null,
+        "repair_count": 0,
+        "request_id": "FIXTURE-7D1F7E01",
+        "retry_count": 0,
+        "started_at": "2026-09-05T13:43:43.996215Z",
+        "timed_out": false,
+        "tool_arguments_hash": "37ee6e23d9040f069b9d9c6e8a52fcba67f34693bdbe056d9ce4d1197198b9f5",
+        "tool_name": "propose_recovery",
+        "tool_result_hash": "37ee6e23d9040f069b9d9c6e8a52fcba67f34693bdbe056d9ce4d1197198b9f5"
+      },
+      "previous_hash": "f1163d415a2394d1e545abdc58e51d572850979b941dfef2207b968ca6c261e8",
+      "recorded_at": "2026-09-05T13:43:43.997321+00:00",
+      "sequence": 30,
+      "span_hash": "e1975c2fed6bfa4d7452455b903be8c59d1d25a95ef27755168c1f1ae178ce1d",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "recovery.intent",
+      "payload": {
+        "action": "REPLAN",
+        "blocked_node_id": "N09",
+        "mission_id": "M-5FFB42980B",
+        "preserve_goal_hash": "4fb2429699b7bebbfce1b82fd23d5889733d86ed1bb322c3601e3026ba8cb8a5",
+        "reason": "verified obstacle at N09 in SNAP-0002",
+        "requested_tools": [
+          "replan_mission"
+        ]
+      },
+      "previous_hash": "e1975c2fed6bfa4d7452455b903be8c59d1d25a95ef27755168c1f1ae178ce1d",
+      "recorded_at": "2026-09-05T13:43:43.997321+00:00",
+      "sequence": 31,
+      "span_hash": "d487b0331ed1b5b8918dd14948533cb4a8ba591b513a26c412d2bb0a1b9ec333",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "workflow.transition",
+      "payload": {
+        "state": "REPLANNING"
+      },
+      "previous_hash": "d487b0331ed1b5b8918dd14948533cb4a8ba591b513a26c412d2bb0a1b9ec333",
+      "recorded_at": "2026-09-05T13:43:43.997321+00:00",
+      "sequence": 32,
+      "span_hash": "dc51bc456f1c07f0d9ac5d1fe179a64a7476c93cb192b96fd45eb84d0e619528",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "tool.replan_mission",
+      "payload": {
+        "arguments": {
+          "force_agv": "AGV-03",
+          "mission_id": "M-5FFB42980B",
+          "snapshot_id": "SNAP-0002",
+          "start_node": "N04"
+        },
+        "arguments_hash": "7ed10a5f08e47ae8d7ad3c556bbff2348f39d180184b37a18117a3a119143aea",
+        "completed_at": "2026-09-05T13:43:43.997321Z",
+        "error": null,
+        "latency_ms": 0.1102,
+        "result": {
+          "candidate_count": 1,
+          "cost": 6.9,
+          "distance_m": 6.9,
+          "estimated_duration_seconds": 6.9,
+          "estimated_energy_percent": 5.175,
+          "map_version": "map-v1",
+          "nodes": [
+            "N04",
+            "N05",
+            "N10",
+            "N12"
+          ],
+          "reservation_groups": [
+            "R4",
+            "R5",
+            "R6"
+          ],
+          "route_version": "route-d8c9119af45a",
+          "selected_agv": "AGV-03"
+        },
+        "result_hash": "c97f9221c19e9177f4299bccf7e88e315e3f0ea9ddea76211a334451ca675472",
+        "started_at": "2026-09-05T13:43:43.997321Z",
+        "tool": "replan_mission"
+      },
+      "previous_hash": "dc51bc456f1c07f0d9ac5d1fe179a64a7476c93cb192b96fd45eb84d0e619528",
+      "recorded_at": "2026-09-05T13:43:43.997321+00:00",
+      "sequence": 33,
+      "span_hash": "bb6c1d66cae6a73c09db0e078663a87cf700aed563567d5edf3667e89e50c4f6",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "safety.replan_proof",
+      "payload": {
+        "checks": [
+          {
+            "detail": "live entities and pallet source",
+            "evidence_hash": "a670b97275963a5e41f095a0bd77fdfe99f096892fcf46417dc263a343545b58",
+            "name": "entity_validity",
+            "passed": true
+          },
+          {
+            "detail": "snapshot/map/proposal versions",
+            "evidence_hash": "45ea650ff262f8577668beab0232b9ee9e335bc6546736aabb7e25b9693e5985",
+            "name": "map_consistency",
+            "passed": true
+          },
+          {
+            "detail": "post-mission reserve >= 20%",
+            "evidence_hash": "3144e29989e85588cd6688dfef1c8e3cc436843513e8d0799c8a1d23554257d4",
+            "name": "battery_reserve",
+            "passed": true
+          },
+          {
+            "detail": "AGV allowed on every route node",
+            "evidence_hash": "58d0f453063fdf126ca92088a9f07b0c398f8c7e4996c49934122c2864ce390c",
+            "name": "vehicle_type",
+            "passed": true
+          },
+          {
+            "detail": "hits=[]",
+            "evidence_hash": "6deffc62cf4a5551db52d4c8be6cba7efabdd36e72de029a3673482a1633d675",
+            "name": "forbidden_zone",
+            "passed": true
+          },
+          {
+            "detail": "obstacle_hits=[]; temporal_conflicts=[]",
+            "evidence_hash": "9a541378106b5b2560faabaf948084e8ca7d209d9bbae3dd21eb7c3c0de8474b",
+            "name": "collision",
+            "passed": true
+          },
+          {
+            "detail": "reservation_conflicts=[]",
+            "evidence_hash": "73178e1796b2101283ba6bb5b8787e1508340500393d862285fb4a2feff27704",
+            "name": "reservation_availability",
+            "passed": true
+          },
+          {
+            "detail": "circular_wait=False; wait_for={}",
+            "evidence_hash": "f1b664e266e9d6c58c120dc33a8e180202bf248549fd3bf38f982858e267ca57",
+            "name": "deadlock",
+            "passed": true
+          },
+          {
+            "detail": "destination can receive pallet",
+            "evidence_hash": "75b1567ee7844c0ecdef390c3cb6fb7b7cda0125a110338a7649ac7c69fe9dfd",
+            "name": "destination_occupancy",
+            "passed": true
+          },
+          {
+            "detail": "proposal matches deterministic plan and live intent",
+            "evidence_hash": "f99fbab08b5a03af50d09d01b16fdee5a3bfae4a609c1a176f2ee0620a773a1f",
+            "name": "proposal_semantics",
+            "passed": true
+          }
+        ],
+        "created_at": "2026-09-05T13:43:43.998436Z",
+        "passed": true,
+        "policy_version": "safety-v2",
+        "proof_hash": "7348761c16fb494ac346a5eb571bcb3fddf71d5991d3c41f358a16a897df5097",
+        "proof_id": "SP-6E0B1DC8ED",
+        "proposal_id": "TP-12E3A9DD6D",
+        "route_version": "route-d8c9119af45a",
+        "snapshot_id": "SNAP-0002"
+      },
+      "previous_hash": "bb6c1d66cae6a73c09db0e078663a87cf700aed563567d5edf3667e89e50c4f6",
+      "recorded_at": "2026-09-05T13:43:43.998436+00:00",
+      "sequence": 34,
+      "span_hash": "5e6d5cf7eab917bac7b7e58519aeed80a374b4ded6099579b95c820012c31ec7",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "workflow.transition",
+      "payload": {
+        "authorization": "equivalent-route-policy",
+        "state": "VERIFIED"
+      },
+      "previous_hash": "5e6d5cf7eab917bac7b7e58519aeed80a374b4ded6099579b95c820012c31ec7",
+      "recorded_at": "2026-09-05T13:43:43.998436+00:00",
+      "sequence": 35,
+      "span_hash": "ef0e81e0e158289db31a2b5f77ecc8c93f031176e94dc9c99791a0f5e3a26bc2",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "tool.resume_mission",
+      "payload": {
+        "arguments": {
+          "authorization": "equivalent-route-policy",
+          "mission_id": "M-5FFB42980B",
+          "route_version": "route-d8c9119af45a"
+        },
+        "arguments_hash": "29d1052d1aaac9bcf3e18646db323b022d9c07735ec7baead55eb6ecf7a8a37f",
+        "completed_at": "2026-09-05T13:43:43.999440Z",
+        "error": null,
+        "latency_ms": 0.149,
+        "result": {
+          "created_at": "2026-09-05T13:43:43.992703Z",
+          "current_node_index": 0,
+          "destination": "RACK-A12",
+          "goal_hash": "4fb2429699b7bebbfce1b82fd23d5889733d86ed1bb322c3601e3026ba8cb8a5",
+          "idempotency_key": "dispatch:0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+          "map_version": "map-v1",
+          "mission_id": "M-5FFB42980B",
+          "pallet_id": "P-104",
+          "proof_hash": "f36c0f109f53521a6af9d6cc182f9be2f7f4e5d3737e54f5fb17c0fe47e55617",
+          "proposal_hash": "0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+          "proposal_id": "TP-12E3A9DD6D",
+          "route": [
+            "N04",
+            "N05",
+            "N10",
+            "N12"
+          ],
+          "route_version": "route-d8c9119af45a",
+          "selected_agv": "AGV-03",
+          "snapshot_id": "SNAP-0001",
+          "source": "INBOUND-01",
+          "status": "EXECUTING",
+          "updated_at": "2026-09-05T13:43:43.999440Z",
+          "version": 1
+        },
+        "result_hash": "579f10b87957a7c9be1154981eca618b2a1158d3774038ddba2e4d3c01f5d570",
+        "started_at": "2026-09-05T13:43:43.999440Z",
+        "tool": "resume_mission"
+      },
+      "previous_hash": "ef0e81e0e158289db31a2b5f77ecc8c93f031176e94dc9c99791a0f5e3a26bc2",
+      "recorded_at": "2026-09-05T13:43:43.999440+00:00",
+      "sequence": 36,
+      "span_hash": "d70a4f1d078f766c83bc5bc58d230c60ad07acb39430be7cda51694329723719",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "execution.resumed",
+      "payload": {
+        "created_at": "2026-09-05T13:43:43.992703Z",
+        "current_node_index": 0,
+        "destination": "RACK-A12",
+        "goal_hash": "4fb2429699b7bebbfce1b82fd23d5889733d86ed1bb322c3601e3026ba8cb8a5",
+        "idempotency_key": "dispatch:0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+        "map_version": "map-v1",
+        "mission_id": "M-5FFB42980B",
+        "pallet_id": "P-104",
+        "proof_hash": "f36c0f109f53521a6af9d6cc182f9be2f7f4e5d3737e54f5fb17c0fe47e55617",
+        "proposal_hash": "0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+        "proposal_id": "TP-12E3A9DD6D",
+        "route": [
+          "N04",
+          "N05",
+          "N10",
+          "N12"
+        ],
+        "route_version": "route-d8c9119af45a",
+        "selected_agv": "AGV-03",
+        "snapshot_id": "SNAP-0001",
+        "source": "INBOUND-01",
+        "status": "EXECUTING",
+        "updated_at": "2026-09-05T13:43:43.999440Z",
+        "version": 1
+      },
+      "previous_hash": "d70a4f1d078f766c83bc5bc58d230c60ad07acb39430be7cda51694329723719",
+      "recorded_at": "2026-09-05T13:43:43.999440+00:00",
+      "sequence": 37,
+      "span_hash": "2e71f602584f7518002bcc4c9150fef6fd5fc16a6ff51cfedb43c444e52d4dcd",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "workflow.transition",
+      "payload": {
+        "state": "EXECUTING"
+      },
+      "previous_hash": "2e71f602584f7518002bcc4c9150fef6fd5fc16a6ff51cfedb43c444e52d4dcd",
+      "recorded_at": "2026-09-05T13:43:43.999440+00:00",
+      "sequence": 38,
+      "span_hash": "51751b88ab5fb54cc12d177105775971f3b27ae793c63fb2a36648b8b3664eee",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "execution.telemetry",
+      "payload": {
+        "created_at": "2026-09-05T13:43:43.992703Z",
+        "current_node_index": 1,
+        "destination": "RACK-A12",
+        "goal_hash": "4fb2429699b7bebbfce1b82fd23d5889733d86ed1bb322c3601e3026ba8cb8a5",
+        "idempotency_key": "dispatch:0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+        "map_version": "map-v1",
+        "mission_id": "M-5FFB42980B",
+        "pallet_id": "P-104",
+        "proof_hash": "f36c0f109f53521a6af9d6cc182f9be2f7f4e5d3737e54f5fb17c0fe47e55617",
+        "proposal_hash": "0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+        "proposal_id": "TP-12E3A9DD6D",
+        "route": [
+          "N04",
+          "N05",
+          "N10",
+          "N12"
+        ],
+        "route_version": "route-d8c9119af45a",
+        "selected_agv": "AGV-03",
+        "snapshot_id": "SNAP-0001",
+        "source": "INBOUND-01",
+        "status": "EXECUTING",
+        "updated_at": "2026-09-05T13:43:44.000444Z",
+        "version": 1
+      },
+      "previous_hash": "51751b88ab5fb54cc12d177105775971f3b27ae793c63fb2a36648b8b3664eee",
+      "recorded_at": "2026-09-05T13:43:44.000444+00:00",
+      "sequence": 39,
+      "span_hash": "d90bb574c0570beb287c8f5803e8a5ceec0359832b56cc92ce565e49a688bc07",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "execution.telemetry",
+      "payload": {
+        "created_at": "2026-09-05T13:43:43.992703Z",
+        "current_node_index": 2,
+        "destination": "RACK-A12",
+        "goal_hash": "4fb2429699b7bebbfce1b82fd23d5889733d86ed1bb322c3601e3026ba8cb8a5",
+        "idempotency_key": "dispatch:0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+        "map_version": "map-v1",
+        "mission_id": "M-5FFB42980B",
+        "pallet_id": "P-104",
+        "proof_hash": "f36c0f109f53521a6af9d6cc182f9be2f7f4e5d3737e54f5fb17c0fe47e55617",
+        "proposal_hash": "0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+        "proposal_id": "TP-12E3A9DD6D",
+        "route": [
+          "N04",
+          "N05",
+          "N10",
+          "N12"
+        ],
+        "route_version": "route-d8c9119af45a",
+        "selected_agv": "AGV-03",
+        "snapshot_id": "SNAP-0001",
+        "source": "INBOUND-01",
+        "status": "EXECUTING",
+        "updated_at": "2026-09-05T13:43:44.000444Z",
+        "version": 1
+      },
+      "previous_hash": "d90bb574c0570beb287c8f5803e8a5ceec0359832b56cc92ce565e49a688bc07",
+      "recorded_at": "2026-09-05T13:43:44.000444+00:00",
+      "sequence": 40,
+      "span_hash": "36b51d0f7b03459c6620741e79aaf6c0fd85495f362a34d5bc6058db0f8cc9eb",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "execution.telemetry",
+      "payload": {
+        "created_at": "2026-09-05T13:43:43.992703Z",
+        "current_node_index": 3,
+        "destination": "RACK-A12",
+        "goal_hash": "4fb2429699b7bebbfce1b82fd23d5889733d86ed1bb322c3601e3026ba8cb8a5",
+        "idempotency_key": "dispatch:0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+        "map_version": "map-v1",
+        "mission_id": "M-5FFB42980B",
+        "pallet_id": "P-104",
+        "proof_hash": "f36c0f109f53521a6af9d6cc182f9be2f7f4e5d3737e54f5fb17c0fe47e55617",
+        "proposal_hash": "0ca494ba90cd1755e231ef5aba98f672d828f3ad26f03084ef25517385e850b5",
+        "proposal_id": "TP-12E3A9DD6D",
+        "route": [
+          "N04",
+          "N05",
+          "N10",
+          "N12"
+        ],
+        "route_version": "route-d8c9119af45a",
+        "selected_agv": "AGV-03",
+        "snapshot_id": "SNAP-0001",
+        "source": "INBOUND-01",
+        "status": "COMPLETED",
+        "updated_at": "2026-09-05T13:43:44.001446Z",
+        "version": 1
+      },
+      "previous_hash": "36b51d0f7b03459c6620741e79aaf6c0fd85495f362a34d5bc6058db0f8cc9eb",
+      "recorded_at": "2026-09-05T13:43:44.001446+00:00",
+      "sequence": 41,
+      "span_hash": "ea788a6cd6c7bb2ef03cceb759d9320275be27f12305d17f3a61c7897d834b4f",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "workflow.transition",
+      "payload": {
+        "state": "COMPLETED"
+      },
+      "previous_hash": "ea788a6cd6c7bb2ef03cceb759d9320275be27f12305d17f3a61c7897d834b4f",
+      "recorded_at": "2026-09-05T13:43:44.001446+00:00",
+      "sequence": 42,
+      "span_hash": "94794033ee74008b6a4a3581f20ce8c1a5edb084b0ecd4ac8fee0f44684124b9",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "tool.get_operation_metrics",
+      "payload": {
+        "arguments": {
+          "mission_id": "M-5FFB42980B"
+        },
+        "arguments_hash": "65788df5fbed985ff6e97c14ed31f04322054fad481869bfb19650a46631f931",
+        "completed_at": "2026-09-05T13:43:44.001446Z",
+        "error": null,
+        "latency_ms": 0.0748,
+        "result": {
+          "completed": true,
+          "destination_occupancy": "P-104",
+          "estimated_model_cost_usd": 0.0,
+          "final_node": "N12",
+          "final_pose": {
+            "heading_deg": 315.0,
+            "node_id": "N12",
+            "x": 6.0,
+            "y": 0.0
+          },
+          "final_status": "COMPLETED",
+          "human_interventions": 1,
+          "measurement_scope": "reference_simulator_fixture_provider",
+          "mission_id": "M-5FFB42980B",
+          "sample_size": 1,
+          "schema_version": "operation-metrics-v1",
+          "stop_latency_kind": "simulated_process",
+          "stop_latency_ms": 0.0196,
+          "total_duration_ms": 17.042
+        },
+        "result_hash": "d01a2c4fe72c8e807d9b7eb1eb967a28ff186026c23d5e9a134aa128977569cd",
+        "started_at": "2026-09-05T13:43:44.001446Z",
+        "tool": "get_operation_metrics"
+      },
+      "previous_hash": "94794033ee74008b6a4a3581f20ce8c1a5edb084b0ecd4ac8fee0f44684124b9",
+      "recorded_at": "2026-09-05T13:43:44.001446+00:00",
+      "sequence": 43,
+      "span_hash": "df69b7b18f9b1e03df7e5213447cbed46fe3a3f5bf431a8196fafb5dadd22f3e",
+      "trace_id": "TR-E78BEEB131AA"
+    },
+    {
+      "kind": "outcome.completed",
+      "payload": {
+        "destination_occupancy": "P-104",
+        "estimated_model_cost_usd": 0.0,
+        "final_node": "N12",
+        "final_pose": {
+          "heading_deg": 315.0,
+          "node_id": "N12",
+          "x": 6.0,
+          "y": 0.0
+        },
+        "human_interventions": 1,
+        "measurement_scope": "reference_simulator_fixture_provider",
+        "mission_id": "M-5FFB42980B",
+        "total_duration_ms": 17.042,
+        "trace_chain_valid": true
+      },
+      "previous_hash": "df69b7b18f9b1e03df7e5213447cbed46fe3a3f5bf431a8196fafb5dadd22f3e",
+      "recorded_at": "2026-09-05T13:43:44.011684+00:00",
+      "sequence": 44,
+      "span_hash": "2913479def1849343fa1b47121499187dcc6ac1568efe033cf86847f4c7195e2",
+      "trace_id": "TR-E78BEEB131AA"
+    }
+  ],
+  "trace_chain_valid": true,
+  "trace_id": "TR-E78BEEB131AA",
+  "trace_jsonl_sha256": "3e6d0f0e4882d1523c744df0846b1baddf29e01f2ca596c9845ee83ef7aaa9cc"
+}

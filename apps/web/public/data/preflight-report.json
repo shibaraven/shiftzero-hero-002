@@ -13,8 +13,8 @@
     "wrong_entity_dispatch_count": 0
   },
   "gate_version": "compat-v2",
-  "generated_at": "2026-09-05T13:12:59.414710+00:00",
-  "git_commit": "291b88f54e3b227f5952733dbd588faf12ea3542",
+  "generated_at": "2026-09-05T13:43:49.509132+00:00",
+  "git_commit": "20fd4436a0a638824104e30b6948afdf62029706",
   "manifest_hash": "3b91ab7c50ee22b507f283913081bd0c63067d16d3ef2022270368a1f680a44d",
   "map_hash": "63b5d635f5fefd3c48e852c96489cf895537a74e15877752ffdf534822cd05ab",
   "metrics": {
@@ -23,7 +23,7 @@
     "first_schema_valid_rate": 1.0,
     "hero_max_consecutive_successes": 120,
     "intent_to_proposal_median_seconds": 2e-06,
-    "intent_to_proposal_p95_seconds": 0.001006,
+    "intent_to_proposal_p95_seconds": 0.001071,
     "measurement": {
       "method": "parse_intent latency plus propose_transport latency; recovery excluded",
       "sample_size": 120,
@@ -38,8 +38,8 @@
   "official_gate_passed": false,
   "provider": "fixture",
   "real_provider": false,
-  "report_hash": "a8a6ea556dc207ffedd477d38a36fe3707c42691222a618364780ac36cb7e30e",
-  "source_tree_hash": "eecf8325d845dedba16954d76eaf7bfe58eefd0c5900231dd85d1e420e90d46b",
+  "report_hash": "15ba11b76c0194d0a1a1dc868d7d216fafa726864f84dd9f8e33f6b9561fa43b",
+  "source_tree_hash": "4d7fbb20513711dd40bcb7805aca89251717d14b48be1be367520fe65ca02be2",
   "thresholds": {
     "duplicate_mission_count": 0,
     "first_schema_valid_rate": 0.98,
