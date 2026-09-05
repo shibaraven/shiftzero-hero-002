@@ -46,6 +46,9 @@ class BlockageDefinition(BaseModel):
     obstacle_id: str
     node_id: str
     confidence: float
+    source: str = "reference_simulator"
+    ttl_seconds: float = 30
+    profile: str = "sudden"
 
 
 class HeroScenario(BaseModel):
@@ -120,10 +123,14 @@ class ReferenceWorld:
             id=definition.obstacle_id,
             node_id=definition.node_id,
             confidence=definition.confidence,
-            source="reference_simulator",
+            source=definition.source,
+            ttl_seconds=definition.ttl_seconds,
         )
         self.obstacles[obstacle.id] = obstacle
         return obstacle
+
+    def remove_obstacle(self, obstacle_id: str) -> None:
+        self.obstacles.pop(obstacle_id, None)
 
 
 class DeterministicPlanner:
@@ -140,7 +147,12 @@ class DeterministicPlanner:
         locations = {location.id: location for location in snapshot.locations}
         source = locations.get(intent.source)
         destination = locations.get(intent.destination)
-        if source is None or destination is None:
+        if (
+            source is None
+            or destination is None
+            or not source.reachable
+            or not destination.reachable
+        ):
             raise NoFeasiblePlan("source or destination is absent from the live snapshot")
 
         agv = self._select_agv(intent, snapshot, force_agv)
@@ -204,7 +216,8 @@ class DeterministicPlanner:
         graph: dict[str, list[tuple[str, MapEdge]]] = {}
         for edge in edges:
             graph.setdefault(edge.from_node, []).append((edge.to_node, edge))
-            graph.setdefault(edge.to_node, []).append((edge.from_node, edge))
+            if edge.direction == "bidirectional":
+                graph.setdefault(edge.to_node, []).append((edge.from_node, edge))
         queue: list[tuple[float, str, list[str], list[MapEdge]]] = [(0, start, [start], [])]
         best: dict[str, float] = {}
         while queue:

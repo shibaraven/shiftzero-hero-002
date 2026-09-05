@@ -38,8 +38,12 @@ Python 3.12 or newer is required.
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e ".[dev]"
 .\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m shiftzero.cli export-schemas
 .\.venv\Scripts\python.exe -m shiftzero.cli hero --provider fixture
 .\.venv\Scripts\python.exe -m shiftzero.cli evaluate-scenarios
+.\.venv\Scripts\python.exe -m shiftzero.cli verify-hero-reliability --runs 20
+.\.venv\Scripts\python.exe -m shiftzero.cli compatibility --provider fixture --repetitions 20
+.\.venv\Scripts\python.exe -m shiftzero.cli build-hero-summary
 .\.venv\Scripts\python.exe -m shiftzero.cli build-evidence-bundle
 ```
 
@@ -73,6 +77,10 @@ and the [Nebius Nemotron 3 Super guide](https://github.com/nebius/token-factory-
 - `adapters/real-agv`: hardware integration boundary, guarded by a signed compatibility result.
 - `schemas`: checked-in JSON Schemas generated from the Pydantic contracts.
 - `evidence`: verified run and compatibility outputs. Generated live evidence is ignored by Git.
+
+All mutating Agent API calls require an idempotency key and expected version. Stale writes return
+HTTP 409, role violations return HTTP 403, and Approve/Reject/Start/Stop/Replan decisions are
+recorded in the tamper-evident trace. The checked-in `schemas/openapi.json` is the frozen contract.
 
 Run the Agent API with:
 

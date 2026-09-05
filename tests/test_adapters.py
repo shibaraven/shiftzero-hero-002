@@ -19,6 +19,7 @@ def _mission() -> tuple[ReferenceWorld, Mission]:
         selected_agv=plan.selected_agv,
         route=plan.nodes,
         route_version=plan.route_version,
+        proof_hash="proof-test",
         status=MissionStatus.APPROVED,
         idempotency_key="same-key",
     )

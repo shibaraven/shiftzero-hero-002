@@ -33,12 +33,23 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type View = 'mission' | 'architecture' | 'evidence';
+type ReplayDecision = 'approved' | 'rejected' | 'stopped' | null;
+
+type HeroSummary = {
+  proposal_id: string;
+  selected_agv: string;
+  safety_policy_sha256: string;
+  stop_latency_ms: number;
+  stop_latency_kind: string;
+  trace_chain_valid: boolean;
+  trace_id: string;
+};
 
 const timeline = [
   {
     state: 'INTENT',
     event: 'intent.received',
-    detail: 'Move pallet P-104 from A-03 to D-07',
+    detail: 'Move pallet P-104 from INBOUND-01 to RACK-A12',
     tone: 'cyan',
   },
   {
@@ -50,7 +61,7 @@ const timeline = [
   {
     state: 'PLANNED',
     event: 'plan_transport',
-    detail: 'R-17 selected · route A calculated',
+    detail: 'AGV-03 selected · route A calculated',
     tone: 'violet',
   },
   {
@@ -80,13 +91,13 @@ const timeline = [
   {
     state: 'BLOCKED',
     event: 'sensor.aisle_blocked',
-    detail: 'Unexpected obstacle at C-04',
+    detail: 'Unexpected obstacle at node N09',
     tone: 'amber',
   },
   {
     state: 'SAFE_STOP',
     event: 'execution.local_stop',
-    detail: 'Edge controller stopped in 84 ms',
+    detail: 'Local simulator stop measured and written to trace',
     tone: 'rose',
   },
   {
@@ -110,7 +121,7 @@ const timeline = [
   {
     state: 'COMPLETED',
     event: 'outcome.completed',
-    detail: 'P-104 delivered at D-07 · proof sealed',
+    detail: 'P-104 delivered at RACK-A12 · proof sealed',
     tone: 'emerald',
   },
 ] as const;
@@ -187,9 +198,19 @@ export default function MissionConsole() {
   const [view, setView] = useState<View>('mission');
   const [runStep, setRunStep] = useState(timeline.length - 1);
   const [running, setRunning] = useState(false);
+  const [decision, setDecision] = useState<ReplayDecision>(null);
+  const [heroSummary, setHeroSummary] = useState<HeroSummary | null>(null);
+  const [evidenceError, setEvidenceError] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
+    fetch('/data/hero-summary.json')
+      .then((response) => {
+        if (!response.ok) throw new Error('hero evidence unavailable');
+        return response.json() as Promise<HeroSummary>;
+      })
+      .then(setHeroSummary)
+      .catch(() => setEvidenceError(true));
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
@@ -200,6 +221,7 @@ export default function MissionConsole() {
     setView('mission');
     setRunStep(0);
     setRunning(true);
+    setDecision(null);
     let next = 0;
     timerRef.current = setInterval(() => {
       next += 1;
@@ -209,6 +231,15 @@ export default function MissionConsole() {
         setRunning(false);
       }
     }, 620);
+  };
+
+  const replayControl = (nextDecision: Exclude<ReplayDecision, null>) => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    setRunning(false);
+    setDecision(nextDecision);
+    setRunStep(
+      nextDecision === 'approved' ? 5 : nextDecision === 'stopped' ? 8 : 4,
+    );
   };
 
   const active = timeline[Math.min(runStep, timeline.length - 1)];
@@ -260,6 +291,15 @@ export default function MissionConsole() {
           </nav>
 
           <div className="flex items-center gap-2">
+            <Button
+              disabled
+              title="Public GitHub repository has not been authorized or configured"
+              variant="ghost"
+              size="sm"
+              className="hidden h-8 rounded-md px-3 font-mono text-[9px] text-slate-500 lg:flex"
+            >
+              <GitBranch className="size-3" /> SOURCE LOCAL
+            </Button>
             <Badge
               variant="outline"
               className="hidden h-8 rounded-md border-amber-300/20 bg-amber-300/[0.06] px-3 font-mono text-[9px] tracking-[0.12em] text-amber-200 sm:flex"
@@ -295,9 +335,18 @@ export default function MissionConsole() {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <DataPill>SCHEMA v1.0.0</DataPill>
-            <DataPill>POLICY sha256:84b7…a2c1</DataPill>
-            <DataPill>TRACE CHAIN VALID</DataPill>
+            <DataPill>SCHEMA v2</DataPill>
+            <DataPill>
+              POLICY sha256:
+              {heroSummary?.safety_policy_sha256.slice(0, 8) ?? 'loading'}…
+            </DataPill>
+            <DataPill>
+              {evidenceError
+                ? 'EVIDENCE LOAD ERROR'
+                : heroSummary?.trace_chain_valid
+                  ? 'TRACE CHAIN VALID'
+                  : 'VERIFYING TRACE'}
+            </DataPill>
           </div>
         </div>
       </section>
@@ -329,11 +378,16 @@ export default function MissionConsole() {
           replanned={replanned}
           runStep={runStep}
           running={running}
+          decision={decision}
+          heroSummary={heroSummary}
+          onControl={replayControl}
           onRun={runHero}
         />
       )}
       {view === 'architecture' && <ArchitectureView onRun={runHero} />}
-      {view === 'evidence' && <EvidenceView />}
+      {view === 'evidence' && (
+        <EvidenceView heroSummary={heroSummary} evidenceError={evidenceError} />
+      )}
     </main>
   );
 }
@@ -345,6 +399,9 @@ function MissionView({
   replanned,
   runStep,
   running,
+  decision,
+  heroSummary,
+  onControl,
   onRun,
 }: {
   active: (typeof timeline)[number];
@@ -353,6 +410,9 @@ function MissionView({
   replanned: boolean;
   runStep: number;
   running: boolean;
+  decision: ReplayDecision;
+  heroSummary: HeroSummary | null;
+  onControl: (decision: Exclude<ReplayDecision, null>) => void;
   onRun: () => void;
 }) {
   return (
@@ -381,7 +441,7 @@ function MissionView({
             <p
               className={`mt-1 font-mono text-sm font-bold metric-${active.tone}`}
             >
-              {active.state}
+              {decision === 'rejected' ? 'REJECTED' : active.state}
             </p>
           </div>
           <Button
@@ -406,8 +466,12 @@ function MissionView({
 
       <div className="mb-4 grid grid-cols-2 border border-white/[0.08] bg-[#0a1828] sm:grid-cols-4">
         {[
-          ['Robot', 'R-17', <Bot key="bot" className="size-3.5" />],
-          ['Payload', 'P-104 · 420 kg', <Box key="box" className="size-3.5" />],
+          [
+            'Robot',
+            heroSummary?.selected_agv ?? 'AGV-03',
+            <Bot key="bot" className="size-3.5" />,
+          ],
+          ['Payload', 'P-104', <Box key="box" className="size-3.5" />],
           [
             'Safety',
             '8 / 8 passed',
@@ -415,7 +479,9 @@ function MissionView({
           ],
           [
             'Trace',
-            '34 spans · valid',
+            heroSummary?.trace_chain_valid
+              ? 'SHA-256 chain · valid'
+              : 'verifying',
             <Fingerprint key="finger" className="size-3.5" />,
           ],
         ].map(([label, value, icon]) => (
@@ -434,6 +500,44 @@ function MissionView({
         ))}
       </div>
 
+      <div className="mb-4 flex flex-col justify-between gap-3 border border-white/[0.08] bg-[#0a1828] p-3 sm:flex-row sm:items-center">
+        <div>
+          <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-slate-500">
+            Local replay controls
+          </p>
+          <p className="mt-1 text-[10px] text-slate-600">
+            Demonstrates UI states; authoritative operations are defined in
+            openapi.json.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => onControl('approved')}
+            className="border-emerald-300/20 bg-emerald-300/[0.05] text-emerald-200"
+          >
+            <Check className="size-3.5" /> Approve
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => onControl('rejected')}
+            className="border-rose-300/20 bg-rose-300/[0.05] text-rose-200"
+          >
+            <AlertTriangle className="size-3.5" /> Reject
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => onControl('stopped')}
+            className="border-amber-300/20 bg-amber-300/[0.05] text-amber-200"
+          >
+            <CircleStop className="size-3.5" /> Stop
+          </Button>
+        </div>
+      </div>
+
       <div className="grid gap-4 xl:grid-cols-[1.45fr_.8fr_.88fr]">
         <WarehouseMap
           blocked={blocked}
@@ -445,12 +549,17 @@ function MissionView({
           complete={complete}
           replanned={replanned}
           runStep={runStep}
+          heroSummary={heroSummary}
         />
         <TraceRail runStep={runStep} />
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[1.25fr_.75fr]">
-        <MissionBrief active={active} complete={complete} />
+        <MissionBrief
+          active={active}
+          complete={complete}
+          heroSummary={heroSummary}
+        />
         <TrustBoundary />
       </div>
     </div>
@@ -485,8 +594,8 @@ function WarehouseMap({
       <CardContent className="map-grid relative min-h-[420px] p-0">
         <svg viewBox="0 0 760 460" className="absolute inset-0 h-full w-full">
           <title>
-            Warehouse route from A-03 to D-07 with a safe replan around a
-            blocked aisle
+            Warehouse route from INBOUND-01 to RACK-A12 with a safe replan
+            around a blocked aisle
           </title>
           <defs>
             <filter id="glow">
@@ -551,7 +660,7 @@ function WarehouseMap({
             fontSize="11"
             fontFamily="monospace"
           >
-            D-07
+            RACK-A12
           </text>
           <path
             d="M105 280 L225 280 L285 225 L405 225 L455 175 L555 175 L620 235"
@@ -620,7 +729,7 @@ function WarehouseMap({
               fontWeight="800"
               fontFamily="monospace"
             >
-              R17
+              AGV-03
             </text>
           </g>
           <g transform="translate(105 280)">
@@ -632,7 +741,7 @@ function WarehouseMap({
               fontSize="10"
               fontFamily="monospace"
             >
-              A-03
+              INBOUND-01
             </text>
           </g>
           <g transform="translate(455 355)">
@@ -671,11 +780,13 @@ function SafetyCard({
   complete,
   replanned,
   runStep,
+  heroSummary,
 }: {
   blocked: boolean;
   complete: boolean;
   replanned: boolean;
   runStep: number;
+  heroSummary: HeroSummary | null;
 }) {
   const checks = [
     ['schema_valid', true],
@@ -726,7 +837,10 @@ function SafetyCard({
               LOCAL STOP ASSERTED
             </div>
             <p className="mt-1.5 font-mono text-[9px] leading-4 text-slate-500">
-              sensor → edge controller · 84 ms
+              simulator process ·{' '}
+              {heroSummary
+                ? `${heroSummary.stop_latency_ms.toFixed(6)} ms`
+                : 'loading measured trace'}
             </p>
           </div>
         )}
@@ -813,9 +927,11 @@ function TraceRail({ runStep }: { runStep: number }) {
 function MissionBrief({
   active,
   complete,
+  heroSummary,
 }: {
   active: (typeof timeline)[number];
   complete: boolean;
+  heroSummary: HeroSummary | null;
 }) {
   return (
     <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
@@ -826,7 +942,7 @@ function MissionBrief({
             Natural-language intent
           </div>
           <p className="text-base font-medium text-white">
-            “Move pallet P-104 from receiving A-03 to dispatch D-07.”
+            “Move pallet P-104 from INBOUND-01 to RACK-A12.”
           </p>
           <p className="mt-2 text-xs leading-5 text-slate-500">
             Current event:{' '}
@@ -839,7 +955,9 @@ function MissionBrief({
         <div className="flex gap-3 sm:text-right">
           <div className="border-l border-white/[0.08] pl-4">
             <p className="font-mono text-[9px] text-slate-600">PROPOSAL</p>
-            <p className="mt-1 font-mono text-xs text-slate-300">PP-91F2</p>
+            <p className="mt-1 max-w-32 truncate font-mono text-xs text-slate-300">
+              {heroSummary?.proposal_id ?? 'loading'}
+            </p>
           </div>
           <div className="border-l border-white/[0.08] pl-4">
             <p className="font-mono text-[9px] text-slate-600">OUTCOME</p>
@@ -988,7 +1106,13 @@ function BoundaryCard({
   );
 }
 
-function EvidenceView() {
+function EvidenceView({
+  heroSummary,
+  evidenceError,
+}: {
+  heroSummary: HeroSummary | null;
+  evidenceError: boolean;
+}) {
   return (
     <div className="mx-auto max-w-[1300px] px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-9 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
@@ -1020,7 +1144,7 @@ function EvidenceView() {
         <Metric value="100/100" label="Valid scenario outcomes" tone="cyan" />
         <Metric value="0" label="Safety violations" tone="emerald" />
         <Metric value="100%" label="Unsafe-condition recall" tone="violet" />
-        <Metric value="VALID" label="Evidence hash chain" tone="emerald" />
+        <Metric value="20/20" label="Consecutive Hero runs" tone="emerald" />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1.2fr_.8fr]">
@@ -1064,11 +1188,19 @@ function EvidenceView() {
           <CardContent className="p-5">
             <dl className="space-y-4">
               {[
-                ['Seed', '20260905'],
+                ['Seed', '2002'],
                 ['Policy', 'safety-policy.json'],
                 ['State machine', 'workflow-state-machine.json'],
-                ['Source status', 'WORKTREE-UNCOMMITTED'],
+                ['Source status', 'BOUND TO RUN MANIFEST'],
                 ['Execution', 'REFERENCE_SIMULATOR'],
+                [
+                  'Hero trace',
+                  evidenceError
+                    ? 'LOAD ERROR'
+                    : heroSummary?.trace_chain_valid
+                      ? `${heroSummary.trace_id} · VALID`
+                      : 'VERIFYING',
+                ],
               ].map(([term, value]) => (
                 <div key={term} className="border-b border-white/[0.05] pb-3">
                   <dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-slate-600">
@@ -1090,6 +1222,15 @@ function EvidenceView() {
                 href="/data/preflight-report.json"
                 label="compatibility-preflight.json"
               />
+              <EvidenceLink
+                href="/data/hero-reliability.json"
+                label="hero-reliability.json"
+              />
+              <EvidenceLink
+                href="/data/hero-summary.json"
+                label="hero-summary.json"
+              />
+              <EvidenceLink href="/data/openapi.json" label="openapi.json" />
             </div>
           </CardContent>
         </Card>

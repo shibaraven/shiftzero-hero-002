@@ -196,6 +196,7 @@ def evaluate_fault_controls(scenario: HeroScenario) -> dict[str, Any]:
         selected_agv=plan.selected_agv,
         route=plan.nodes,
         route_version=plan.route_version,
+        proof_hash=invalid_proof.proof_hash,
         status=MissionStatus.APPROVED,
         idempotency_key="dispatch:fixed-test-key",
     )

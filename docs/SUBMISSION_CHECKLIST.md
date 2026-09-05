@@ -8,7 +8,9 @@
 - [x] Stateful Agent API and idempotent structured execution.
 - [x] Tamper-evident trace and downloadable Evidence Bundle.
 - [x] 100-scenario deterministic evaluation.
+- [x] 20 consecutive complete Hero runs with a valid trace chain and route-version change.
 - [x] 120-call fixture-provider compatibility preflight.
+- [x] API-level idempotency, optimistic concurrency, role checks, Approve/Reject/Stop audit.
 - [x] Judge Mode website, architecture view and evidence view.
 - [x] Devpost draft and three-minute video shot list.
 
@@ -18,6 +20,7 @@
 - [ ] Record a real forced Nemotron tool call with provider/model receipt.
 - [ ] Pass the official Token Factory Compatibility Gate and archive the live report.
 - [ ] Publish the Git repository and add its immutable revision URL.
+- [ ] Explicitly authorize public access for the owner-private Judge Mode deployment.
 - [ ] Verify Judge Mode in an anonymous/private browser session.
 - [ ] Record and upload the final demo video.
 - [ ] Supply AGV protocol, site map, edge stop interface and safety-owner approval before any

@@ -5,6 +5,7 @@ from pathlib import Path
 from zipfile import ZipFile
 
 from shiftzero.bundle import REQUIRED_PATHS, build_evidence_bundle
+from shiftzero.evidence import EvidenceRecorder
 
 
 def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
@@ -12,9 +13,20 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         path = tmp_path / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(f"fixture for {relative}\n", encoding="utf-8")
-    trace = tmp_path / "evidence/sample-verified-run/TR-TEST/hero-run.jsonl"
-    trace.parent.mkdir(parents=True)
-    trace.write_text('{"trace":"valid"}\n', encoding="utf-8")
+    (tmp_path / "evidence/scenario-evaluation/metrics.json").write_text(
+        json.dumps({"sample_size": 100, "safety_violation_count": 0}), encoding="utf-8"
+    )
+    (tmp_path / "evidence/hero-reliability/report.json").write_text(
+        json.dumps({"max_consecutive_passes": 20, "acceptance_passed": True}),
+        encoding="utf-8",
+    )
+    EvidenceRecorder(tmp_path / "evidence/sample-verified-run").record(
+        "fixture", {"valid": True}
+    )
+    for index in range(20):
+        EvidenceRecorder(tmp_path / "evidence/hero-reliability/runs").record(
+            "fixture", {"run": index}
+        )
 
     first_zip = tmp_path / "evidence/first.zip"
     second_zip = tmp_path / "evidence/second.zip"
@@ -35,4 +47,5 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
     with ZipFile(first_zip) as archive:
         embedded = json.loads(archive.read("MANIFEST.json"))
         assert embedded["claim_scope"] == "reference_simulator_and_fixture_provider_only"
-        assert len(embedded["files"]) == len(REQUIRED_PATHS) + 1
+        assert len(embedded["files"]) == len(REQUIRED_PATHS) + 21
+        assert embedded["completeness_checks"]["passed"] is True

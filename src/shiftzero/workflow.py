@@ -159,6 +159,7 @@ class WorkflowController:
             selected_agv=plan.selected_agv,
             route=plan.nodes,
             route_version=plan.route_version,
+            proof_hash=proof.proof_hash,
             status=MissionStatus.APPROVED,
             idempotency_key=f"dispatch:{proposal.proposal_hash}",
         )

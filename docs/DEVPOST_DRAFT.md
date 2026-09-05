@@ -51,7 +51,8 @@ and kept emergency stopping on the edge path.
 - Reproducible 100-scenario evaluation: 100/100 expected outcomes, zero observed safety
   violations, and 45/45 unsafe conditions rejected or safely handled.
 - 120-call deterministic fixture preflight across six intent variants.
-- Credential-free public Judge Mode and downloadable, hash-indexed evidence.
+- Credential-free owner-private Judge Mode staging and downloadable, hash-indexed evidence;
+  public access remains an explicit release action.
 
 These results are explicitly scoped to the reference simulator and fixture provider.
 

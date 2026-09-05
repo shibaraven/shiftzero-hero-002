@@ -9,6 +9,8 @@ from shiftzero.bundle import build_evidence_bundle
 from shiftzero.compatibility import run_compatibility_gate
 from shiftzero.config import TokenFactorySettings
 from shiftzero.evaluation import evaluate_scenarios
+from shiftzero.evidence_summary import build_hero_summary
+from shiftzero.reliability import run_hero_reliability
 from shiftzero.schema_export import export_schemas
 from shiftzero.simulator import load_default_scenario
 from shiftzero.workflow import WorkflowController
@@ -58,12 +60,24 @@ def main() -> None:
     )
     evaluation.add_argument("--output", type=Path, default=Path("evidence/scenario-evaluation"))
 
+    reliability = subparsers.add_parser(
+        "verify-hero-reliability", help="Run the complete fixture hero repeatedly"
+    )
+    reliability.add_argument("--runs", type=int, default=20)
+    reliability.add_argument("--output", type=Path, default=Path("evidence/hero-reliability"))
+
     bundle = subparsers.add_parser(
         "build-evidence-bundle", help="Create a reproducible offline evidence archive"
     )
     bundle.add_argument("--root", type=Path, default=Path.cwd())
     bundle.add_argument("--output", type=Path, default=Path("evidence/HERO002-evidence-bundle.zip"))
     bundle.add_argument("--manifest", type=Path, default=Path("evidence/bundle-manifest.json"))
+
+    summary = subparsers.add_parser(
+        "build-hero-summary", help="Extract a judge-readable summary from verified evidence"
+    )
+    summary.add_argument("--root", type=Path, default=Path.cwd())
+    summary.add_argument("--output", type=Path, default=Path("evidence/hero-summary.json"))
 
     args = parser.parse_args()
     scenario = load_default_scenario()
@@ -115,6 +129,15 @@ def main() -> None:
         print(report.model_dump_json(indent=2))
         return
 
+    if args.command == "verify-hero-reliability":
+        report = run_hero_reliability(
+            scenario=scenario,
+            output_dir=args.output,
+            runs=args.runs,
+        )
+        print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
+        return
+
     if args.command == "build-evidence-bundle":
         manifest = build_evidence_bundle(
             root=args.root.resolve(),
@@ -122,6 +145,11 @@ def main() -> None:
             manifest_path=args.manifest.resolve(),
         )
         print(json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True))
+        return
+
+    if args.command == "build-hero-summary":
+        result = build_hero_summary(root=args.root.resolve(), output_path=args.output.resolve())
+        print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

@@ -16,7 +16,7 @@ every evidence artifact.
 4. Open **Evidence** to inspect the 100-scenario result, run manifest, fixture compatibility
    preflight, and downloadable Evidence Bundle.
 
-Expected hero outcome: the simulated AGV stops after the C-04 obstruction, takes the alternate
+Expected hero outcome: the simulated AGV stops after the N09 obstruction, takes the alternate
 route only after re-verification, and completes with an intact evidence hash chain.
 
 ## Reproduce from source
@@ -27,6 +27,8 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pytest
 .\.venv\Scripts\python.exe -m shiftzero.cli hero --provider fixture
 .\.venv\Scripts\python.exe -m shiftzero.cli evaluate-scenarios
+.\.venv\Scripts\python.exe -m shiftzero.cli verify-hero-reliability --runs 20
+.\.venv\Scripts\python.exe -m shiftzero.cli build-hero-summary
 .\.venv\Scripts\python.exe -m shiftzero.cli build-evidence-bundle
 ```
 

@@ -16,7 +16,7 @@ Target duration: 2:45–2:55. Capture only after the public URL and repository r
 
 ## 0:50–1:35 — Physical-AI failure path
 
-- Start execution and inject the C-04 aisle obstruction.
+- Start execution and inject the N09 aisle obstruction.
 - Hold on `BLOCKED → SAFE_STOP`; explain that stop authority is local and independent of cloud
   or LLM latency.
 - Show the alternate route and `REPLANNING → VERIFIED → EXECUTING`.

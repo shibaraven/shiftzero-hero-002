@@ -32,6 +32,18 @@
           "title": "Id",
           "type": "string"
         },
+        "load_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Load Id"
+        },
         "node_id": {
           "title": "Node Id",
           "type": "string"
@@ -89,6 +101,11 @@
           ],
           "default": null,
           "title": "Occupancy"
+        },
+        "reachable": {
+          "default": true,
+          "title": "Reachable",
+          "type": "boolean"
         }
       },
       "required": [
@@ -102,6 +119,15 @@
     "MapEdge": {
       "additionalProperties": false,
       "properties": {
+        "direction": {
+          "default": "bidirectional",
+          "enum": [
+            "bidirectional",
+            "forward"
+          ],
+          "title": "Direction",
+          "type": "string"
+        },
         "from_node": {
           "title": "From Node",
           "type": "string"
@@ -138,6 +164,13 @@
     "MapNode": {
       "additionalProperties": false,
       "properties": {
+        "allowed_vehicle_types": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Allowed Vehicle Types",
+          "type": "array"
+        },
         "capacity": {
           "default": 1,
           "title": "Capacity",

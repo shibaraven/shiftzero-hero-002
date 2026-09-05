@@ -18,11 +18,12 @@
   "local_stop": {
     "cloud_dependency": false,
     "model_dependency": false,
-    "target_ms": 200
+    "physical_target_ms": 200,
+    "physical_measurement_required": true,
+    "simulator_measurements_must_be_labeled": "simulated_process"
   },
   "replan": {
     "equivalent_route_may_auto_resume": true,
     "changed_goal_requires_new_approval": true
   }
 }
-

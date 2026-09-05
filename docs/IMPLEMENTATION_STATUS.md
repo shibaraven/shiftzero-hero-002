@@ -12,9 +12,13 @@
   dispatch controls.
 - Compatibility attestation gate that prevents a fixture report from opening the real adapter.
 - Stateful Agent API for intent, proposal, proof, approval, execution, stop, replan, trace, and
-  metric inspection.
-- Deterministic 100-scenario evaluation across six scenario families, with 100/100 validated
-  outcomes, zero observed safety violations, and 45/45 unsafe conditions safely handled.
+  metric inspection, including request idempotency, optimistic concurrency, role gates, and
+  audited Reject behavior.
+- Differentiated 100-scenario evaluation across six scenario families. Nominal missions execute;
+  static, temporary and sudden blockages follow distinct paths; unsafe cases are proof-gated; and
+  ambiguous text goes through the real fixture parser without invented defaults.
+- Independent 20-run Hero reliability gate with the complete state path, changed route version,
+  and a verified SHA-256 trace chain required on every run.
 - Byte-reproducible, SHA-256-indexed Evidence Bundle.
 - Interactive Judge Mode website with mission, architecture, and evidence views.
 - Devpost draft, anonymous judge runbook, submission checklist, and three-minute video shot list.
@@ -26,6 +30,10 @@
    fails closed, and the fixture preflight correctly records `official_gate_passed=false`.
 2. No AGV/OEM protocol, broker credentials, PLC/edge stop interface, test map, or safety-owner
    approval has been supplied. Real hardware integration remains locked as required by the spec.
+3. The source repository has no authorized public remote, and Judge Mode is owner-private. Public
+   release is a separate exposure decision rather than a local engineering task.
+4. Physical video, anonymous-access verification, and Devpost submission require the final public
+   URLs and hardware/test evidence.
 
 ## Deferred external evidence
 

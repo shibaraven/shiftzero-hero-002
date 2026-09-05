@@ -18,6 +18,7 @@ from shiftzero.domain import (
     RoutePlan,
     SafetyProof,
     TransportProposal,
+    canonical_hash,
     utc_now,
 )
 from shiftzero.evidence import EvidenceRecorder
@@ -27,6 +28,14 @@ from shiftzero.state_machine import WorkflowState
 
 
 class MissionServiceError(RuntimeError):
+    pass
+
+
+class MissionConflictError(MissionServiceError):
+    pass
+
+
+class MissionPermissionError(MissionServiceError):
     pass
 
 
@@ -47,6 +56,8 @@ class MissionSession:
     mission: Mission | None = None
     replan: RoutePlan | None = None
     stop_latency_ms: float | None = None
+    version: int = 1
+    rejection_reason: str | None = None
 
 
 class MissionService:
@@ -57,6 +68,8 @@ class MissionService:
         self._proposal_index: dict[str, str] = {}
         self._mission_index: dict[str, str] = {}
         self._trace_index: dict[str, str] = {}
+        self._operations: dict[str, tuple[str, str]] = {}
+        self._pending_operations: dict[str, tuple[str, str]] = {}
         self._lock = RLock()
 
     def create_intent(
@@ -89,9 +102,24 @@ class MissionService:
             self._trace_index[recorder.trace_id] = session.session_id
             return session
 
-    def prepare_proposal(self, session_id: str) -> MissionSession:
+    def prepare_proposal(
+        self,
+        session_id: str,
+        *,
+        idempotency_key: str,
+        expected_version: int,
+    ) -> MissionSession:
         with self._lock:
             session = self._session(session_id)
+            operation = self._begin_operation(
+                session,
+                name="prepare",
+                idempotency_key=idempotency_key,
+                expected_version=expected_version,
+                payload={"session_id": session_id},
+            )
+            if operation is not None:
+                return operation
             if session.state.current != MissionStatus.INTENT:
                 raise MissionServiceError("proposal preparation requires INTENT state")
             snapshot = session.world.snapshot()
@@ -142,11 +170,29 @@ class MissionService:
             session.state.transition(MissionStatus.VERIFIED)
             session.recorder.record("workflow.transition", {"state": session.state.current})
             self._proposal_index[proposal.proposal_id] = session.session_id
-            return session
+            return self._finish_operation(session, name="prepare", idempotency_key=idempotency_key)
 
-    def approve(self, proposal_id: str, *, actor: str) -> MissionSession:
+    def approve(
+        self,
+        proposal_id: str,
+        *,
+        actor: str,
+        actor_role: str,
+        idempotency_key: str,
+        expected_version: int,
+    ) -> MissionSession:
         with self._lock:
             session = self._by_proposal(proposal_id)
+            self._require_role(actor_role, {"approver", "admin"})
+            operation = self._begin_operation(
+                session,
+                name="approve",
+                idempotency_key=idempotency_key,
+                expected_version=expected_version,
+                payload={"proposal_id": proposal_id, "actor": actor, "role": actor_role},
+            )
+            if operation is not None:
+                return operation
             if session.state.current != MissionStatus.VERIFIED or session.proposal is None:
                 raise MissionServiceError("only a VERIFIED proposal can be approved")
             approval = ApprovalToken.issue(
@@ -174,15 +220,72 @@ class MissionService:
                 selected_agv=session.plan.selected_agv,
                 route=session.plan.nodes,
                 route_version=session.plan.route_version,
+                proof_hash=session.proof.proof_hash if session.proof else "",
                 status=MissionStatus.APPROVED,
                 idempotency_key=f"dispatch:{session.proposal.proposal_hash}",
             )
             self._mission_index[session.mission.mission_id] = session.session_id
-            return session
+            return self._finish_operation(session, name="approve", idempotency_key=idempotency_key)
 
-    def start(self, mission_id: str) -> MissionSession:
+    def reject(
+        self,
+        proposal_id: str,
+        *,
+        actor: str,
+        actor_role: str,
+        reason: str,
+        idempotency_key: str,
+        expected_version: int,
+    ) -> MissionSession:
+        with self._lock:
+            session = self._by_proposal(proposal_id)
+            self._require_role(actor_role, {"approver", "admin"})
+            operation = self._begin_operation(
+                session,
+                name="reject",
+                idempotency_key=idempotency_key,
+                expected_version=expected_version,
+                payload={
+                    "proposal_id": proposal_id,
+                    "actor": actor,
+                    "role": actor_role,
+                    "reason": reason,
+                },
+            )
+            if operation is not None:
+                return operation
+            if session.state.current != MissionStatus.VERIFIED:
+                raise MissionServiceError("only a VERIFIED proposal can be rejected")
+            session.rejection_reason = reason
+            session.recorder.record(
+                "approval.rejected",
+                {"proposal_id": proposal_id, "actor": actor, "role": actor_role, "reason": reason},
+            )
+            session.state.transition(MissionStatus.REJECTED)
+            session.recorder.record("workflow.transition", {"state": session.state.current})
+            return self._finish_operation(session, name="reject", idempotency_key=idempotency_key)
+
+    def start(
+        self,
+        mission_id: str,
+        *,
+        actor: str,
+        actor_role: str,
+        idempotency_key: str,
+        expected_version: int,
+    ) -> MissionSession:
         with self._lock:
             session = self._by_mission(mission_id)
+            self._require_role(actor_role, {"operator", "approver", "admin"})
+            operation = self._begin_operation(
+                session,
+                name="start",
+                idempotency_key=idempotency_key,
+                expected_version=expected_version,
+                payload={"mission_id": mission_id, "actor": actor, "role": actor_role},
+            )
+            if operation is not None:
+                return operation
             if session.mission is None or session.approval is None or session.proposal is None:
                 raise MissionServiceError("mission has no valid approval context")
             if session.state.current != MissionStatus.APPROVED:
@@ -198,11 +301,29 @@ class MissionService:
             session.recorder.record("workflow.transition", {"state": session.state.current})
             session.mission = session.adapter.advance(mission_id)
             session.recorder.record("execution.telemetry", session.mission)
-            return session
+            return self._finish_operation(session, name="start", idempotency_key=idempotency_key)
 
-    def stop(self, mission_id: str, *, actor: str) -> MissionSession:
+    def stop(
+        self,
+        mission_id: str,
+        *,
+        actor: str,
+        actor_role: str,
+        idempotency_key: str,
+        expected_version: int,
+    ) -> MissionSession:
         with self._lock:
             session = self._by_mission(mission_id)
+            self._require_role(actor_role, {"operator", "safety_operator", "admin"})
+            operation = self._begin_operation(
+                session,
+                name="stop",
+                idempotency_key=idempotency_key,
+                expected_version=expected_version,
+                payload={"mission_id": mission_id, "actor": actor, "role": actor_role},
+            )
+            if operation is not None:
+                return operation
             if session.state.current != MissionStatus.EXECUTING:
                 raise MissionServiceError("stop requires EXECUTING state")
             obstacle = session.world.add_hero_blockage()
@@ -226,11 +347,29 @@ class MissionService:
             )
             session.state.transition(MissionStatus.SAFE_STOP)
             session.recorder.record("workflow.transition", {"state": session.state.current})
-            return session
+            return self._finish_operation(session, name="stop", idempotency_key=idempotency_key)
 
-    def replan_and_complete(self, mission_id: str) -> MissionSession:
+    def replan_and_complete(
+        self,
+        mission_id: str,
+        *,
+        actor: str,
+        actor_role: str,
+        idempotency_key: str,
+        expected_version: int,
+    ) -> MissionSession:
         with self._lock:
             session = self._by_mission(mission_id)
+            self._require_role(actor_role, {"operator", "approver", "admin"})
+            operation = self._begin_operation(
+                session,
+                name="replan",
+                idempotency_key=idempotency_key,
+                expected_version=expected_version,
+                payload={"mission_id": mission_id, "actor": actor, "role": actor_role},
+            )
+            if operation is not None:
+                return operation
             if (
                 session.state.current != MissionStatus.SAFE_STOP
                 or session.mission is None
@@ -286,7 +425,7 @@ class MissionService:
                     ].occupancy,
                 },
             )
-            return session
+            return self._finish_operation(session, name="replan", idempotency_key=idempotency_key)
 
     def proof(self, proposal_id: str) -> SafetyProof:
         session = self._by_proposal(proposal_id)
@@ -334,6 +473,8 @@ class MissionService:
             "mission": session.mission,
             "replan": session.replan,
             "stop_latency_ms": session.stop_latency_ms,
+            "version": session.version,
+            "rejection_reason": session.rejection_reason,
             "provider": session.provider.provider_name,
             "model": session.provider.model_name,
         }
@@ -358,3 +499,60 @@ class MissionService:
             return self._session(self._mission_index[mission_id])
         except KeyError as exc:
             raise MissionServiceError("unknown mission") from exc
+
+    def _begin_operation(
+        self,
+        session: MissionSession,
+        *,
+        name: str,
+        idempotency_key: str,
+        expected_version: int,
+        payload: dict[str, Any],
+    ) -> MissionSession | None:
+        operation_key = f"{name}:{idempotency_key}"
+        fingerprint = canonical_hash(payload)
+        prior = self._operations.get(operation_key)
+        if prior is not None:
+            prior_fingerprint, prior_session_id = prior
+            if prior_fingerprint != fingerprint or prior_session_id != session.session_id:
+                raise MissionConflictError("idempotency key was reused with different input")
+            return session
+        if expected_version != session.version:
+            raise MissionConflictError(
+                f"stale version: expected {expected_version}, current {session.version}"
+            )
+        session.recorder.record(
+            "api.operation.accepted",
+            {
+                "operation": name,
+                "idempotency_key_hash": canonical_hash(idempotency_key),
+                "expected_version": expected_version,
+            },
+        )
+        self._pending_operations[operation_key] = (fingerprint, session.session_id)
+        return None
+
+    def _finish_operation(
+        self,
+        session: MissionSession,
+        *,
+        name: str,
+        idempotency_key: str,
+    ) -> MissionSession:
+        session.version += 1
+        if session.mission is not None:
+            session.mission.version = session.version
+        operation_key = f"{name}:{idempotency_key}"
+        self._operations[operation_key] = self._pending_operations.pop(operation_key)
+        session.recorder.record(
+            "api.operation.committed",
+            {"operation": name, "version": session.version},
+        )
+        return session
+
+    @staticmethod
+    def _require_role(actor_role: str, allowed: set[str]) -> None:
+        if actor_role not in allowed:
+            raise MissionPermissionError(
+                f"role {actor_role!r} is not allowed; expected one of {sorted(allowed)}"
+            )

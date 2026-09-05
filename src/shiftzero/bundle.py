@@ -5,12 +5,17 @@ import json
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-BUNDLE_VERSION = "hero002-evidence-v1"
+from shiftzero.evidence import EvidenceRecorder
+
+BUNDLE_VERSION = "hero002-evidence-v2"
 REQUIRED_PATHS = (
     "evidence/scenario-evaluation/metrics.json",
     "evidence/scenario-evaluation/run-manifest.json",
     "evidence/scenario-evaluation/scenario-results.jsonl",
     "evidence/compatibility/preflight-report.json",
+    "evidence/hero-reliability/report.json",
+    "evidence/hero-summary.json",
+    "evidence/METHODOLOGY.md",
     "scenarios/hero.json",
     "scenarios/evaluation_manifest.json",
     "schemas/safety-policy.json",
@@ -18,6 +23,9 @@ REQUIRED_PATHS = (
     "schemas/tool-catalog.json",
     "docs/SAFETY_RULES.md",
     "docs/IP_BOUNDARY.md",
+    "docs/REAL_AGV_HANDOFF.md",
+    "docs/SERVERLESS_JOB.md",
+    "schemas/openapi.json",
 )
 
 
@@ -41,6 +49,7 @@ def build_evidence_bundle(
         "bundle_version": BUNDLE_VERSION,
         "claim_scope": "reference_simulator_and_fixture_provider_only",
         "official_gate_passed": False,
+        "completeness_checks": _completeness_checks(root, files),
         "files": entries,
     }
     manifest_bytes = (
@@ -76,13 +85,41 @@ def _resolve_files(root: Path) -> list[Path]:
     paths = [root / relative for relative in REQUIRED_PATHS]
     trace_paths = sorted((root / "evidence" / "sample-verified-run").glob("*/hero-run.jsonl"))
     paths.extend(trace_paths)
+    reliability_trace_paths = sorted(
+        (root / "evidence" / "hero-reliability" / "runs").glob("*/hero-run.jsonl")
+    )
+    paths.extend(reliability_trace_paths)
     missing = [path for path in paths[: len(REQUIRED_PATHS)] if not path.is_file()]
     if missing:
         missing_text = ", ".join(path.relative_to(root).as_posix() for path in missing)
         raise FileNotFoundError(f"evidence bundle inputs are missing: {missing_text}")
     if not trace_paths:
         raise FileNotFoundError("evidence bundle needs a sample verified hero trace")
+    if len(reliability_trace_paths) < 20:
+        raise FileNotFoundError("evidence bundle needs at least 20 hero reliability traces")
     return sorted(paths, key=lambda path: path.relative_to(root).as_posix())
+
+
+def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
+    metrics = json.loads(
+        (root / "evidence/scenario-evaluation/metrics.json").read_text(encoding="utf-8")
+    )
+    reliability = json.loads(
+        (root / "evidence/hero-reliability/report.json").read_text(encoding="utf-8")
+    )
+    trace_paths = [path for path in files if path.name == "hero-run.jsonl"]
+    checks = {
+        "scenario_count_is_100": metrics["sample_size"] == 100,
+        "scenario_safety_violations_zero": metrics["safety_violation_count"] == 0,
+        "hero_twenty_consecutive_passes": reliability["max_consecutive_passes"] >= 20,
+        "hero_acceptance_passed": reliability["acceptance_passed"] is True,
+        "all_included_trace_chains_valid": all(
+            EvidenceRecorder.verify(path) for path in trace_paths
+        ),
+        "required_file_count": len(files),
+    }
+    checks["passed"] = all(value is True for value in checks.values() if isinstance(value, bool))
+    return checks
 
 
 def _write_reproducible(archive: ZipFile, name: str, content: bytes) -> None:

@@ -34,4 +34,12 @@ def export_schemas(output_dir: Path) -> list[Path]:
             encoding="utf-8",
         )
         written.append(path)
+    from shiftzero.api import app
+
+    openapi_path = output_dir / "openapi.json"
+    openapi_path.write_text(
+        json.dumps(app.openapi(), indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    written.append(openapi_path)
     return written

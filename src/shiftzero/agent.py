@@ -26,6 +26,12 @@ class ProviderError(RuntimeError):
     pass
 
 
+class NeedsInputError(ProviderError):
+    def __init__(self, missing_fields: list[str]) -> None:
+        self.missing_fields = missing_fields
+        super().__init__(f"NEEDS_INPUT: missing {', '.join(missing_fields)}")
+
+
 class IntentProposalProvider(Protocol):
     provider_name: str
     model_name: str
@@ -50,10 +56,19 @@ class FixtureProvider:
 
     def parse_intent(self, operator_text: str) -> tuple[MissionIntent, ModelCallEvidence]:
         started = datetime.now(UTC)
-        pallet = _extract(r"\bP-\d+\b", operator_text, "P-104")
+        pallet = _extract(r"\bP-\d+\b", operator_text.upper(), None)
         locations = re.findall(r"\b(?:INBOUND|RACK)-[A-Z]*\d+\b", operator_text.upper())
-        source = locations[0] if locations else "INBOUND-01"
-        destination = locations[1] if len(locations) > 1 else "RACK-A12"
+        missing: list[str] = []
+        if pallet is None:
+            missing.append("pallet_id")
+        if not locations:
+            missing.append("source")
+        if len(locations) < 2:
+            missing.append("destination")
+        if missing:
+            raise NeedsInputError(missing)
+        source = locations[0]
+        destination = locations[1]
         agv = _extract(r"\bAGV-\d+\b", operator_text.upper(), None)
         intent = MissionIntent(
             pallet_id=pallet,

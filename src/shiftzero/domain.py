@@ -49,6 +49,9 @@ class ToolName(StrEnum):
     PLAN_TRANSPORT = "plan_transport"
     PROPOSE_TRANSPORT = "propose_transport"
     APPROVE_TRANSPORT = "approve_transport"
+    REJECT_TRANSPORT = "reject_transport"
+    START_MISSION = "start_mission"
+    STOP_MISSION = "stop_mission"
     GET_MISSION_STATUS = "get_mission_status"
     REPLAN_MISSION = "replan_mission"
     GET_OPERATION_METRICS = "get_operation_metrics"
@@ -79,6 +82,7 @@ class MapNode(StrictModel):
     y: float
     zone: str
     capacity: int = 1
+    allowed_vehicle_types: list[str] = Field(default_factory=lambda: ["AGV"])
 
 
 class MapEdge(StrictModel):
@@ -87,6 +91,7 @@ class MapEdge(StrictModel):
     length_m: float = Field(gt=0)
     speed_limit_mps: float = Field(gt=0)
     reservation_group: str
+    direction: Literal["bidirectional", "forward"] = "bidirectional"
 
 
 class AgvState(StrictModel):
@@ -96,6 +101,7 @@ class AgvState(StrictModel):
     battery_percent: float = Field(ge=0, le=100)
     capabilities: list[str]
     current_mission_id: str | None = None
+    load_id: str | None = None
 
 
 class LocationState(StrictModel):
@@ -103,6 +109,7 @@ class LocationState(StrictModel):
     node_id: str
     kind: Literal["INBOUND", "RACK", "STAGING"]
     occupancy: str | None = None
+    reachable: bool = True
 
 
 class PalletState(StrictModel):
@@ -280,8 +287,10 @@ class Mission(StrictModel):
     selected_agv: str
     route: list[str]
     route_version: str
+    proof_hash: str
     status: MissionStatus
     idempotency_key: str
+    version: int = Field(default=1, ge=1)
     created_at: datetime = Field(default_factory=utc_now)
     updated_at: datetime = Field(default_factory=utc_now)
     current_node_index: int = 0
@@ -304,6 +313,9 @@ class ModelCallEvidence(StrictModel):
     http_status: int | None = None
     rate_limit_remaining: str | None = None
     rate_limit_reset: str | None = None
+    estimated_cost_usd: float | None = Field(default=None, ge=0)
+    timed_out: bool = False
+    fallback_state: str | None = None
 
 
 class HeroRunResult(StrictModel):
