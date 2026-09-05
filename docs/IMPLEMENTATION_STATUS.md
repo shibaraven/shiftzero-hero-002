@@ -18,6 +18,7 @@
 - Byte-reproducible, SHA-256-indexed Evidence Bundle.
 - Interactive Judge Mode website with mission, architecture, and evidence views.
 - Devpost draft, anonymous judge runbook, submission checklist, and three-minute video shot list.
+- Owner-private Judge Mode deployment at `https://shiftzero-hero-002.mingjen.chatgpt.site`.
 
 ## Current external blockers
 

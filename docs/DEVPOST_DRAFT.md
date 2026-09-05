@@ -70,7 +70,8 @@ PLC/edge stop contract, mapped test area and safety-owner approval.
 
 ## Links to fill at submission time
 
-- Judge Mode: `[ADD DEPLOYED URL]`
+- Judge Mode staging: `https://shiftzero-hero-002.mingjen.chatgpt.site` (owner-private until
+  public access is explicitly approved)
 - Source repository: `[ADD PUBLIC REPOSITORY URL]`
 - Demo video: `[ADD VIDEO URL]`
 - Live compatibility report: `[ADD ONLY AFTER OFFICIAL GATE PASSES]`

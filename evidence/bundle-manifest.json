@@ -1,7 +1,7 @@
 {
-  "bundle_bytes": 16688,
+  "bundle_bytes": 16691,
   "bundle_path": "evidence/HERO002-evidence-bundle.zip",
-  "bundle_sha256": "0a86ca76bacf40b6d512dce317d319de19ffef8be79b02fa031830b3d67d167a",
+  "bundle_sha256": "24028850e22c322cbbe7ed2e239a80cf389e8dfbe1a0654e7f7df7ceeb09863e",
   "bundle_version": "hero002-evidence-v1",
   "claim_scope": "reference_simulator_and_fixture_provider_only",
   "files": [
@@ -31,14 +31,14 @@
       "sha256": "c49f04af4052552632c5915ff3a997f62a76a0fafe719a6c189537d3bd692404"
     },
     {
-      "bytes": 852,
+      "bytes": 872,
       "path": "evidence/scenario-evaluation/run-manifest.json",
-      "sha256": "a30e2f83b0fd79a4eb83345a24213f6f8f9303c45c125200de382f231f87d454"
+      "sha256": "00bdd454bec755a152b2d35b2d8bb7f3bcc81e15ba6347369847113470249745"
     },
     {
       "bytes": 47348,
       "path": "evidence/scenario-evaluation/scenario-results.jsonl",
-      "sha256": "895ae8be63e67152d42b6e99af4b655b8fcc078b709262a972fd67f8944e66a7"
+      "sha256": "021708a95ca91bca809cd7d278bee59b87a2e34fd19a0ea8b17334ea7c615131"
     },
     {
       "bytes": 585,
