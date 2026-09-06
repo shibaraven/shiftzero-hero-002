@@ -8,7 +8,7 @@
   ],
   "claim_boundary": "Passed means the checked evidence satisfies that item. Simulator rehearsal never satisfies physical A06/A07, and draft assets never satisfy A11/A12.",
   "failed_ids": [],
-  "generated_at": "2026-09-06T02:31:04.359582+00:00",
+  "generated_at": "2026-09-06T02:40:14.194790+00:00",
   "items": [
     {
       "detail": "360 live, unique, hash-linked Token Factory tool-call receipts.",
@@ -143,7 +143,7 @@
     }
   ],
   "passed_count": 8,
-  "report_hash": "89115e13d770e4e9611da6259595c4280c7767219815dc89a1b43b23d71aa026",
+  "report_hash": "934becda4035d19dba52478159a302cf898d98c8cdc717bb032e844d5c33e98d",
   "schema_version": "release-acceptance-v1",
   "spec_version": "HERO-002 competition spec v2.1",
   "total_count": 12

@@ -123,7 +123,11 @@ function schedule(stopLatencyMs: number): SimulationEvent[] {
   ];
 }
 
-function phaseAt(elapsedMs: number, started: boolean, stopLatencyMs: number): Phase {
+function phaseAt(
+  elapsedMs: number,
+  started: boolean,
+  stopLatencyMs: number,
+): Phase {
   if (!started) return 'READY';
   const stationaryAt = DETECT_AT_MS + stopLatencyMs;
   if (elapsedMs < DETECT_AT_MS) return 'EXECUTING';
@@ -136,9 +140,11 @@ function phaseAt(elapsedMs: number, started: boolean, stopLatencyMs: number): Ph
 
 function pointAlong(points: Point[], progress: number): Point {
   const bounded = Math.max(0, Math.min(1, progress));
-  const distances = points.slice(1).map((point, index) =>
-    Math.hypot(point.x - points[index].x, point.y - points[index].y),
-  );
+  const distances = points
+    .slice(1)
+    .map((point, index) =>
+      Math.hypot(point.x - points[index].x, point.y - points[index].y),
+    );
   const total = distances.reduce((sum, distance) => sum + distance, 0);
   let remaining = bounded * total;
   for (let index = 0; index < distances.length; index += 1) {
@@ -188,7 +194,9 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
   const events = useMemo(() => schedule(stopLatencyMs), [stopLatencyMs]);
   const completeAtMs = events[events.length - 1].atMs;
   const phase = phaseAt(elapsedMs, started, stopLatencyMs);
-  const visibleEvents = events.filter((event) => event.atMs <= elapsedMs && started);
+  const visibleEvents = events.filter(
+    (event) => event.atMs <= elapsedMs && started,
+  );
 
   useEffect(() => {
     if (!running) return;
@@ -296,7 +304,7 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
             variant="ghost"
             size="sm"
             onClick={onBack}
-            className="mb-4 -ml-2 text-slate-400 hover:bg-white/[0.04] hover:text-white"
+            className="mb-4 -ml-2 text-stone-400 hover:bg-white/[0.04] hover:text-white"
           >
             <ChevronLeft className="size-4" /> Back to Evidence
           </Button>
@@ -314,19 +322,23 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
           <h1 className="text-3xl font-semibold tracking-[-0.03em] text-white sm:text-4xl">
             A06/A07 Field Test Lab
           </h1>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
-            Nine-AGV rehearsal for sensor-stop timing, local safety, blockage replan,
-            mission recovery and evidence capture. It prepares the field test; only
-            synchronized physical evidence can close the two gates.
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-stone-400">
+            Nine-AGV rehearsal for sensor-stop timing, local safety, blockage
+            replan, mission recovery and evidence capture. It prepares the field
+            test; only synchronized physical evidence can close the two gates.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button
             onClick={startOrPause}
             disabled={phase === 'COMPLETED'}
-            className="rounded-md bg-cyan-200 text-[#07111f] hover:bg-cyan-100"
+            className="rounded-md bg-orange-200 text-[#1b120d] hover:bg-orange-100"
           >
-            {running ? <Pause className="size-4" /> : <Play className="size-4" />}
+            {running ? (
+              <Pause className="size-4" />
+            ) : (
+              <Play className="size-4" />
+            )}
             {running ? 'Pause' : started ? 'Continue' : 'Run rehearsal'}
           </Button>
           <Button
@@ -340,7 +352,7 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
           <Button
             onClick={reset}
             variant="outline"
-            className="rounded-md border-white/10 bg-white/[0.03] text-slate-300 hover:bg-white/[0.07]"
+            className="rounded-md border-white/10 bg-white/[0.03] text-stone-300 hover:bg-white/[0.07]"
           >
             <RotateCcw className="size-4" /> Reset
           </Button>
@@ -348,11 +360,12 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(330px,0.75fr)]">
-        <Card className="overflow-hidden rounded-lg border-white/[0.08] bg-[#081522] shadow-none">
+        <Card className="overflow-hidden rounded-lg border-white/[0.08] bg-[#22160f] shadow-none">
           <CardHeader className="border-b border-white/[0.07] px-5 py-4">
             <CardTitle className="flex flex-wrap items-center justify-between gap-3 text-xs text-white">
               <span className="flex items-center gap-2">
-                <Route className="size-4 text-cyan-200" /> Nine-AGV warehouse map
+                <Route className="size-4 text-orange-200" /> Nine-AGV warehouse
+                map
               </span>
               <span className="flex items-center gap-2">
                 {(['2D', '3D'] as const).map((mode) => (
@@ -363,8 +376,8 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
                     onClick={() => setMapMode(mode)}
                     className={
                       mapMode === mode
-                        ? 'border-cyan-200/40 bg-cyan-200/10 text-cyan-100'
-                        : 'border-white/10 bg-transparent text-slate-500'
+                        ? 'border-orange-200/40 bg-orange-200/10 text-orange-100'
+                        : 'border-white/10 bg-transparent text-stone-500'
                     }
                   >
                     {mode}
@@ -376,7 +389,11 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
           <CardContent className="p-0">
             <div className="grid grid-cols-2 border-b border-white/[0.06] sm:grid-cols-4">
               <SimulatorMetric label="Phase" value={phase} tone="cyan" />
-              <SimulatorMetric label="Elapsed" value={formatElapsed(elapsedMs)} tone="slate" />
+              <SimulatorMetric
+                label="Elapsed"
+                value={formatElapsed(elapsedMs)}
+                tone="slate"
+              />
               <SimulatorMetric label="Fleet" value="9 / 9" tone="emerald" />
               <SimulatorMetric
                 label="Synthetic stop"
@@ -384,7 +401,10 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
                 tone={stopLatencyMs <= 200 ? 'emerald' : 'rose'}
               />
             </div>
-            <div className="overflow-hidden bg-[#06111d] p-3 sm:p-5" style={{ perspective: '1200px' }}>
+            <div
+              className="overflow-hidden bg-[#170f0b] p-3 sm:p-5"
+              style={{ perspective: '1200px' }}
+            >
               <svg
                 viewBox="0 0 920 520"
                 aria-label="Functional nine-AGV warehouse simulation map"
@@ -396,27 +416,87 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
                 }
               >
                 <defs>
-                  <pattern id="field-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#173047" strokeWidth="1" />
+                  <pattern
+                    id="field-grid"
+                    width="40"
+                    height="40"
+                    patternUnits="userSpaceOnUse"
+                  >
+                    <path
+                      d="M 40 0 L 0 0 0 40"
+                      fill="none"
+                      stroke="#4a3020"
+                      strokeWidth="1"
+                    />
                   </pattern>
-                  <filter id="hero-glow" x="-60%" y="-60%" width="220%" height="220%">
+                  <filter
+                    id="hero-glow"
+                    x="-60%"
+                    y="-60%"
+                    width="220%"
+                    height="220%"
+                  >
                     <feGaussianBlur stdDeviation="5" result="blur" />
-                    <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
                   </filter>
                 </defs>
                 <rect width="920" height="520" fill="url(#field-grid)" />
                 {[170, 270, 370, 470, 570, 670].map((x) => (
                   <g key={x}>
-                    <rect x={x} y="58" width="58" height="118" rx="4" fill="#0e2537" stroke="#24445d" />
-                    <rect x={x} y="285" width="58" height="82" rx="4" fill="#0e2537" stroke="#24445d" />
+                    <rect
+                      x={x}
+                      y="58"
+                      width="58"
+                      height="118"
+                      rx="4"
+                      fill="#342117"
+                      stroke="#6d4529"
+                    />
+                    <rect
+                      x={x}
+                      y="285"
+                      width="58"
+                      height="82"
+                      rx="4"
+                      fill="#342117"
+                      stroke="#6d4529"
+                    />
                   </g>
                 ))}
-                <path d={pathData(ROUTE_A)} fill="none" stroke="#2b526b" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />
-                <path d={pathData(ROUTE_A)} fill="none" stroke="#60a5fa" strokeWidth="3" strokeDasharray="10 10" />
+                <path
+                  d={pathData(ROUTE_A)}
+                  fill="none"
+                  stroke="#7d5030"
+                  strokeWidth="12"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d={pathData(ROUTE_A)}
+                  fill="none"
+                  stroke="#60a5fa"
+                  strokeWidth="3"
+                  strokeDasharray="10 10"
+                />
                 {elapsedMs >= DETECT_AT_MS + stopLatencyMs + 850 && (
-                  <path d={pathData(DETOUR_ROUTE)} fill="none" stroke="#6ee7b7" strokeWidth="5" strokeDasharray="12 9" />
+                  <path
+                    d={pathData(DETOUR_ROUTE)}
+                    fill="none"
+                    stroke="#6ee7b7"
+                    strokeWidth="5"
+                    strokeDasharray="12 9"
+                  />
                 )}
-                <path d={pathData(TRAFFIC_LOOP)} fill="none" stroke="#203c52" strokeWidth="5" strokeDasharray="5 10" />
+                <path
+                  d={pathData(TRAFFIC_LOOP)}
+                  fill="none"
+                  stroke="#583824"
+                  strokeWidth="5"
+                  strokeDasharray="5 10"
+                />
 
                 {[
                   { label: 'N01', point: ROUTE_A[0] },
@@ -426,42 +506,131 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
                   { label: 'N12', point: ROUTE_A[4] },
                 ].map(({ label, point }) => (
                   <g key={label}>
-                    <circle cx={point.x} cy={point.y} r="8" fill="#081522" stroke="#67e8f9" strokeWidth="2" />
-                    <text x={point.x} y={point.y - 16} fill="#91a9bb" fontSize="13" textAnchor="middle">{label}</text>
+                    <circle
+                      cx={point.x}
+                      cy={point.y}
+                      r="8"
+                      fill="#22160f"
+                      stroke="#f4bd73"
+                      strokeWidth="2"
+                    />
+                    <text
+                      x={point.x}
+                      y={point.y - 16}
+                      fill="#d0aa7a"
+                      fontSize="13"
+                      textAnchor="middle"
+                    >
+                      {label}
+                    </text>
                   </g>
                 ))}
 
                 {elapsedMs >= DETECT_AT_MS && phase !== 'COMPLETED' && (
                   <g transform="translate(620 420)">
                     <circle r="35" fill="#fb7185" opacity="0.12" />
-                    <path d="M -12 -12 L 12 12 M 12 -12 L -12 12" stroke="#fb7185" strokeWidth="7" strokeLinecap="round" />
-                    <text x="0" y="54" fill="#fda4af" fontSize="12" textAnchor="middle">SYNTHETIC BLOCKAGE</text>
+                    <path
+                      d="M -12 -12 L 12 12 M 12 -12 L -12 12"
+                      stroke="#fb7185"
+                      strokeWidth="7"
+                      strokeLinecap="round"
+                    />
+                    <text
+                      x="0"
+                      y="54"
+                      fill="#fda4af"
+                      fontSize="12"
+                      textAnchor="middle"
+                    >
+                      SYNTHETIC BLOCKAGE
+                    </text>
                   </g>
                 )}
 
                 {Array.from({ length: 8 }, (_, index) => {
                   const position = pointAlong(
                     TRAFFIC_LOOP,
-                    ((elapsedMs / 10000 + index / 8) % 1 + 1) % 1,
+                    (((elapsedMs / 10000 + index / 8) % 1) + 1) % 1,
                   );
                   return (
-                    <g key={index} transform={`translate(${position.x} ${position.y})`}>
-                      <rect x="-14" y="-9" width="28" height="18" rx="4" fill="#334b61" stroke="#8ba2b5" />
-                      <text x="0" y="-14" fill="#8095a8" fontSize="10" textAnchor="middle">{`AGV-${String(index + (index >= 2 ? 2 : 1)).padStart(2, '0')}`}</text>
+                    <g
+                      key={index}
+                      transform={`translate(${position.x} ${position.y})`}
+                    >
+                      <rect
+                        x="-14"
+                        y="-9"
+                        width="28"
+                        height="18"
+                        rx="4"
+                        fill="#745039"
+                        stroke="#d4ad7a"
+                      />
+                      <text
+                        x="0"
+                        y="-14"
+                        fill="#bf9a70"
+                        fontSize="10"
+                        textAnchor="middle"
+                      >{`AGV-${String(index + (index >= 2 ? 2 : 1)).padStart(2, '0')}`}</text>
                     </g>
                   );
                 })}
 
-                <g transform={`translate(${heroPosition.x} ${heroPosition.y})`} filter="url(#hero-glow)">
-                  <rect x="-21" y="-14" width="42" height="28" rx="5" fill="#67e8f9" stroke="#cffafe" strokeWidth="2" />
-                  <rect x="-13" y="-8" width="26" height="16" rx="2" fill="#0b2638" />
+                <g
+                  transform={`translate(${heroPosition.x} ${heroPosition.y})`}
+                  filter="url(#hero-glow)"
+                >
+                  <rect
+                    x="-21"
+                    y="-14"
+                    width="42"
+                    height="28"
+                    rx="5"
+                    fill="#f4bd73"
+                    stroke="#ffedd5"
+                    strokeWidth="2"
+                  />
+                  <rect
+                    x="-13"
+                    y="-8"
+                    width="26"
+                    height="16"
+                    rx="2"
+                    fill="#3a2415"
+                  />
                   <circle cx="-13" cy="15" r="4" fill="#e2e8f0" />
                   <circle cx="13" cy="15" r="4" fill="#e2e8f0" />
-                  <text x="0" y="-22" fill="#cffafe" fontSize="12" fontWeight="700" textAnchor="middle">AGV-03 / HERO</text>
+                  <text
+                    x="0"
+                    y="-22"
+                    fill="#ffedd5"
+                    fontSize="12"
+                    fontWeight="700"
+                    textAnchor="middle"
+                  >
+                    AGV-03 / HERO
+                  </text>
                 </g>
                 <g transform="translate(842 135)">
-                  <rect x="20" y="-34" width="42" height="68" rx="4" fill="#173a36" stroke="#6ee7b7" />
-                  <text x="41" y="4" fill="#a7f3d0" fontSize="11" textAnchor="middle">P-104</text>
+                  <rect
+                    x="20"
+                    y="-34"
+                    width="42"
+                    height="68"
+                    rx="4"
+                    fill="#3f321b"
+                    stroke="#6ee7b7"
+                  />
+                  <text
+                    x="41"
+                    y="4"
+                    fill="#a7f3d0"
+                    fontSize="11"
+                    textAnchor="middle"
+                  >
+                    P-104
+                  </text>
                 </g>
               </svg>
             </div>
@@ -469,10 +638,10 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
         </Card>
 
         <div className="space-y-4">
-          <Card className="rounded-lg border-white/[0.08] bg-[#0a1828] shadow-none">
+          <Card className="rounded-lg border-white/[0.08] bg-[#261911] shadow-none">
             <CardHeader className="border-b border-white/[0.07] px-5 py-4">
               <CardTitle className="flex items-center gap-2 text-xs text-white">
-                <RadioTower className="size-4 text-cyan-200" /> Test controls
+                <RadioTower className="size-4 text-orange-200" /> Test controls
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-5 p-5">
@@ -483,7 +652,11 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
                     size="xs"
                     variant="outline"
                     onClick={() => setSpeed(value)}
-                    className={speed === value ? 'border-cyan-200/40 bg-cyan-200/10 text-cyan-100' : 'border-white/10 text-slate-500'}
+                    className={
+                      speed === value
+                        ? 'border-orange-200/40 bg-orange-200/10 text-orange-100'
+                        : 'border-white/10 text-stone-500'
+                    }
                   >
                     {value}×
                   </Button>
@@ -497,24 +670,39 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
                     variant="outline"
                     disabled={started}
                     onClick={() => setStopLatencyMs(value)}
-                    className={stopLatencyMs === value ? 'border-cyan-200/40 bg-cyan-200/10 text-cyan-100' : 'border-white/10 text-slate-500'}
+                    className={
+                      stopLatencyMs === value
+                        ? 'border-orange-200/40 bg-orange-200/10 text-orange-100'
+                        : 'border-white/10 text-stone-500'
+                    }
                   >
                     {value} ms
                   </Button>
                 ))}
               </ControlRow>
-              <div className="rounded-md border border-white/[0.07] bg-[#071321] p-3">
+              <div className="rounded-md border border-white/[0.07] bg-[#1d130e] p-3">
                 <div className="flex items-center justify-between gap-3">
-                  <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-slate-500">Cloud path</span>
-                  <Badge className="rounded-sm bg-emerald-300/10 font-mono text-[8px] text-emerald-200">DISABLED</Badge>
+                  <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-stone-500">
+                    Cloud path
+                  </span>
+                  <Badge className="rounded-sm bg-emerald-300/10 font-mono text-[8px] text-emerald-200">
+                    DISABLED
+                  </Badge>
                 </div>
-                <p className="mt-2 text-[10px] leading-5 text-slate-500">
-                  Rehearses a local edge stop. This is a software assertion until the physical network path is disconnected and filmed.
+                <p className="mt-2 text-[10px] leading-5 text-stone-500">
+                  Rehearses a local edge stop. This is a software assertion
+                  until the physical network path is disconnected and filmed.
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <GateStatus label="A06 rehearsal" passed={phase === 'COMPLETED' && stopLatencyMs <= 200} />
-                <GateStatus label="A07 rehearsal" passed={phase === 'COMPLETED'} />
+                <GateStatus
+                  label="A06 rehearsal"
+                  passed={phase === 'COMPLETED' && stopLatencyMs <= 200}
+                />
+                <GateStatus
+                  label="A07 rehearsal"
+                  passed={phase === 'COMPLETED'}
+                />
               </div>
               <Button
                 onClick={exportRehearsal}
@@ -527,23 +715,35 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
             </CardContent>
           </Card>
 
-          <Card className="rounded-lg border-white/[0.08] bg-[#0a1828] shadow-none">
+          <Card className="rounded-lg border-white/[0.08] bg-[#261911] shadow-none">
             <CardHeader className="border-b border-white/[0.07] px-5 py-4">
               <CardTitle className="flex items-center gap-2 text-xs text-white">
-                <CircleStop className="size-4 text-rose-200" /> Synthetic event timeline
+                <CircleStop className="size-4 text-rose-200" /> Synthetic event
+                timeline
               </CardTitle>
             </CardHeader>
             <CardContent className="max-h-[340px] space-y-2 overflow-y-auto p-4">
               {visibleEvents.length === 0 ? (
-                <p className="px-1 py-6 text-center text-xs text-slate-600">Run the rehearsal to emit synthetic events.</p>
+                <p className="px-1 py-6 text-center text-xs text-stone-600">
+                  Run the rehearsal to emit synthetic events.
+                </p>
               ) : (
                 visibleEvents.map((event, index) => (
-                  <div key={`${event.kind}-${index}`} className="rounded-md border border-white/[0.06] bg-[#071321] p-3">
+                  <div
+                    key={`${event.kind}-${index}`}
+                    className="rounded-md border border-white/[0.06] bg-[#1d130e] p-3"
+                  >
                     <div className="flex items-center justify-between gap-3">
-                      <span className="font-mono text-[10px] text-cyan-200">{event.kind}</span>
-                      <span className="font-mono text-[9px] text-slate-600">+{event.atMs} ms</span>
+                      <span className="font-mono text-[10px] text-orange-200">
+                        {event.kind}
+                      </span>
+                      <span className="font-mono text-[9px] text-stone-600">
+                        +{event.atMs} ms
+                      </span>
                     </div>
-                    <p className="mt-1 text-[10px] leading-4 text-slate-500">{event.detail}</p>
+                    <p className="mt-1 text-[10px] leading-4 text-stone-500">
+                      {event.detail}
+                    </p>
                   </div>
                 ))
               )}
@@ -555,15 +755,25 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
       <Card className="mt-4 rounded-lg border-amber-300/20 bg-amber-300/[0.035] shadow-none">
         <CardHeader className="border-b border-amber-300/10 px-5 py-4">
           <CardTitle className="flex flex-wrap items-center justify-between gap-3 text-xs text-white">
-            <span className="flex items-center gap-2"><AlertTriangle className="size-4 text-amber-200" /> Physical evidence still required</span>
-            <span className="font-mono text-[9px] text-amber-200">FAIL CLOSED UNTIL ONSITE TEST</span>
+            <span className="flex items-center gap-2">
+              <AlertTriangle className="size-4 text-amber-200" /> Physical
+              evidence still required
+            </span>
+            <span className="font-mono text-[9px] text-amber-200">
+              FAIL CLOSED UNTIL ONSITE TEST
+            </span>
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 p-5 md:grid-cols-2 xl:grid-cols-3">
           {fieldChecklist.map((item, index) => (
-            <div key={item} className="flex gap-3 rounded-md border border-white/[0.06] bg-[#071321] p-3">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full border border-amber-300/20 font-mono text-[9px] text-amber-200">{index + 1}</span>
-              <p className="text-[11px] leading-5 text-slate-400">{item}</p>
+            <div
+              key={item}
+              className="flex gap-3 rounded-md border border-white/[0.06] bg-[#1d130e] p-3"
+            >
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full border border-amber-300/20 font-mono text-[9px] text-amber-200">
+                {index + 1}
+              </span>
+              <p className="text-[11px] leading-5 text-stone-400">{item}</p>
             </div>
           ))}
         </CardContent>
@@ -572,25 +782,45 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
   );
 }
 
-function SimulatorMetric({ label, value, tone }: { label: string; value: string; tone: 'cyan' | 'emerald' | 'rose' | 'slate' }) {
+function SimulatorMetric({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone: 'cyan' | 'emerald' | 'rose' | 'slate';
+}) {
   const tones = {
-    cyan: 'text-cyan-200',
+    cyan: 'text-orange-200',
     emerald: 'text-emerald-200',
     rose: 'text-rose-200',
-    slate: 'text-slate-200',
+    slate: 'text-stone-200',
   };
   return (
     <div className="border-r border-white/[0.06] px-4 py-3 last:border-r-0">
-      <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-slate-600">{label}</p>
-      <p className={`mt-1 font-mono text-xs font-semibold ${tones[tone]}`}>{value}</p>
+      <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-stone-600">
+        {label}
+      </p>
+      <p className={`mt-1 font-mono text-xs font-semibold ${tones[tone]}`}>
+        {value}
+      </p>
     </div>
   );
 }
 
-function ControlRow({ label, children }: { label: string; children: ReactNode }) {
+function ControlRow({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
   return (
     <div>
-      <p className="mb-2 font-mono text-[9px] uppercase tracking-[0.14em] text-slate-500">{label}</p>
+      <p className="mb-2 font-mono text-[9px] uppercase tracking-[0.14em] text-stone-500">
+        {label}
+      </p>
       <div className="flex flex-wrap gap-2">{children}</div>
     </div>
   );
@@ -598,12 +828,24 @@ function ControlRow({ label, children }: { label: string; children: ReactNode })
 
 function GateStatus({ label, passed }: { label: string; passed: boolean }) {
   return (
-    <div className={`rounded-md border p-3 ${passed ? 'border-emerald-300/20 bg-emerald-300/[0.05]' : 'border-white/[0.07] bg-[#071321]'}`}>
+    <div
+      className={`rounded-md border p-3 ${passed ? 'border-emerald-300/20 bg-emerald-300/[0.05]' : 'border-white/[0.07] bg-[#1d130e]'}`}
+    >
       <div className="flex items-center gap-2">
-        {passed ? <CheckCircle2 className="size-4 text-emerald-300" /> : <Box className="size-4 text-slate-600" />}
-        <span className={`font-mono text-[9px] ${passed ? 'text-emerald-200' : 'text-slate-500'}`}>{label}</span>
+        {passed ? (
+          <CheckCircle2 className="size-4 text-emerald-300" />
+        ) : (
+          <Box className="size-4 text-stone-600" />
+        )}
+        <span
+          className={`font-mono text-[9px] ${passed ? 'text-emerald-200' : 'text-stone-500'}`}
+        >
+          {label}
+        </span>
       </div>
-      <p className="mt-2 text-[9px] text-slate-600">{passed ? 'SIMULATION PASS' : 'NOT RUN'}</p>
+      <p className="mt-2 text-[9px] text-stone-600">
+        {passed ? 'SIMULATION PASS' : 'NOT RUN'}
+      </p>
     </div>
   );
 }

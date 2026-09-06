@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'ShiftZero HERO-002 | Judge Mode',
     description: 'One sentence in. One verified robot mission out.',
-    images: [{ url: '/og.png', width: 1732, height: 909 }],
+    images: [{ url: '/og.png', width: 1731, height: 909 }],
   },
   twitter: {
     card: 'summary_large_image',

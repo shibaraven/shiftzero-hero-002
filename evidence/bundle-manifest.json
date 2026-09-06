@@ -1,7 +1,7 @@
 {
-  "bundle_bytes": 3937428,
+  "bundle_bytes": 3937743,
   "bundle_path": "evidence/HERO002-evidence-bundle.zip",
-  "bundle_sha256": "036d196c70db333d0aa8e845d827338b57e69b9a30a6befa041be85f54e5d04f",
+  "bundle_sha256": "6d9cda8ab769aefb5f60b21849cd1022c60eeca6846f8cb5b3cc3f9bf3e28a3f",
   "bundle_version": "hero002-evidence-v9",
   "claim_scope": "live_nebius_token_factory_with_reference_simulator_no_physical_hardware",
   "completeness_checks": {
@@ -76,9 +76,9 @@
       "sha256": "98b4b2303d63ba74258f556e0aa8f96c530a828c72fdd9ed0cf7b2aad0f53d18"
     },
     {
-      "bytes": 25109,
+      "bytes": 29382,
       "path": "apps/web/components/field-test-simulator.tsx",
-      "sha256": "99753bbfa0330d7fbee0540d9d487ca8ec580868f43215ac234b0cfb04526278"
+      "sha256": "96199da68204d6cafe0e8fc6ac173e1836071dd3cdc4807fe1db35e0ac0080a8"
     },
     {
       "bytes": 3014,
@@ -403,7 +403,7 @@
     {
       "bytes": 5205,
       "path": "evidence/release-acceptance.json",
-      "sha256": "30e40fb3429898c6a75c11062eee114128c1e73ead6c54c64b451cfd6913c660"
+      "sha256": "4e191a9b34a8430052d98a5bf0ea434d06c9fe5da98f484da1d36d53a654f181"
     },
     {
       "bytes": 72156,

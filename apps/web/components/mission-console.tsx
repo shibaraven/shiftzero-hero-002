@@ -150,8 +150,16 @@ type LiveRuntimeSummary = {
     endpoint_base_url: string;
     endpoint_region: string;
     tested_git_commit: string;
-    prompt_contract: { version: string; sha256: string; matches_tested_commit: boolean };
-    tool_schema: { version: string; sha256: string; matches_tested_commit: boolean };
+    prompt_contract: {
+      version: string;
+      sha256: string;
+      matches_tested_commit: boolean;
+    };
+    tool_schema: {
+      version: string;
+      sha256: string;
+      matches_tested_commit: boolean;
+    };
     safety_policy: { version: string; sha256: string };
   };
   compatibility: {
@@ -176,7 +184,11 @@ type LiveRuntimeSummary = {
       prompt_usd_per_million_tokens: number;
       completion_usd_per_million_tokens: number;
       total_gate_estimated_usd: number;
-      per_mission_estimated_usd: { median: number; p95: number; maximum: number };
+      per_mission_estimated_usd: {
+        median: number;
+        p95: number;
+        maximum: number;
+      };
     };
   };
   representative_live_trace: {
@@ -334,7 +346,7 @@ const timeline = [
 ] as const;
 
 const suites = [
-  ['S01', 'Nominal transport', 20, '#67e8e3'],
+  ['S01', 'Nominal transport', 20, '#f4bd73'],
   ['S02', 'Aisle blockage', 20, '#a69cff'],
   ['S03', 'Low battery', 15, '#f5c563'],
   ['S04', 'Destination occupied', 15, '#67dba5'],
@@ -395,7 +407,7 @@ function StatusDot({ tone = 'cyan' }: { tone?: string }) {
 
 function DataPill({ children }: { children: React.ReactNode }) {
   return (
-    <span className="rounded border border-white/10 bg-white/[0.035] px-2 py-1 font-mono text-[10px] tracking-[0.08em] text-slate-400">
+    <span className="rounded border border-white/10 bg-white/[0.035] px-2 py-1 font-mono text-[10px] tracking-[0.08em] text-stone-400">
       {children}
     </span>
   );
@@ -415,8 +427,12 @@ export default function MissionConsole() {
   const [screenshotEvidence, setScreenshotEvidence] =
     useState<ScreenshotEvidence | null>(null);
   const [liveGate, setLiveGate] = useState<LiveGateEvidence | null>(null);
-  const [liveRuntime, setLiveRuntime] = useState<LiveRuntimeSummary | null>(null);
-  const [serverless, setServerless] = useState<ServerlessReadiness | null>(null);
+  const [liveRuntime, setLiveRuntime] = useState<LiveRuntimeSummary | null>(
+    null,
+  );
+  const [serverless, setServerless] = useState<ServerlessReadiness | null>(
+    null,
+  );
   const [releaseAcceptance, setReleaseAcceptance] =
     useState<ReleaseAcceptance | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -438,7 +454,8 @@ export default function MissionConsole() {
       .catch(() => setEvidenceError(true));
     fetch('/data/judge-mode-load.json')
       .then((response) => {
-        if (!response.ok) throw new Error('Judge Mode load evidence unavailable');
+        if (!response.ok)
+          throw new Error('Judge Mode load evidence unavailable');
         return response.json() as Promise<JudgeLoadEvidence>;
       })
       .then(setJudgeLoad)
@@ -473,14 +490,16 @@ export default function MissionConsole() {
       .catch(() => setEvidenceError(true));
     fetch('/data/serverless-readiness.json')
       .then((response) => {
-        if (!response.ok) throw new Error('Serverless readiness evidence unavailable');
+        if (!response.ok)
+          throw new Error('Serverless readiness evidence unavailable');
         return response.json() as Promise<ServerlessReadiness>;
       })
       .then(setServerless)
       .catch(() => setEvidenceError(true));
     fetch('/data/release-acceptance.json')
       .then((response) => {
-        if (!response.ok) throw new Error('release acceptance evidence unavailable');
+        if (!response.ok)
+          throw new Error('release acceptance evidence unavailable');
         return response.json() as Promise<ReleaseAcceptance>;
       })
       .then(setReleaseAcceptance)
@@ -528,28 +547,28 @@ export default function MissionConsole() {
   const complete = runStep >= timeline.length - 1;
 
   return (
-    <main className="min-h-screen bg-[#07111f] text-slate-100">
-      <div className="pointer-events-none fixed bottom-3 right-3 z-[70] rounded border border-amber-300/25 bg-[#07111f]/95 px-2.5 py-1.5 font-mono text-[8px] tracking-[0.08em] text-amber-100 shadow-xl backdrop-blur">
+    <main className="min-h-screen bg-[#1b120d] text-stone-100">
+      <div className="pointer-events-none fixed bottom-3 right-3 z-[70] rounded border border-amber-300/25 bg-[#1b120d]/95 px-2.5 py-1.5 font-mono text-[8px] tracking-[0.08em] text-amber-100 shadow-xl backdrop-blur">
         <span className="font-bold">MOCK / FIXTURE</span>
-        <span className="mx-1.5 text-slate-600">·</span>
+        <span className="mx-1.5 text-stone-600">·</span>
         <time dateTime={heroSummary?.evidence_captured_at}>
           EVIDENCE UTC {heroSummary?.evidence_captured_at ?? 'LOADING'}
         </time>
       </div>
-      <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#07111f]/90 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#1b120d]/90 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-[1500px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <button
             className="group flex items-center gap-3"
             onClick={() => setView('mission')}
           >
-            <span className="grid size-9 place-items-center rounded-md border border-cyan-300/30 bg-cyan-300/10 text-cyan-200 shadow-[0_0_22px_rgba(103,232,227,.12)]">
+            <span className="grid size-9 place-items-center rounded-md border border-orange-300/30 bg-orange-300/10 text-orange-200 shadow-[0_0_22px_rgba(244,189,115,.12)]">
               <Route className="size-5" />
             </span>
             <span className="text-left">
               <span className="block text-[15px] font-bold tracking-[0.16em] text-white">
                 SHIFTZERO
               </span>
-              <span className="block font-mono text-[9px] tracking-[0.22em] text-slate-500">
+              <span className="block font-mono text-[9px] tracking-[0.22em] text-stone-500">
                 HERO—002 / JUDGE MODE
               </span>
             </span>
@@ -569,7 +588,7 @@ export default function MissionConsole() {
                   'h-9 rounded-md px-4 text-xs capitalize tracking-wide',
                   view === item.id
                     ? 'bg-white/[0.07] text-white'
-                    : 'text-slate-400 hover:bg-white/[0.04] hover:text-white',
+                    : 'text-stone-400 hover:bg-white/[0.04] hover:text-white',
                 )}
               >
                 {item.label}
@@ -583,7 +602,7 @@ export default function MissionConsole() {
               title="Inspect source readiness and publication gate"
               variant="ghost"
               size="sm"
-              className="hidden h-8 rounded-md px-3 font-mono text-[9px] text-slate-500 lg:flex"
+              className="hidden h-8 rounded-md px-3 font-mono text-[9px] text-stone-500 lg:flex"
             >
               <GitBranch className="size-3" /> SOURCE GATE
             </Button>
@@ -612,7 +631,7 @@ export default function MissionConsole() {
               onClick={runHero}
               disabled={running}
               size="sm"
-              className="h-9 rounded-md bg-cyan-200 px-4 text-xs font-bold text-[#07111f] hover:bg-cyan-100"
+              className="h-9 rounded-md bg-orange-200 px-4 text-xs font-bold text-[#1b120d] hover:bg-orange-100"
             >
               {running ? (
                 <Activity className="size-3.5 animate-pulse" />
@@ -625,12 +644,14 @@ export default function MissionConsole() {
         </div>
       </header>
 
-      <section className="border-b border-white/[0.06] bg-[#091626]">
+      <section className="border-b border-white/[0.06] bg-[#21150e]">
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center justify-between gap-3 px-4 py-2.5 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 text-[11px] text-slate-400">
+          <div className="flex items-center gap-2 text-[11px] text-stone-400">
             <StatusDot tone="emerald" />
-            <span className="font-medium text-slate-200">MOCK verified replay</span>
-            <span className="text-slate-700">/</span>
+            <span className="font-medium text-stone-200">
+              MOCK verified replay
+            </span>
+            <span className="text-stone-700">/</span>
             <span>
               Reference simulator · deterministic fixture · no cloud key loaded
               in Judge Mode
@@ -662,8 +683,8 @@ export default function MissionConsole() {
               className={classNames(
                 'py-3 text-[10px] font-bold uppercase tracking-[0.15em]',
                 view === item.id
-                  ? 'border-b border-cyan-200 text-cyan-200'
-                  : 'text-slate-500',
+                  ? 'border-b border-orange-200 text-orange-200'
+                  : 'text-stone-500',
               )}
             >
               {item.label}
@@ -737,15 +758,15 @@ function MissionView({
     <div className="mx-auto max-w-[1500px] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-7 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
         <div>
-          <div className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-300">
-            <span className="h-px w-6 bg-cyan-300/70" /> Proof-carrying physical
-            AI
+          <div className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-orange-300">
+            <span className="h-px w-6 bg-orange-300/70" /> Proof-carrying
+            physical AI
           </div>
           <h1 className="max-w-3xl text-3xl font-semibold leading-tight tracking-[-0.03em] text-white sm:text-4xl lg:text-[46px]">
             One sentence in.{' '}
-            <span className="text-cyan-200">One verified mission out.</span>
+            <span className="text-orange-200">One verified mission out.</span>
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-400">
             A judge-readable warehouse mission where AI proposes, deterministic
             rules decide, a human approves, and every transition carries
             evidence.
@@ -753,7 +774,7 @@ function MissionView({
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-slate-600">
+            <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-stone-600">
               Current state
             </p>
             <p
@@ -766,7 +787,7 @@ function MissionView({
             onClick={onRun}
             disabled={running}
             variant="outline"
-            className="h-11 rounded-md border-cyan-200/25 bg-cyan-200/[0.06] px-5 text-xs font-bold text-cyan-100 hover:bg-cyan-200/[0.12]"
+            className="h-11 rounded-md border-orange-200/25 bg-orange-200/[0.06] px-5 text-xs font-bold text-orange-100 hover:bg-orange-200/[0.12]"
           >
             {complete ? (
               <RotateCcw className="size-4" />
@@ -782,7 +803,7 @@ function MissionView({
         </div>
       </div>
 
-      <div className="mb-4 grid grid-cols-2 border border-white/[0.08] bg-[#0a1828] sm:grid-cols-3 xl:grid-cols-6">
+      <div className="mb-4 grid grid-cols-2 border border-white/[0.08] bg-[#261911] sm:grid-cols-3 xl:grid-cols-6">
         {[
           [
             'Connection',
@@ -824,23 +845,23 @@ function MissionView({
             key={label as string}
             className="border-b border-r border-white/[0.06] p-4 last:border-r-0 sm:border-b-0"
           >
-            <div className="mb-1.5 flex items-center gap-2 text-[9px] uppercase tracking-[0.16em] text-slate-600">
+            <div className="mb-1.5 flex items-center gap-2 text-[9px] uppercase tracking-[0.16em] text-stone-600">
               {icon}
               {label}
             </div>
-            <div className="font-mono text-xs font-semibold text-slate-200">
+            <div className="font-mono text-xs font-semibold text-stone-200">
               {value}
             </div>
           </div>
         ))}
       </div>
 
-      <div className="mb-4 flex flex-col justify-between gap-3 border border-white/[0.08] bg-[#0a1828] p-3 sm:flex-row sm:items-center">
+      <div className="mb-4 flex flex-col justify-between gap-3 border border-white/[0.08] bg-[#261911] p-3 sm:flex-row sm:items-center">
         <div>
-          <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-slate-500">
+          <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-stone-500">
             Local replay controls
           </p>
-          <p className="mt-1 text-[10px] text-slate-600">
+          <p className="mt-1 text-[10px] text-stone-600">
             Demonstrates UI states; authoritative operations are defined in
             openapi.json.
           </p>
@@ -911,17 +932,17 @@ function WarehouseMap({
   replanned: boolean;
 }) {
   return (
-    <Card className="overflow-hidden rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+    <Card className="overflow-hidden rounded-lg border-white/[0.09] bg-[#261911] shadow-none">
       <CardHeader className="flex-row items-center justify-between border-b border-white/[0.06] px-5 py-4">
         <div>
           <CardTitle className="text-xs font-semibold tracking-wide text-white">
             Live mission topology
           </CardTitle>
-          <p className="mt-1 font-mono text-[9px] tracking-[0.1em] text-slate-600">
+          <p className="mt-1 font-mono text-[9px] tracking-[0.1em] text-stone-600">
             WAREHOUSE WEST · SIMULATION FRAME 04
           </p>
         </div>
-        <div className="flex items-center gap-2 text-[10px] text-slate-500">
+        <div className="flex items-center gap-2 text-[10px] text-stone-500">
           <RadioTower className="size-3.5 text-emerald-300" />
           LOCAL TELEMETRY
         </div>
@@ -949,7 +970,7 @@ function WarehouseMap({
               <path
                 d="M0 20V0H20"
                 fill="none"
-                stroke="#203a50"
+                stroke="#5a3a25"
                 strokeWidth="1"
               />
             </pattern>
@@ -963,7 +984,7 @@ function WarehouseMap({
               height="62"
               rx="4"
               fill="url(#shelf)"
-              stroke="#29445a"
+              stroke="#6a452d"
             />
           ))}
           {[55, 205, 505].map((x) => (
@@ -975,7 +996,7 @@ function WarehouseMap({
               height="62"
               rx="4"
               fill="url(#shelf)"
-              stroke="#29445a"
+              stroke="#6a452d"
             />
           ))}
           <rect
@@ -984,7 +1005,7 @@ function WarehouseMap({
             width="100"
             height="62"
             rx="4"
-            fill="#112a34"
+            fill="#38251a"
             stroke="#346057"
           />
           <text
@@ -1000,7 +1021,7 @@ function WarehouseMap({
           <path
             d="M105 280 L225 280 L285 225 L405 225 L455 175 L555 175 L620 235"
             fill="none"
-            stroke="#273d50"
+            stroke="#5d3d28"
             strokeWidth="14"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -1008,14 +1029,14 @@ function WarehouseMap({
           <path
             d="M105 280 L225 280 L285 225 L405 225 L455 175 L555 175 L620 235"
             fill="none"
-            stroke="#4f7087"
+            stroke="#a27b50"
             strokeWidth="2"
             strokeDasharray="8 9"
           />
           <path
             d="M105 280 L225 280 L285 225 L405 225"
             fill="none"
-            stroke="#67e8e3"
+            stroke="#f4bd73"
             strokeWidth="7"
             strokeLinecap="round"
             filter="url(#glow)"
@@ -1052,14 +1073,14 @@ function WarehouseMap({
               width="40"
               height="28"
               rx="7"
-              fill="#67e8e3"
+              fill="#f4bd73"
             />
-            <circle cx="-11" cy="15" r="5" fill="#07111f" stroke="#67e8e3" />
-            <circle cx="11" cy="15" r="5" fill="#07111f" stroke="#67e8e3" />
+            <circle cx="-11" cy="15" r="5" fill="#1b120d" stroke="#f4bd73" />
+            <circle cx="11" cy="15" r="5" fill="#1b120d" stroke="#f4bd73" />
             <text
               y="4"
               textAnchor="middle"
-              fill="#07111f"
+              fill="#1b120d"
               fontSize="10"
               fontWeight="800"
               fontFamily="monospace"
@@ -1068,11 +1089,11 @@ function WarehouseMap({
             </text>
           </g>
           <g transform="translate(105 280)">
-            <circle r="8" fill="#07111f" stroke="#67e8e3" strokeWidth="3" />
+            <circle r="8" fill="#1b120d" stroke="#f4bd73" strokeWidth="3" />
             <text
               y="-17"
               textAnchor="middle"
-              fill="#8da2b5"
+              fill="#d2ad82"
               fontSize="10"
               fontFamily="monospace"
             >
@@ -1084,7 +1105,7 @@ function WarehouseMap({
             <path
               d="M-4 0L-1 4L5-5"
               fill="none"
-              stroke="#07111f"
+              stroke="#1b120d"
               strokeWidth="2"
             />
           </g>
@@ -1092,14 +1113,14 @@ function WarehouseMap({
         <div className="absolute bottom-4 left-4 flex flex-wrap gap-2">
           <Badge
             variant="outline"
-            className="border-cyan-300/20 bg-[#07111f]/80 font-mono text-[9px] text-cyan-200"
+            className="border-orange-300/20 bg-[#1b120d]/80 font-mono text-[9px] text-orange-200"
           >
-            <span className="mr-1 h-0.5 w-4 bg-cyan-200" />
+            <span className="mr-1 h-0.5 w-4 bg-orange-200" />
             EXECUTED
           </Badge>
           <Badge
             variant="outline"
-            className="border-violet-300/20 bg-[#07111f]/80 font-mono text-[9px] text-violet-200"
+            className="border-violet-300/20 bg-[#1b120d]/80 font-mono text-[9px] text-violet-200"
           >
             <span className="mr-1 h-0.5 w-4 border-t-2 border-dashed border-violet-300" />
             REPLAN
@@ -1137,7 +1158,7 @@ function SafetyCard({
     ['approval_integrity', runStep >= 5],
   ];
   return (
-    <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+    <Card className="rounded-lg border-white/[0.09] bg-[#261911] shadow-none">
       <CardHeader className="border-b border-white/[0.06] px-5 py-4">
         <CardTitle className="flex items-center justify-between text-xs text-white">
           <span className="flex items-center gap-2">
@@ -1156,14 +1177,14 @@ function SafetyCard({
               key={name as string}
               className="flex items-center justify-between border-b border-white/[0.045] pb-2.5 font-mono text-[10px]"
             >
-              <span className="text-slate-400">{name}</span>
+              <span className="text-stone-400">{name}</span>
               {passed ? (
                 <span className="flex items-center gap-1.5 text-emerald-300">
                   <Check className="size-3" />
                   PASS
                 </span>
               ) : (
-                <span className="text-slate-700">PENDING</span>
+                <span className="text-stone-700">PENDING</span>
               )}
             </div>
           ))}
@@ -1174,7 +1195,7 @@ function SafetyCard({
               <AlertTriangle className="size-3.5" />
               LOCAL STOP ASSERTED
             </div>
-            <p className="mt-1.5 font-mono text-[9px] leading-4 text-slate-500">
+            <p className="mt-1.5 font-mono text-[9px] leading-4 text-stone-500">
               simulator process ·{' '}
               {heroSummary
                 ? `${heroSummary.stop_latency_ms.toFixed(6)} ms`
@@ -1201,14 +1222,14 @@ function SafetyCard({
 
 function TraceRail({ runStep }: { runStep: number }) {
   return (
-    <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+    <Card className="rounded-lg border-white/[0.09] bg-[#261911] shadow-none">
       <CardHeader className="border-b border-white/[0.06] px-5 py-4">
         <CardTitle className="flex items-center justify-between text-xs text-white">
           <span className="flex items-center gap-2">
-            <TerminalSquare className="size-4 text-cyan-200" />
+            <TerminalSquare className="size-4 text-orange-200" />
             Evidence trace
           </span>
-          <span className="font-mono text-[9px] font-normal text-slate-600">
+          <span className="font-mono text-[9px] font-normal text-stone-600">
             SHA-256 CHAIN
           </span>
         </CardTitle>
@@ -1231,8 +1252,8 @@ function TraceRail({ runStep }: { runStep: number }) {
                     'absolute -left-[25px] top-1 size-2 rounded-full border',
                     visible
                       ? `status-${item.tone}`
-                      : 'border-slate-700 bg-[#0a1828]',
-                    current && 'ring-4 ring-cyan-200/10',
+                      : 'border-stone-700 bg-[#261911]',
+                    current && 'ring-4 ring-orange-200/10',
                   )}
                 />
                 <div className="flex items-center justify-between gap-2">
@@ -1241,15 +1262,15 @@ function TraceRail({ runStep }: { runStep: number }) {
                   >
                     {item.state}
                   </span>
-                  <span className="font-mono text-[8px] text-slate-700">
+                  <span className="font-mono text-[8px] text-stone-700">
                     {String(index + 1).padStart(2, '0')}
                   </span>
                 </div>
-                <p className="mt-1 font-mono text-[9px] text-slate-400">
+                <p className="mt-1 font-mono text-[9px] text-stone-400">
                   {item.event}
                 </p>
                 {current && (
-                  <p className="mt-1.5 text-[10px] leading-4 text-slate-500">
+                  <p className="mt-1.5 text-[10px] leading-4 text-stone-500">
                     {item.detail}
                   </p>
                 )}
@@ -1272,17 +1293,17 @@ function MissionBrief({
   heroSummary: HeroSummary | null;
 }) {
   return (
-    <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+    <Card className="rounded-lg border-white/[0.09] bg-[#261911] shadow-none">
       <CardContent className="grid gap-6 p-5 sm:grid-cols-[1fr_auto] sm:items-center">
         <div>
-          <div className="mb-2 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.15em] text-slate-600">
+          <div className="mb-2 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.15em] text-stone-600">
             <MapPinned className="size-3.5" />
             Natural-language intent
           </div>
           <p className="text-base font-medium text-white">
             “Move pallet P-104 from INBOUND-01 to RACK-A12.”
           </p>
-          <p className="mt-2 text-xs leading-5 text-slate-500">
+          <p className="mt-2 text-xs leading-5 text-stone-500">
             Current event:{' '}
             <span className={`font-mono metric-${active.tone}`}>
               {active.event}
@@ -1292,24 +1313,25 @@ function MissionBrief({
         </div>
         <div className="flex gap-3 sm:text-right">
           <div className="border-l border-white/[0.08] pl-4">
-            <p className="font-mono text-[9px] text-slate-600">PROPOSAL</p>
-            <p className="mt-1 max-w-32 truncate font-mono text-xs text-slate-300">
+            <p className="font-mono text-[9px] text-stone-600">PROPOSAL</p>
+            <p className="mt-1 max-w-32 truncate font-mono text-xs text-stone-300">
               {heroSummary?.proposal_id ?? 'loading'}
             </p>
           </div>
           <div className="border-l border-white/[0.08] pl-4">
-            <p className="font-mono text-[9px] text-slate-600">OUTCOME</p>
+            <p className="font-mono text-[9px] text-stone-600">OUTCOME</p>
             <p
               className={classNames(
                 'mt-1 font-mono text-xs',
-                complete ? 'text-emerald-300' : 'text-slate-600',
+                complete ? 'text-emerald-300' : 'text-stone-600',
               )}
             >
               {complete ? 'VERIFIED' : 'PENDING'}
             </p>
             {complete && heroSummary?.final_pose && (
               <p className="mt-1 whitespace-nowrap font-mono text-[9px] text-emerald-200/75">
-                {heroSummary.final_pose.node_id} · x {heroSummary.final_pose.x.toFixed(1)} · y{' '}
+                {heroSummary.final_pose.node_id} · x{' '}
+                {heroSummary.final_pose.x.toFixed(1)} · y{' '}
                 {heroSummary.final_pose.y.toFixed(1)} · θ{' '}
                 {heroSummary.final_pose.heading_deg.toFixed(1)}°
               </p>
@@ -1323,7 +1345,7 @@ function MissionBrief({
 
 function TrustBoundary() {
   return (
-    <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+    <Card className="rounded-lg border-white/[0.09] bg-[#261911] shadow-none">
       <CardContent className="flex h-full items-center gap-4 p-5">
         <div className="grid size-10 shrink-0 place-items-center rounded-md border border-violet-300/20 bg-violet-300/[0.07]">
           <Cpu className="size-5 text-violet-200" />
@@ -1332,7 +1354,7 @@ function TrustBoundary() {
           <p className="text-xs font-semibold text-white">
             AI proposes. Rules authorize.
           </p>
-          <p className="mt-1 text-[11px] leading-5 text-slate-500">
+          <p className="mt-1 text-[11px] leading-5 text-stone-500">
             No model output crosses the actuation boundary without schema,
             safety proof and human approval.
           </p>
@@ -1355,7 +1377,7 @@ function ArchitectureView({ onRun }: { onRun: () => void }) {
             <br />
             <span className="text-violet-200">Authority below.</span>
           </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-400">
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-stone-400">
             The design separates probabilistic reasoning from deterministic
             authorization, then preserves the relationship in a tamper-evident
             evidence chain.
@@ -1364,7 +1386,7 @@ function ArchitectureView({ onRun }: { onRun: () => void }) {
         <div className="flex justify-start lg:justify-end">
           <Button
             onClick={onRun}
-            className="rounded-md bg-violet-200 text-[#07111f] hover:bg-violet-100"
+            className="rounded-md bg-violet-200 text-[#1b120d] hover:bg-violet-100"
           >
             <Play className="size-4" />
             Watch the boundary in action
@@ -1377,9 +1399,9 @@ function ArchitectureView({ onRun }: { onRun: () => void }) {
           return (
             <div
               key={layer.number}
-              className="group grid gap-4 border border-white/[0.08] bg-[#0a1828] p-5 transition-colors hover:border-violet-300/20 sm:grid-cols-[60px_48px_1fr_auto] sm:items-center"
+              className="group grid gap-4 border border-white/[0.08] bg-[#261911] p-5 transition-colors hover:border-violet-300/20 sm:grid-cols-[60px_48px_1fr_auto] sm:items-center"
             >
-              <span className="font-mono text-xs text-slate-700">
+              <span className="font-mono text-xs text-stone-700">
                 {layer.number}
               </span>
               <div className="grid size-10 place-items-center rounded border border-white/[0.08] bg-white/[0.025]">
@@ -1396,13 +1418,13 @@ function ArchitectureView({ onRun }: { onRun: () => void }) {
                 <h2 className="text-sm font-semibold text-white">
                   {layer.title}
                 </h2>
-                <p className="mt-1 text-xs leading-5 text-slate-500">
+                <p className="mt-1 text-xs leading-5 text-stone-500">
                   {layer.detail}
                 </p>
               </div>
               <Badge
                 variant="outline"
-                className="w-fit rounded-sm border-white/[0.1] font-mono text-[9px] text-slate-400"
+                className="w-fit rounded-sm border-white/[0.1] font-mono text-[9px] text-stone-400"
               >
                 {layer.label}
               </Badge>
@@ -1441,11 +1463,11 @@ function BoundaryCard({
   detail: string;
 }) {
   return (
-    <Card className="rounded-lg border-white/[0.08] bg-[#0a1828] shadow-none">
+    <Card className="rounded-lg border-white/[0.08] bg-[#261911] shadow-none">
       <CardContent className="p-5">
-        <Icon className="mb-4 size-5 text-cyan-200" />
+        <Icon className="mb-4 size-5 text-orange-200" />
         <h3 className="text-sm font-semibold text-white">{title}</h3>
-        <p className="mt-2 text-xs leading-5 text-slate-500">{detail}</p>
+        <p className="mt-2 text-xs leading-5 text-stone-500">{detail}</p>
       </CardContent>
     </Card>
   );
@@ -1487,7 +1509,7 @@ function EvidenceView({
             100 scenarios.{' '}
             <span className="text-emerald-200">Zero silent failures.</span>
           </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-400">
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-stone-400">
             A deterministic, reproducible offline suite spanning nominal
             delivery and five safety-critical edge-case families.
           </p>
@@ -1503,11 +1525,11 @@ function EvidenceView({
         </a>
       </div>
 
-      <Card className="mb-4 rounded-lg border-cyan-300/20 bg-cyan-300/[0.035] shadow-none">
-        <CardHeader className="border-b border-cyan-300/10 px-5 py-4">
+      <Card className="mb-4 rounded-lg border-orange-300/20 bg-orange-300/[0.035] shadow-none">
+        <CardHeader className="border-b border-orange-300/10 px-5 py-4">
           <CardTitle className="flex flex-wrap items-center justify-between gap-3 text-xs text-white">
             <span className="flex items-center gap-2">
-              <FileCheck2 className="size-4 text-cyan-200" />
+              <FileCheck2 className="size-4 text-orange-200" />
               PDF release acceptance · A01–A12
             </span>
             <span className="flex flex-wrap items-center gap-2">
@@ -1551,7 +1573,7 @@ function EvidenceView({
                   >
                     {item.id}
                   </span>
-                  <span className="font-mono text-[8px] uppercase tracking-[0.08em] text-slate-600">
+                  <span className="font-mono text-[8px] uppercase tracking-[0.08em] text-stone-600">
                     {item.status === 'passed'
                       ? 'PASS'
                       : item.status === 'external_evidence_required'
@@ -1559,21 +1581,21 @@ function EvidenceView({
                         : 'FAIL'}
                   </span>
                 </div>
-                <p className="mt-2 text-[10px] leading-4 text-slate-400">
+                <p className="mt-2 text-[10px] leading-4 text-stone-400">
                   {item.requirement}
                 </p>
-                <p className="mt-2 text-[9px] leading-4 text-slate-600">
+                <p className="mt-2 text-[9px] leading-4 text-stone-600">
                   {item.detail}
                 </p>
               </div>
             )) ?? (
-              <p className="col-span-full py-6 text-center text-xs text-slate-600">
+              <p className="col-span-full py-6 text-center text-xs text-stone-600">
                 Loading the signed acceptance ledger…
               </p>
             )}
           </div>
           <div className="mt-4 flex flex-col justify-between gap-3 border-t border-white/[0.06] pt-4 sm:flex-row sm:items-center">
-            <p className="max-w-3xl text-[10px] leading-5 text-slate-500">
+            <p className="max-w-3xl text-[10px] leading-5 text-stone-500">
               Simulator rehearsal cannot close A06/A07. Draft copy cannot close
               A11/A12. The report fails closed until physical artifacts and the
               owner-authorized public submission exist.
@@ -1582,7 +1604,7 @@ function EvidenceView({
               <Button
                 size="sm"
                 variant="outline"
-                className="rounded-md border-cyan-300/20 bg-cyan-300/[0.04] text-cyan-100 hover:bg-cyan-300/[0.1]"
+                className="rounded-md border-orange-300/20 bg-orange-300/[0.04] text-orange-100 hover:bg-orange-300/[0.1]"
               >
                 <Download className="size-4" /> Download A01–A12 report
               </Button>
@@ -1610,14 +1632,15 @@ function EvidenceView({
         </CardHeader>
         <CardContent className="flex flex-col justify-between gap-4 p-5 lg:flex-row lg:items-center">
           <div>
-            <p className="max-w-3xl text-xs leading-6 text-slate-400">
+            <p className="max-w-3xl text-xs leading-6 text-stone-400">
               Rehearse nine-AGV traffic, 2D/isometric views, synthetic blockage,
               local stop timing, route recovery and evidence export before the
-              onsite test. Simulator output is intentionally ineligible for final
-              A06/A07 evidence.
+              onsite test. Simulator output is intentionally ineligible for
+              final A06/A07 evidence.
             </p>
-            <p className="mt-2 font-mono text-[9px] text-slate-600">
-              FIELD CLOSEOUT REQUIRES VIDEO + TELEMETRY + SENSOR CAPTURE + MQTT/VDA 5050 TRACE
+            <p className="mt-2 font-mono text-[9px] text-stone-600">
+              FIELD CLOSEOUT REQUIRES VIDEO + TELEMETRY + SENSOR CAPTURE +
+              MQTT/VDA 5050 TRACE
             </p>
           </div>
           <Button
@@ -1629,7 +1652,7 @@ function EvidenceView({
         </CardContent>
       </Card>
 
-      <div className="mb-4 grid grid-cols-2 border border-white/[0.08] bg-[#0a1828] md:grid-cols-3 xl:grid-cols-6">
+      <div className="mb-4 grid grid-cols-2 border border-white/[0.08] bg-[#261911] md:grid-cols-3 xl:grid-cols-6">
         <Metric
           value={
             scenarioMetrics
@@ -1672,7 +1695,9 @@ function EvidenceView({
               Live Nebius Token Factory Compatibility Gate
             </span>
             <Badge className="rounded-sm bg-emerald-300/10 font-mono text-[8px] text-emerald-300">
-              {liveGate?.official_gate_passed ? 'OFFICIAL GATE · PASS' : 'VERIFYING'}
+              {liveGate?.official_gate_passed
+                ? 'OFFICIAL GATE · PASS'
+                : 'VERIFYING'}
             </Badge>
           </CardTitle>
         </CardHeader>
@@ -1711,22 +1736,23 @@ function EvidenceView({
               value={liveGate ? `${liveGate.failures.length}` : '—'}
             />
           </div>
-          <p className="mt-4 break-all font-mono text-[9px] leading-4 text-slate-500">
+          <p className="mt-4 break-all font-mono text-[9px] leading-4 text-stone-500">
             {liveGate
               ? `${liveGate.provider} · ${liveGate.model} · report ${liveGate.report_hash}`
               : 'Loading signed-off aggregate report…'}
           </p>
-          <p className="mt-2 text-[10px] leading-5 text-slate-500">
-            Live model/provider evidence over the reference simulator. This does not claim physical AGV execution.
+          <p className="mt-2 text-[10px] leading-5 text-stone-500">
+            Live model/provider evidence over the reference simulator. This does
+            not claim physical AGV execution.
           </p>
         </CardContent>
       </Card>
 
-      <Card className="mb-4 rounded-lg border-cyan-300/20 bg-cyan-300/[0.035] shadow-none">
-        <CardHeader className="border-b border-cyan-300/10 px-5 py-4">
+      <Card className="mb-4 rounded-lg border-orange-300/20 bg-orange-300/[0.035] shadow-none">
+        <CardHeader className="border-b border-orange-300/10 px-5 py-4">
           <CardTitle className="flex flex-wrap items-center justify-between gap-3 text-xs text-white">
             <span className="flex items-center gap-2">
-              <TerminalSquare className="size-4 text-cyan-200" />
+              <TerminalSquare className="size-4 text-orange-200" />
               Real-call receipts · one representative live trace
             </span>
             <Badge className="rounded-sm border border-emerald-300/20 bg-emerald-300/[0.08] font-mono text-[8px] text-emerald-200">
@@ -1742,18 +1768,26 @@ function EvidenceView({
             />
             <EvidenceStat
               label="Prompt contract"
-              value={liveRuntime ? liveRuntime.metadata.prompt_contract.version : '—'}
+              value={
+                liveRuntime ? liveRuntime.metadata.prompt_contract.version : '—'
+              }
             />
             <EvidenceStat
               label="Tool schema"
-              value={liveRuntime ? liveRuntime.metadata.tool_schema.version : '—'}
+              value={
+                liveRuntime ? liveRuntime.metadata.tool_schema.version : '—'
+              }
             />
             <EvidenceStat
               label="Trace"
-              value={liveRuntime ? liveRuntime.representative_live_trace.trace_id : '—'}
+              value={
+                liveRuntime
+                  ? liveRuntime.representative_live_trace.trace_id
+                  : '—'
+              }
             />
           </div>
-          <p className="mt-4 break-all font-mono text-[9px] leading-4 text-slate-500">
+          <p className="mt-4 break-all font-mono text-[9px] leading-4 text-stone-500">
             {liveRuntime
               ? `${liveRuntime.metadata.provider} · ${liveRuntime.metadata.model} · ${liveRuntime.metadata.endpoint_base_url}`
               : 'Loading live runtime metadata…'}
@@ -1772,48 +1806,80 @@ function EvidenceView({
                     HTTP {call.http_status} · {call.finish_reason}
                   </span>
                 </div>
-                <p className="mt-2 break-all font-mono text-[9px] leading-4 text-slate-400">
+                <p className="mt-2 break-all font-mono text-[9px] leading-4 text-stone-400">
                   request_id {call.request_id}
                 </p>
-                <p className="mt-1 font-mono text-[9px] leading-4 text-slate-500">
-                  {call.latency_ms.toFixed(3)} ms · {call.input_tokens} in / {call.output_tokens} out · retry {call.retry_count} · repair {call.repair_count}
+                <p className="mt-1 font-mono text-[9px] leading-4 text-stone-500">
+                  {call.latency_ms.toFixed(3)} ms · {call.input_tokens} in /{' '}
+                  {call.output_tokens} out · retry {call.retry_count} · repair{' '}
+                  {call.repair_count}
                 </p>
-                <p className="mt-1 truncate font-mono text-[9px] text-slate-600">
-                  args {call.tool_arguments_hash.slice(0, 16)}… · result {call.tool_result_hash.slice(0, 16)}…
+                <p className="mt-1 truncate font-mono text-[9px] text-stone-600">
+                  args {call.tool_arguments_hash.slice(0, 16)}… · result{' '}
+                  {call.tool_result_hash.slice(0, 16)}…
                 </p>
               </div>
-            )) ?? <p className="text-xs text-slate-500">Loading real-call receipts…</p>}
+            )) ?? (
+              <p className="text-xs text-stone-500">
+                Loading real-call receipts…
+              </p>
+            )}
           </div>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <EvidenceStat
               label="Replan median / p95"
-              value={liveRuntime ? `${liveRuntime.measurements.replan_mission.latency_ms.median.toFixed(4)} / ${liveRuntime.measurements.replan_mission.latency_ms.p95.toFixed(4)} ms` : '—'}
+              value={
+                liveRuntime
+                  ? `${liveRuntime.measurements.replan_mission.latency_ms.median.toFixed(4)} / ${liveRuntime.measurements.replan_mission.latency_ms.p95.toFixed(4)} ms`
+                  : '—'
+              }
             />
             <EvidenceStat
               label="Replan successes"
-              value={liveRuntime ? `${liveRuntime.measurements.replan_mission.successful_result_count}/${liveRuntime.measurements.replan_mission.sample_size}` : '—'}
+              value={
+                liveRuntime
+                  ? `${liveRuntime.measurements.replan_mission.successful_result_count}/${liveRuntime.measurements.replan_mission.sample_size}`
+                  : '—'
+              }
             />
             <EvidenceStat
               label="Cost / mission median"
-              value={liveRuntime ? `$${liveRuntime.measurements.cost_kpi.per_mission_estimated_usd.median.toFixed(6)}` : '—'}
+              value={
+                liveRuntime
+                  ? `$${liveRuntime.measurements.cost_kpi.per_mission_estimated_usd.median.toFixed(6)}`
+                  : '—'
+              }
             />
             <EvidenceStat
               label="120-run estimated cost"
-              value={liveRuntime ? `$${liveRuntime.measurements.cost_kpi.total_gate_estimated_usd.toFixed(6)}` : '—'}
+              value={
+                liveRuntime
+                  ? `$${liveRuntime.measurements.cost_kpi.total_gate_estimated_usd.toFixed(6)}`
+                  : '—'
+              }
             />
           </div>
-          <p className="mt-4 text-[10px] leading-5 text-slate-500">
-            Replan is measured inside 120 live-provider reference-simulator runs. Cost uses measured token counts × the Token Factory catalog snapshot ($0.30/M prompt, $0.90/M completion); it is not an invoice or a physical-AGV result.
+          <p className="mt-4 text-[10px] leading-5 text-stone-500">
+            Replan is measured inside 120 live-provider reference-simulator
+            runs. Cost uses measured token counts × the Token Factory catalog
+            snapshot ($0.30/M prompt, $0.90/M completion); it is not an invoice
+            or a physical-AGV result.
           </p>
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            <EvidenceLink href="/data/live-runtime-summary.json" label="live-runtime-summary.json" />
-            <EvidenceLink href="/data/token-factory-model-catalog.json" label="token-factory-model-catalog.json" />
+            <EvidenceLink
+              href="/data/live-runtime-summary.json"
+              label="live-runtime-summary.json"
+            />
+            <EvidenceLink
+              href="/data/token-factory-model-catalog.json"
+              label="token-factory-model-catalog.json"
+            />
           </div>
         </CardContent>
       </Card>
 
       <div className="grid gap-4 lg:grid-cols-[1.2fr_.8fr]">
-        <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+        <Card className="rounded-lg border-white/[0.09] bg-[#261911] shadow-none">
           <CardHeader className="border-b border-white/[0.06] px-5 py-4">
             <CardTitle className="text-xs text-white">
               Scenario families
@@ -1824,12 +1890,12 @@ function EvidenceView({
               <div key={id}>
                 <div className="mb-2 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="font-mono text-[9px] text-slate-600">
+                    <span className="font-mono text-[9px] text-stone-600">
                       {id}
                     </span>
-                    <span className="text-xs text-slate-300">{label}</span>
+                    <span className="text-xs text-stone-300">{label}</span>
                   </div>
-                  <span className="font-mono text-[10px] text-slate-500">
+                  <span className="font-mono text-[10px] text-stone-500">
                     {count}/{count}
                   </span>
                 </div>
@@ -1843,7 +1909,7 @@ function EvidenceView({
             ))}
           </CardContent>
         </Card>
-        <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+        <Card className="rounded-lg border-white/[0.09] bg-[#261911] shadow-none">
           <CardHeader className="border-b border-white/[0.06] px-5 py-4">
             <CardTitle className="flex items-center gap-2 text-xs text-white">
               <Fingerprint className="size-4 text-emerald-300" />
@@ -1868,10 +1934,10 @@ function EvidenceView({
                 ],
               ].map(([term, value]) => (
                 <div key={term} className="border-b border-white/[0.05] pb-3">
-                  <dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-slate-600">
+                  <dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-stone-600">
                     {term}
                   </dt>
-                  <dd className="mt-1.5 break-all font-mono text-[10px] text-slate-300">
+                  <dd className="mt-1.5 break-all font-mono text-[10px] text-stone-300">
                     {value}
                   </dd>
                 </div>
@@ -1922,7 +1988,7 @@ function EvidenceView({
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[1.15fr_.85fr]">
-        <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+        <Card className="rounded-lg border-white/[0.09] bg-[#261911] shadow-none">
           <CardHeader className="border-b border-white/[0.06] px-5 py-4">
             <CardTitle className="flex items-center justify-between gap-2 text-xs text-white">
               <span className="flex items-center gap-2">
@@ -1944,44 +2010,48 @@ function EvidenceView({
                   <span className="font-mono text-[10px] text-violet-200">
                     {call.tool_name}
                   </span>
-                  <span className="font-mono text-[9px] text-slate-500">
+                  <span className="font-mono text-[9px] text-stone-500">
                     {call.latency_ms.toFixed(3)} ms
                   </span>
                 </div>
-                <p className="mt-2 truncate font-mono text-[9px] text-slate-600">
+                <p className="mt-2 truncate font-mono text-[9px] text-stone-600">
                   {call.provider} / {call.model}
                 </p>
-                <p className="mt-1 truncate font-mono text-[9px] text-slate-600">
+                <p className="mt-1 truncate font-mono text-[9px] text-stone-600">
                   args {call.tool_arguments_hash.slice(0, 12)}… · result{' '}
                   {call.tool_result_hash.slice(0, 12)}…
                 </p>
               </div>
             )) ?? (
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-stone-500">
                 Loading verified tool spans…
               </p>
             )}
             {heroSummary?.operation_metrics && (
-              <div className="border border-cyan-300/15 bg-cyan-300/[0.035] p-3 sm:col-span-2">
+              <div className="border border-orange-300/15 bg-orange-300/[0.035] p-3 sm:col-span-2">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="font-mono text-[10px] text-cyan-200">
+                  <span className="font-mono text-[10px] text-orange-200">
                     get_operation_metrics
                   </span>
                   <span className="font-mono text-[9px] text-emerald-300">
-                    {heroSummary.operation_metrics.completed ? 'TYPED RESULT · PASS' : 'INCOMPLETE'}
+                    {heroSummary.operation_metrics.completed
+                      ? 'TYPED RESULT · PASS'
+                      : 'INCOMPLETE'}
                   </span>
                 </div>
-                <p className="mt-2 font-mono text-[9px] leading-4 text-slate-500">
+                <p className="mt-2 font-mono text-[9px] leading-4 text-stone-500">
                   {heroSummary.operation_metrics.schema_version} · mission{' '}
-                  {heroSummary.operation_metrics.mission_id} · sample n={heroSummary.operation_metrics.sample_size} ·{' '}
-                  {heroSummary.operation_metrics.total_duration_ms.toFixed(3)} ms ·{' '}
-                  {heroSummary.operation_metrics.human_interventions} human approval
+                  {heroSummary.operation_metrics.mission_id} · sample n=
+                  {heroSummary.operation_metrics.sample_size} ·{' '}
+                  {heroSummary.operation_metrics.total_duration_ms.toFixed(3)}{' '}
+                  ms · {heroSummary.operation_metrics.human_interventions} human
+                  approval
                 </p>
               </div>
             )}
           </CardContent>
         </Card>
-        <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+        <Card className="rounded-lg border-white/[0.09] bg-[#261911] shadow-none">
           <CardHeader className="border-b border-white/[0.06] px-5 py-4">
             <CardTitle className="text-xs text-white">
               Release acceptance boundary
@@ -1998,7 +2068,12 @@ function EvidenceView({
                 liveGate?.official_gate_passed ? 'emerald' : 'amber',
               ],
               ['A06–A07', 'Physical stop and AGV loop', 'HARDWARE', 'amber'],
-              ['A09–A10', 'Public Judge Mode + source', 'PUBLIC PASS', 'emerald'],
+              [
+                'A09–A10',
+                'Public Judge Mode + source',
+                'PUBLIC PASS',
+                'emerald',
+              ],
               [
                 'A11–A12',
                 'Physical video + Devpost submission',
@@ -2010,10 +2085,10 @@ function EvidenceView({
                 key={id}
                 className="grid grid-cols-[60px_1fr_auto] items-center gap-3 border-b border-white/[0.05] py-2"
               >
-                <span className="font-mono text-[9px] text-slate-600">
+                <span className="font-mono text-[9px] text-stone-600">
                   {id}
                 </span>
-                <span className="text-[11px] text-slate-400">{label}</span>
+                <span className="text-[11px] text-stone-400">{label}</span>
                 <span className={`font-mono text-[9px] metric-${tone}`}>
                   {status}
                 </span>
@@ -2024,11 +2099,12 @@ function EvidenceView({
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+        <Card className="rounded-lg border-white/[0.09] bg-[#261911] shadow-none">
           <CardHeader className="border-b border-white/[0.06] px-5 py-4">
             <CardTitle className="flex items-center justify-between gap-3 text-xs text-white">
               <span className="flex items-center gap-2">
-                <Zap className="size-4 text-cyan-200" /> Judge Mode first-load evidence
+                <Zap className="size-4 text-orange-200" /> Judge Mode first-load
+                evidence
               </span>
               <Badge className="rounded-sm bg-emerald-300/10 font-mono text-[8px] text-emerald-300">
                 {judgeLoad?.acceptance_passed ? 'PASS' : 'VERIFYING'}
@@ -2037,22 +2113,40 @@ function EvidenceView({
           </CardHeader>
           <CardContent className="p-5">
             <div className="grid grid-cols-3 gap-3">
-              <EvidenceStat label="Samples" value={judgeLoad ? `${judgeLoad.sample_count}` : '—'} />
-              <EvidenceStat label="Median" value={judgeLoad ? `${judgeLoad.median_ms.toFixed(0)} ms` : '—'} />
-              <EvidenceStat label="p95 / limit" value={judgeLoad ? `${judgeLoad.p95_ms.toFixed(0)} / ${judgeLoad.threshold_ms} ms` : '—'} />
+              <EvidenceStat
+                label="Samples"
+                value={judgeLoad ? `${judgeLoad.sample_count}` : '—'}
+              />
+              <EvidenceStat
+                label="Median"
+                value={judgeLoad ? `${judgeLoad.median_ms.toFixed(0)} ms` : '—'}
+              />
+              <EvidenceStat
+                label="p95 / limit"
+                value={
+                  judgeLoad
+                    ? `${judgeLoad.p95_ms.toFixed(0)} / ${judgeLoad.threshold_ms} ms`
+                    : '—'
+                }
+              />
             </div>
-            <p className="mt-4 text-[10px] leading-5 text-slate-500">
-              Local production build · browser end-to-end load timing · one new-tab navigation plus 19 same-tab reloads.
+            <p className="mt-4 text-[10px] leading-5 text-stone-500">
+              Local production build · browser end-to-end load timing · one
+              new-tab navigation plus 19 same-tab reloads.
             </p>
-            <EvidenceLink href="/data/judge-mode-load.json" label="judge-mode-load.json" />
+            <EvidenceLink
+              href="/data/judge-mode-load.json"
+              label="judge-mode-load.json"
+            />
           </CardContent>
         </Card>
 
-        <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+        <Card className="rounded-lg border-white/[0.09] bg-[#261911] shadow-none">
           <CardHeader className="border-b border-white/[0.06] px-5 py-4">
             <CardTitle className="flex items-center justify-between gap-3 text-xs text-white">
               <span className="flex items-center gap-2">
-                <Activity className="size-4 text-violet-200" /> 400–500 pallets/day stress model
+                <Activity className="size-4 text-violet-200" /> 400–500
+                pallets/day stress model
               </span>
               <Badge className="rounded-sm bg-violet-300/10 font-mono text-[8px] text-violet-200">
                 PROJECTION · NOT PHYSICAL
@@ -2062,48 +2156,90 @@ function EvidenceView({
           <CardContent className="p-5">
             <div className="space-y-2">
               {impactLoad?.loads.map((row) => (
-                <div key={row.pallets_per_day} className="grid grid-cols-[80px_1fr_auto] items-center gap-3 border-b border-white/[0.05] py-2 font-mono text-[9px]">
-                  <span className="text-slate-300">{row.pallets_per_day}/day</span>
-                  <span className="text-slate-500">
-                    util {(row.agv_metrics.mean_utilization * 100).toFixed(1)}% · p95 wait {row.agv_metrics.p95_queue_wait_seconds.toFixed(0)}s
+                <div
+                  key={row.pallets_per_day}
+                  className="grid grid-cols-[80px_1fr_auto] items-center gap-3 border-b border-white/[0.05] py-2 font-mono text-[9px]"
+                >
+                  <span className="text-stone-300">
+                    {row.pallets_per_day}/day
                   </span>
-                  <span className="text-violet-200">save {row.operator_impact.hours_saved_per_day.toFixed(1)}h*</span>
+                  <span className="text-stone-500">
+                    util {(row.agv_metrics.mean_utilization * 100).toFixed(1)}%
+                    · p95 wait{' '}
+                    {row.agv_metrics.p95_queue_wait_seconds.toFixed(0)}s
+                  </span>
+                  <span className="text-violet-200">
+                    save {row.operator_impact.hours_saved_per_day.toFixed(1)}h*
+                  </span>
                 </div>
-              )) ?? <p className="text-xs text-slate-500">Loading projection…</p>}
+              )) ?? (
+                <p className="text-xs text-stone-500">Loading projection…</p>
+              )}
             </div>
-            <p className="mt-4 text-[10px] leading-5 text-slate-500">
-              *Seeded M/G/2 planning projection, 20 simulated days per load. Assumptions are explicit and are not observed site labor or physical throughput.
+            <p className="mt-4 text-[10px] leading-5 text-stone-500">
+              *Seeded M/G/2 planning projection, 20 simulated days per load.
+              Assumptions are explicit and are not observed site labor or
+              physical throughput.
             </p>
-            <EvidenceLink href="/data/impact-load-model.json" label="impact-load-model.json" />
+            <EvidenceLink
+              href="/data/impact-load-model.json"
+              label="impact-load-model.json"
+            />
           </CardContent>
         </Card>
       </div>
 
-      <Card className="mt-4 rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+      <Card className="mt-4 rounded-lg border-white/[0.09] bg-[#261911] shadow-none">
         <CardHeader className="border-b border-white/[0.06] px-5 py-4">
           <CardTitle className="flex flex-wrap items-center justify-between gap-3 text-xs text-white">
             <span className="flex items-center gap-2">
-              <Cpu className="size-4 text-cyan-200" /> Nebius Serverless job boundary
+              <Cpu className="size-4 text-orange-200" /> Nebius Serverless job
+              boundary
             </span>
-            <Badge className={classNames(
-              'rounded-sm font-mono text-[8px]',
-              serverless?.cloud_deployed
-                ? 'bg-emerald-300/10 text-emerald-300'
-                : 'bg-amber-300/10 text-amber-200',
-            )}>
+            <Badge
+              className={classNames(
+                'rounded-sm font-mono text-[8px]',
+                serverless?.cloud_deployed
+                  ? 'bg-emerald-300/10 text-emerald-300'
+                  : 'bg-amber-300/10 text-amber-200',
+              )}
+            >
               {serverless?.cloud_deployed ? 'CLOUD DEPLOYED' : 'ACCOUNT-GATED'}
             </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="p-5">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <EvidenceStat label="Job artifact" value={serverless?.artifact_ready ? 'READY' : 'VERIFYING'} />
-            <EvidenceStat label="Local smoke" value={serverless?.local_artifact.smoke_test_passed ? '100/100 PASS' : '—'} />
-            <EvidenceStat label="Safety violations" value={serverless ? `${serverless.local_artifact.safety_violation_count}` : '—'} />
-            <EvidenceStat label="Nebius deployment" value={serverless?.cloud_deployed ? 'SUCCEEDED' : 'NO RECEIPT'} />
+            <EvidenceStat
+              label="Job artifact"
+              value={serverless?.artifact_ready ? 'READY' : 'VERIFYING'}
+            />
+            <EvidenceStat
+              label="Local smoke"
+              value={
+                serverless?.local_artifact.smoke_test_passed
+                  ? '100/100 PASS'
+                  : '—'
+              }
+            />
+            <EvidenceStat
+              label="Safety violations"
+              value={
+                serverless
+                  ? `${serverless.local_artifact.safety_violation_count}`
+                  : '—'
+              }
+            />
+            <EvidenceStat
+              label="Nebius deployment"
+              value={serverless?.cloud_deployed ? 'SUCCEEDED' : 'NO RECEIPT'}
+            />
           </div>
-          <p className="mt-4 text-[10px] leading-5 text-slate-500">
-            The non-interactive Serverless image and entrypoint are locally verified. A Token Factory key is not an AI Cloud project credential; cloud deployment remains closed until a Nebius project, CLI profile, registry image, quota, and successful job receipt exist.
+          <p className="mt-4 text-[10px] leading-5 text-stone-500">
+            The non-interactive Serverless image and entrypoint are locally
+            verified. A Token Factory key is not an AI Cloud project credential;
+            cloud deployment remains closed until a Nebius project, CLI profile,
+            registry image, quota, and successful job receipt exist.
           </p>
           {!serverless?.cloud_deployed && serverless?.blockers && (
             <p className="mt-2 font-mono text-[9px] leading-4 text-amber-200/70">
@@ -2111,7 +2247,10 @@ function EvidenceView({
             </p>
           )}
           <div className="mt-3">
-            <EvidenceLink href="/data/serverless-readiness.json" label="serverless-readiness.json" />
+            <EvidenceLink
+              href="/data/serverless-readiness.json"
+              label="serverless-readiness.json"
+            />
           </div>
         </CardContent>
       </Card>
@@ -2123,7 +2262,7 @@ function EvidenceView({
             <p className="text-xs font-semibold text-amber-100">
               Final evidence gate intentionally remains closed
             </p>
-            <p className="mt-1 text-[11px] leading-5 text-slate-500">
+            <p className="mt-1 text-[11px] leading-5 text-stone-500">
               {screenshotEvidence?.final_submission_eligible
                 ? 'The three screenshots are bound to a passing live-provider gate and are eligible for final review.'
                 : liveGate?.official_gate_passed
@@ -2157,14 +2296,14 @@ function SourceView() {
   return (
     <div className="mx-auto max-w-[1100px] px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-300">
+        <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-orange-300">
           GitHub / source release gate
         </div>
         <h1 className="text-3xl font-semibold tracking-[-0.03em] text-white sm:text-4xl">
           Source is public.{' '}
           <span className="text-emerald-200">Release boundary verified.</span>
         </h1>
-        <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-400">
+        <p className="mt-4 max-w-3xl text-sm leading-6 text-stone-400">
           The local repository contains the required public boundary, build
           instructions, licenses, disclosures, schemas, simulator and evidence.
           GitHub reports public visibility on the main branch, and the captured
@@ -2172,10 +2311,10 @@ function SourceView() {
         </p>
       </div>
       <div className="grid gap-4 lg:grid-cols-[1fr_.7fr]">
-        <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+        <Card className="rounded-lg border-white/[0.09] bg-[#261911] shadow-none">
           <CardHeader className="border-b border-white/[0.06] px-5 py-4">
             <CardTitle className="flex items-center gap-2 text-xs text-white">
-              <GitBranch className="size-4 text-cyan-200" /> Repository
+              <GitBranch className="size-4 text-orange-200" /> Repository
               checklist
             </CardTitle>
           </CardHeader>
@@ -2183,7 +2322,7 @@ function SourceView() {
             {requiredFiles.map((file) => (
               <div
                 key={file}
-                className="flex items-center gap-3 text-xs text-slate-300"
+                className="flex items-center gap-3 text-xs text-stone-300"
               >
                 <Check className="size-4 shrink-0 text-emerald-300" /> {file}
               </div>
@@ -2196,16 +2335,16 @@ function SourceView() {
             <p className="text-sm font-semibold text-white">
               Public GitHub repository
             </p>
-            <p className="mt-2 text-xs leading-5 text-slate-400">
-              Source, reproducibility instructions and evidence are available
-              on the public main branch. Repository and commit reachability were
+            <p className="mt-2 text-xs leading-5 text-stone-400">
+              Source, reproducibility instructions and evidence are available on
+              the public main branch. Repository and commit reachability were
               independently checked before this release receipt was generated.
             </p>
             <a
               href="https://github.com/shibaraven/shiftzero-hero-002"
               target="_blank"
               rel="noreferrer"
-              className="mt-4 inline-flex text-xs font-medium text-cyan-200 underline decoration-cyan-300/30 underline-offset-4 hover:text-cyan-100"
+              className="mt-4 inline-flex text-xs font-medium text-orange-200 underline decoration-orange-300/30 underline-offset-4 hover:text-orange-100"
             >
               github.com/shibaraven/shiftzero-hero-002
             </a>
@@ -2216,7 +2355,10 @@ function SourceView() {
               PUBLIC · MAIN · VERIFIED
             </Badge>
             <div className="mt-3">
-              <EvidenceLink href="/data/public-repository.json" label="public-repository.json" />
+              <EvidenceLink
+                href="/data/public-repository.json"
+                label="public-repository.json"
+              />
             </div>
           </CardContent>
         </Card>
@@ -2241,7 +2383,7 @@ function Metric({
       >
         {value}
       </p>
-      <p className="mt-2 text-[10px] uppercase tracking-[0.12em] text-slate-600">
+      <p className="mt-2 text-[10px] uppercase tracking-[0.12em] text-stone-600">
         {label}
       </p>
     </div>
@@ -2251,8 +2393,8 @@ function Metric({
 function EvidenceStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="border border-white/[0.06] bg-white/[0.02] p-3">
-      <p className="font-mono text-sm font-semibold text-cyan-100">{value}</p>
-      <p className="mt-1 text-[8px] uppercase tracking-[0.12em] text-slate-600">
+      <p className="font-mono text-sm font-semibold text-orange-100">{value}</p>
+      <p className="mt-1 text-[8px] uppercase tracking-[0.12em] text-stone-600">
         {label}
       </p>
     </div>
@@ -2264,7 +2406,7 @@ function EvidenceLink({ href, label }: { href: string; label: string }) {
     <a
       href={href}
       download
-      className="flex items-center justify-between border border-white/[0.07] bg-white/[0.02] px-3 py-2 font-mono text-[10px] text-slate-400 transition-colors hover:border-cyan-300/20 hover:text-cyan-200"
+      className="flex items-center justify-between border border-white/[0.07] bg-white/[0.02] px-3 py-2 font-mono text-[10px] text-stone-400 transition-colors hover:border-orange-300/20 hover:text-orange-200"
     >
       <span>{label}</span>
       <ChevronRight className="size-3" />
