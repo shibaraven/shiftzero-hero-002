@@ -8,7 +8,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 from shiftzero.domain import canonical_hash
 from shiftzero.evidence import EvidenceRecorder
 
-BUNDLE_VERSION = "hero002-evidence-v8"
+BUNDLE_VERSION = "hero002-evidence-v9"
 LIVE_GATE_PATH = "evidence/compatibility/live-gate.json"
 LIVE_TRACE_ROOT = "evidence/runs/live-compatibility"
 LIVE_PROVIDER = "nebius_token_factory"
@@ -50,6 +50,7 @@ REQUIRED_PATHS = (
     "evidence/judge-mode-publication.json",
     "evidence/public-repository.json",
     "evidence/serverless-readiness.json",
+    "evidence/release-acceptance.json",
     "evidence/screenshots/manifest.json",
     "evidence/METHODOLOGY.md",
     "evidence/screenshots/01-completed.png",
@@ -226,6 +227,9 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
     serverless = json.loads(
         (root / "evidence/serverless-readiness.json").read_text(encoding="utf-8")
     )
+    release_acceptance = json.loads(
+        (root / "evidence/release-acceptance.json").read_text(encoding="utf-8")
+    )
     license_inventory = json.loads(
         (root / "THIRD_PARTY_LICENSES.json").read_text(encoding="utf-8")
     )
@@ -296,6 +300,9 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
     serverless_without_hash = dict(serverless)
     serverless_hash = serverless_without_hash.pop("report_hash", None)
     serverless_hash_valid = serverless_hash == canonical_hash(serverless_without_hash)
+    release_without_hash = dict(release_acceptance)
+    release_hash = release_without_hash.pop("report_hash", None)
+    release_hash_valid = release_hash == canonical_hash(release_without_hash)
 
     def proof_has_approval_integrity(events: list[dict[str, object]], kind: str) -> bool:
         return any(
@@ -509,6 +516,14 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
                 "physical_evidence_required",
             )
         ),
+        "release_acceptance_has_only_external_blockers": bool(
+            release_hash_valid
+            and release_acceptance.get("passed_count") == 8
+            and release_acceptance.get("total_count") == 12
+            and release_acceptance.get("failed_ids") == []
+            and release_acceptance.get("blocked_external_ids")
+            == ["A06", "A07", "A11", "A12"]
+        ),
         "required_file_count": len(files),
     }
     local_preflight_checks = (
@@ -532,6 +547,7 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         "devpost_has_existing_work_section",
         "video_plan_has_continuous_65_second_physical_segment",
         "physical_field_test_harness_ready",
+        "release_acceptance_has_only_external_blockers",
         "serverless_job_artifact_ready",
         "judge_mode_public_and_anonymous",
         "public_repository_ready",

@@ -215,6 +215,24 @@ type ServerlessReadiness = {
   };
 };
 
+type ReleaseAcceptance = {
+  schema_version: string;
+  passed_count: number;
+  total_count: number;
+  all_acceptance_passed: boolean;
+  blocked_external_ids: string[];
+  failed_ids: string[];
+  report_hash: string;
+  items: Array<{
+    id: string;
+    requirement: string;
+    status: 'passed' | 'external_evidence_required' | 'failed';
+    passed: boolean;
+    detail: string;
+    evidence: string[];
+  }>;
+};
+
 const views: Array<{ id: View; label: string }> = [
   { id: 'mission', label: 'Run Hero' },
   { id: 'architecture', label: 'Architecture' },
@@ -399,6 +417,8 @@ export default function MissionConsole() {
   const [liveGate, setLiveGate] = useState<LiveGateEvidence | null>(null);
   const [liveRuntime, setLiveRuntime] = useState<LiveRuntimeSummary | null>(null);
   const [serverless, setServerless] = useState<ServerlessReadiness | null>(null);
+  const [releaseAcceptance, setReleaseAcceptance] =
+    useState<ReleaseAcceptance | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -457,6 +477,13 @@ export default function MissionConsole() {
         return response.json() as Promise<ServerlessReadiness>;
       })
       .then(setServerless)
+      .catch(() => setEvidenceError(true));
+    fetch('/data/release-acceptance.json')
+      .then((response) => {
+        if (!response.ok) throw new Error('release acceptance evidence unavailable');
+        return response.json() as Promise<ReleaseAcceptance>;
+      })
+      .then(setReleaseAcceptance)
       .catch(() => setEvidenceError(true));
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -670,6 +697,7 @@ export default function MissionConsole() {
           liveGate={liveGate}
           liveRuntime={liveRuntime}
           serverless={serverless}
+          releaseAcceptance={releaseAcceptance}
           evidenceError={evidenceError}
           onOpenFieldTest={() => setView('field-test')}
         />
@@ -1432,6 +1460,7 @@ function EvidenceView({
   liveGate,
   liveRuntime,
   serverless,
+  releaseAcceptance,
   evidenceError,
   onOpenFieldTest,
 }: {
@@ -1443,6 +1472,7 @@ function EvidenceView({
   liveGate: LiveGateEvidence | null;
   liveRuntime: LiveRuntimeSummary | null;
   serverless: ServerlessReadiness | null;
+  releaseAcceptance: ReleaseAcceptance | null;
   evidenceError: boolean;
   onOpenFieldTest: () => void;
 }) {
@@ -1472,6 +1502,94 @@ function EvidenceView({
           </Button>
         </a>
       </div>
+
+      <Card className="mb-4 rounded-lg border-cyan-300/20 bg-cyan-300/[0.035] shadow-none">
+        <CardHeader className="border-b border-cyan-300/10 px-5 py-4">
+          <CardTitle className="flex flex-wrap items-center justify-between gap-3 text-xs text-white">
+            <span className="flex items-center gap-2">
+              <FileCheck2 className="size-4 text-cyan-200" />
+              PDF release acceptance · A01–A12
+            </span>
+            <span className="flex flex-wrap items-center gap-2">
+              <Badge className="rounded-sm border border-emerald-300/25 bg-emerald-300/[0.08] font-mono text-[8px] text-emerald-200">
+                {releaseAcceptance
+                  ? `${releaseAcceptance.passed_count}/${releaseAcceptance.total_count} EVIDENCE PASS`
+                  : 'LOADING'}
+              </Badge>
+              <Badge className="rounded-sm border border-amber-300/25 bg-amber-300/[0.08] font-mono text-[8px] text-amber-200">
+                {releaseAcceptance
+                  ? `${releaseAcceptance.blocked_external_ids.length} EXTERNAL GATES`
+                  : 'VERIFYING'}
+              </Badge>
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-5">
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {releaseAcceptance?.items.map((item) => (
+              <div
+                key={item.id}
+                className={classNames(
+                  'rounded-md border p-3',
+                  item.status === 'passed'
+                    ? 'border-emerald-300/15 bg-emerald-300/[0.035]'
+                    : item.status === 'external_evidence_required'
+                      ? 'border-amber-300/15 bg-amber-300/[0.035]'
+                      : 'border-rose-300/15 bg-rose-300/[0.035]',
+                )}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span
+                    className={classNames(
+                      'font-mono text-[11px] font-bold',
+                      item.status === 'passed'
+                        ? 'text-emerald-200'
+                        : item.status === 'external_evidence_required'
+                          ? 'text-amber-200'
+                          : 'text-rose-200',
+                    )}
+                  >
+                    {item.id}
+                  </span>
+                  <span className="font-mono text-[8px] uppercase tracking-[0.08em] text-slate-600">
+                    {item.status === 'passed'
+                      ? 'PASS'
+                      : item.status === 'external_evidence_required'
+                        ? 'ONSITE / OWNER'
+                        : 'FAIL'}
+                  </span>
+                </div>
+                <p className="mt-2 text-[10px] leading-4 text-slate-400">
+                  {item.requirement}
+                </p>
+                <p className="mt-2 text-[9px] leading-4 text-slate-600">
+                  {item.detail}
+                </p>
+              </div>
+            )) ?? (
+              <p className="col-span-full py-6 text-center text-xs text-slate-600">
+                Loading the signed acceptance ledger…
+              </p>
+            )}
+          </div>
+          <div className="mt-4 flex flex-col justify-between gap-3 border-t border-white/[0.06] pt-4 sm:flex-row sm:items-center">
+            <p className="max-w-3xl text-[10px] leading-5 text-slate-500">
+              Simulator rehearsal cannot close A06/A07. Draft copy cannot close
+              A11/A12. The report fails closed until physical artifacts and the
+              owner-authorized public submission exist.
+            </p>
+            <a href="/data/release-acceptance.json" download>
+              <Button
+                size="sm"
+                variant="outline"
+                className="rounded-md border-cyan-300/20 bg-cyan-300/[0.04] text-cyan-100 hover:bg-cyan-300/[0.1]"
+              >
+                <Download className="size-4" /> Download A01–A12 report
+              </Button>
+            </a>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="mb-4 rounded-lg border-amber-300/20 bg-amber-300/[0.035] shadow-none">
         <CardHeader className="border-b border-amber-300/10 px-5 py-4">

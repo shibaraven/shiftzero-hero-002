@@ -16,6 +16,7 @@ from shiftzero.impact import run_impact_load_model
 from shiftzero.license_inventory import build_license_inventory
 from shiftzero.live_evidence import build_live_evidence_summary
 from shiftzero.physical_evidence import validate_physical_evidence
+from shiftzero.release_acceptance import build_release_acceptance
 from shiftzero.reliability import run_hero_reliability
 from shiftzero.schema_export import export_schemas
 from shiftzero.screenshot_manifest import (
@@ -177,6 +178,17 @@ def main() -> None:
     physical_evidence.add_argument("--input", type=Path, required=True)
     physical_evidence.add_argument("--output", type=Path)
 
+    release_acceptance = subparsers.add_parser(
+        "build-release-acceptance",
+        help="Build the evidence-backed A01-A12 release acceptance ledger",
+    )
+    release_acceptance.add_argument("--root", type=Path, default=Path.cwd())
+    release_acceptance.add_argument(
+        "--output",
+        type=Path,
+        default=Path("evidence/release-acceptance.json"),
+    )
+
     licenses = subparsers.add_parser(
         "build-license-inventory",
         help="Freeze Python packages and inventory Python/npm licenses and sources",
@@ -251,6 +263,14 @@ def main() -> None:
         print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
         if not report["passed"]:
             raise SystemExit(2)
+        return
+
+    if args.command == "build-release-acceptance":
+        report = build_release_acceptance(
+            root=args.root.resolve(),
+            output_path=args.output.resolve(),
+        )
+        print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
         return
 
     if args.command == "build-license-inventory":

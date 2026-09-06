@@ -161,6 +161,16 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
     (tmp_path / "evidence/serverless-readiness.json").write_text(
         json.dumps(serverless), encoding="utf-8"
     )
+    release_acceptance = {
+        "passed_count": 8,
+        "total_count": 12,
+        "failed_ids": [],
+        "blocked_external_ids": ["A06", "A07", "A11", "A12"],
+    }
+    release_acceptance["report_hash"] = canonical_hash(release_acceptance)
+    (tmp_path / "evidence/release-acceptance.json").write_text(
+        json.dumps(release_acceptance), encoding="utf-8"
+    )
     (tmp_path / "THIRD_PARTY_LICENSES.json").write_text(
         json.dumps(
             {
@@ -229,7 +239,7 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
     assert first["official_gate_passed"] is False
     with ZipFile(first_zip) as archive:
         embedded = json.loads(archive.read("MANIFEST.json"))
-        assert embedded["bundle_version"] == "hero002-evidence-v8"
+        assert embedded["bundle_version"] == "hero002-evidence-v9"
         assert embedded["evidence_class"] == "preflight_fixture"
         assert embedded["claim_scope"] == "reference_simulator_and_fixture_provider_only"
         assert embedded["final_release_ready"] is False
@@ -255,6 +265,10 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         )
         assert embedded["completeness_checks"]["local_preflight_passed"] is True
         assert embedded["completeness_checks"]["physical_field_test_harness_ready"] is True
+        assert (
+            embedded["completeness_checks"]["release_acceptance_has_only_external_blockers"]
+            is True
+        )
         assert embedded["completeness_checks"]["serverless_job_artifact_ready"] is True
         assert embedded["completeness_checks"]["serverless_cloud_deployed"] is False
         assert embedded["completeness_checks"]["judge_mode_public_and_anonymous"] is True

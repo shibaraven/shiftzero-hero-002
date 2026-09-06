@@ -11,6 +11,8 @@
       tests; simulator files cannot be promoted into physical evidence.
 - [x] Stateful Agent API and idempotent structured execution.
 - [x] Tamper-evident trace and downloadable Evidence Bundle.
+- [x] Machine-readable, hash-bound A01–A12 release report with evidence paths and explicit
+      `external_evidence_required` status for physical/video/submission gates.
 - [x] 100-scenario deterministic evaluation.
 - [x] 20 consecutive complete Hero runs with a valid trace chain and route-version change.
 - [x] 120-call fixture-provider compatibility preflight.

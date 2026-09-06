@@ -15,7 +15,8 @@ recorded live-provider Compatibility Gate without loading an API key in the brow
    deterministic policy and the state machine authorize execution.
 4. Open **Evidence** to inspect the 100-scenario result, run manifest, fixture compatibility
    preflight, official live Compatibility Gate, fair baseline, Judge load report, 400–500
-   pallets/day projection, typed tool spans, and downloadable Evidence Bundle. Select
+   pallets/day projection, typed tool spans, the evidence-backed A01–A12 release matrix, and
+   downloadable Evidence Bundle. Select
    **Open field-test lab** to rehearse the nine-AGV A06/A07 blockage sequence in 2D or isometric
    view and export an explicitly ineligible simulator report.
 5. Open **GitHub** to inspect the public source repository, required release files and the

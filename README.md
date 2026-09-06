@@ -52,6 +52,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m shiftzero.cli build-live-evidence-summary
 .\.venv\Scripts\python.exe -m shiftzero.cli build-screenshot-manifest
 .\.venv\Scripts\python.exe -m shiftzero.cli serverless-readiness --smoke-output tmp/serverless-smoke
+.\.venv\Scripts\python.exe -m shiftzero.cli build-release-acceptance
 .\.venv\Scripts\python.exe -m shiftzero.cli build-evidence-bundle
 ```
 
@@ -131,6 +132,10 @@ The physical validator requires the correlated sensor, local stop, stationary, r
 completion events; a sensor-to-stop result no greater than 200 ms; changed route version; final
 `x/y/heading`; four colocated source artifacts whose bytes match their declared SHA-256 hashes;
 clock synchronization; cloud-disconnected stop proof; and a named safety-owner attestation.
+
+`evidence/release-acceptance.json` evaluates the PDF's A01–A12 gates from checked-in evidence.
+The current report passes A01–A05 and A08–A10, reports no software-evidence failures, and keeps
+A06/A07/A11/A12 blocked on physical or owner-controlled artifacts.
 
 Official API references: [Token Factory function calling](https://docs.tokenfactory.nebius.com/ai-models-inference/function-calling)
 and the [Nebius Nemotron 3 Super guide](https://github.com/nebius/token-factory-cookbook/blob/main/models/nemotron/nemotron3-super-120B.md).

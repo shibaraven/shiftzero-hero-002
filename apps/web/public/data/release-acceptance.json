@@ -1,0 +1,150 @@
+{
+  "all_acceptance_passed": false,
+  "blocked_external_ids": [
+    "A06",
+    "A07",
+    "A11",
+    "A12"
+  ],
+  "claim_boundary": "Passed means the checked evidence satisfies that item. Simulator rehearsal never satisfies physical A06/A07, and draft assets never satisfy A11/A12.",
+  "failed_ids": [],
+  "generated_at": "2026-09-06T02:26:51.433459+00:00",
+  "items": [
+    {
+      "detail": "360 live, unique, hash-linked Token Factory tool-call receipts.",
+      "evidence": [
+        "evidence/compatibility/live-gate.json",
+        "evidence/live-runtime-summary.json"
+      ],
+      "id": "A01",
+      "passed": true,
+      "requirement": "Live Nebius/Nemotron runtime trace is visible and verifiable",
+      "status": "passed"
+    },
+    {
+      "detail": "120/120 runs; every declared threshold passes with no failures.",
+      "evidence": [
+        "evidence/compatibility/live-gate.json"
+      ],
+      "id": "A02",
+      "passed": true,
+      "requirement": "Compatibility Gate: 120 runs and every hard threshold passes",
+      "status": "passed"
+    },
+    {
+      "detail": "20/20 independent reference-simulator runs pass with valid trace chains.",
+      "evidence": [
+        "evidence/hero-reliability/report.json"
+      ],
+      "id": "A03",
+      "passed": true,
+      "requirement": "HERO-002 succeeds end to end 20 consecutive times",
+      "status": "passed"
+    },
+    {
+      "detail": "Fault controls fail closed; duplicate and wrong-entity dispatch counts are zero.",
+      "evidence": [
+        "evidence/compatibility/live-gate.json"
+      ],
+      "id": "A04",
+      "passed": true,
+      "requirement": "Timeout/429 retry creates no duplicate mission or wrong dispatch",
+      "status": "passed"
+    },
+    {
+      "detail": "100/100 outcomes validated; 0 safety violations; unsafe recall 100%.",
+      "evidence": [
+        "evidence/scenario-evaluation/metrics.json"
+      ],
+      "id": "A05",
+      "passed": true,
+      "requirement": "100 scenarios complete with zero safety violations",
+      "status": "passed"
+    },
+    {
+      "detail": "Needs onsite clocks, sensor/edge/AGV telemetry and disconnected-cloud stop proof.",
+      "evidence": [
+        "schemas/physical-field-evidence.schema.json",
+        "docs/A06_A07_FIELD_TEST_PROTOCOL.md"
+      ],
+      "id": "A06",
+      "passed": false,
+      "requirement": "Physical local sensor-to-stop is at most 200 ms and cloud independent",
+      "status": "external_evidence_required"
+    },
+    {
+      "detail": "Needs the original onsite video, telemetry, sensor and MQTT/VDA5050 artifacts.",
+      "evidence": [
+        "schemas/physical-field-evidence.schema.json",
+        "docs/A06_A07_FIELD_TEST_PROTOCOL.md"
+      ],
+      "id": "A07",
+      "passed": false,
+      "requirement": "Physical AGV blockage, stop, replan and completion are all recorded",
+      "status": "external_evidence_required"
+    },
+    {
+      "detail": "Live, simulator, browser, baseline and projection claims retain scope and method labels.",
+      "evidence": [
+        "evidence/live-runtime-summary.json",
+        "evidence/scenario-evaluation/metrics.json",
+        "evidence/judge-mode-load.json",
+        "evidence/baseline-comparison.json",
+        "evidence/impact-load-model.json"
+      ],
+      "id": "A08",
+      "passed": true,
+      "requirement": "Every current claim has a sample count and measurement method",
+      "status": "passed"
+    },
+    {
+      "detail": "Public anonymous checks pass; the four-entry Judge Mode has a bounded replay and error state.",
+      "evidence": [
+        "evidence/judge-mode-publication.json",
+        "evidence/judge-mode-load.json"
+      ],
+      "id": "A09",
+      "passed": true,
+      "requirement": "Judge Mode has no login, runs in one click and explains errors",
+      "status": "passed"
+    },
+    {
+      "detail": "The repository is public and every mandatory top-level release file exists.",
+      "evidence": [
+        "evidence/public-repository.json",
+        "README.md",
+        "PRE_EXISTING_WORK.md"
+      ],
+      "id": "A10",
+      "passed": true,
+      "requirement": "Public repository, license, README and existing-work disclosure are complete",
+      "status": "passed"
+    },
+    {
+      "detail": "Needs the final 1080p onsite recording and public video URL.",
+      "evidence": [
+        "docs/VIDEO_SHOTLIST.md"
+      ],
+      "id": "A11",
+      "passed": false,
+      "requirement": "Video is under three minutes with 65 seconds physical and English narration/subtitles",
+      "status": "external_evidence_required"
+    },
+    {
+      "detail": "Needs the final video URL, Devpost submission URL and owner-authorized submit action.",
+      "evidence": [
+        "docs/DEVPOST_DRAFT.md",
+        "docs/SUBMISSION_CHECKLIST.md"
+      ],
+      "id": "A12",
+      "passed": false,
+      "requirement": "Every Devpost link is anonymously verified and the entry is submitted",
+      "status": "external_evidence_required"
+    }
+  ],
+  "passed_count": 8,
+  "report_hash": "4e62b1c97b6d4b812e8e08cb65b2421908c0955478dc79420f3a4221f40aec1d",
+  "schema_version": "release-acceptance-v1",
+  "spec_version": "HERO-002 competition spec v2.1",
+  "total_count": 12
+}

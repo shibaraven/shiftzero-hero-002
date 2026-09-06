@@ -16,6 +16,7 @@ fixture result is equivalent to Nebius or physical evidence.
 | 100-case evaluation | Complete locally | differentiated S01-S06 results and method in Evidence Bundle |
 | Evidence Bundle and reproducibility hashes | Complete for simulator + live provider | JSON+JSONL traces, 360 live provider receipts, tool latency/error/result hashes, visibly timestamped MOCK screenshots, outcome metrics and source/map/policy hashes; manifest sets `official_gate_passed=true` and keeps `final_release_ready=false` until physical capture |
 | Complete P0 typed-tool trace | Complete locally | every bundled Hero trace contains snapshot, inspection, planning, proposal, approval, mission status, replan and metrics spans; status is read at started/safe-stop/completed checkpoints |
+| A01–A12 release ledger | Complete and fail-closed | hash-bound machine report passes A01–A05/A08–A10, has no software-evidence failures, and labels A06/A07/A11/A12 `external_evidence_required` |
 | Approval-integrity Safety Proof | Complete locally | execution and replan proofs contain a passing hashed check bound to proposal hash, actor, expiry and goal; bundle validation fails if it is absent |
 | P0 `get_operation_metrics` typed tool | Complete locally | completed Hero and Agent API traces contain a schema-validated `tool.get_operation_metrics` span |
 | Fair Manual vs Agent baseline | Complete locally | at least 20 matched simulator samples per flow; no physical savings claim |

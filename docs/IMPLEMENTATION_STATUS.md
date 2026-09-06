@@ -59,6 +59,9 @@
 - A strict `physical-field-evidence-v1` schema, field-test protocol, CLI validator and regression
   tests are complete. Simulator exports deliberately use a different, ineligible evidence class;
   only correlated onsite video/telemetry/sensor/protocol artifacts can pass the validator.
+- A hash-bound A01–A12 release-acceptance report is generated from the underlying evidence and
+  shown in Judge Mode. It passes 8/12, has no unresolved software-evidence failures, and identifies
+  A06/A07/A11/A12 as external evidence gates rather than silently marking them complete.
 - Devpost draft, anonymous judge runbook, submission checklist, and three-minute video shot list.
 - Spec-aligned 2:58 video plan with a 15-second opening, at most 20 seconds of architecture and an
   uninterrupted 65-second physical segment; Devpost includes an explicit existing-work section.

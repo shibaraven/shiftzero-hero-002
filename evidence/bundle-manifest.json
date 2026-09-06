@@ -1,8 +1,8 @@
 {
-  "bundle_bytes": 3935330,
+  "bundle_bytes": 3937435,
   "bundle_path": "evidence/HERO002-evidence-bundle.zip",
-  "bundle_sha256": "7ff859e3566ee27f87fa057fc47f7018fc4bcbaea44ea98deb8057f1f61edbd5",
-  "bundle_version": "hero002-evidence-v8",
+  "bundle_sha256": "1e8bd996faa67c2bfc932f10b8edb75092eeffe2e23d8d3944ff823760e3b9e1",
+  "bundle_version": "hero002-evidence-v9",
   "claim_scope": "live_nebius_token_factory_with_reference_simulator_no_physical_hardware",
   "completeness_checks": {
     "all_included_trace_chains_valid": true,
@@ -29,7 +29,8 @@
     "passed": false,
     "physical_field_test_harness_ready": true,
     "public_repository_ready": true,
-    "required_file_count": 356,
+    "release_acceptance_has_only_external_blockers": true,
+    "required_file_count": 357,
     "scenario_all_outcomes_valid": true,
     "scenario_count_is_100": true,
     "scenario_safety_violations_zero": true,
@@ -60,9 +61,9 @@
       "sha256": "c1873b5c09013202962379f8b81f090b29c71e9b3bddcb0a495d3a867a7108b5"
     },
     {
-      "bytes": 9281,
+      "bytes": 9615,
       "path": "README.md",
-      "sha256": "a570f0ed6dc8fdf504da1bce0f9e916d876eda9f4b5726e12ef4463669dd0f94"
+      "sha256": "7c424345fa6fc1c7ec8b8543349e5d7efc9e0f1b737915d41865d08c92789ad9"
     },
     {
       "bytes": 192322,
@@ -130,9 +131,9 @@
       "sha256": "d555d71b179647fe1c1884392e393401a0feb5817b5edf9ce5772307e3d0affc"
     },
     {
-      "bytes": 6172,
+      "bytes": 6375,
       "path": "docs/SPEC_COMPLIANCE.md",
-      "sha256": "85b8b9c9cc7f7df10ea28a18e4084baa357ed642eee2c205a6e718c2f79c1e05"
+      "sha256": "35088d36075a3a932df51a2cdc8ab3c6d660717d4bb34986cc1a058e1afb716c"
     },
     {
       "bytes": 3641,
@@ -398,6 +399,11 @@
       "bytes": 1078,
       "path": "evidence/public-repository.json",
       "sha256": "9bb5ff91ca8090b008e97692bd2e6d35e6b63ac04bcaed524266a05e58fddeb6"
+    },
+    {
+      "bytes": 5205,
+      "path": "evidence/release-acceptance.json",
+      "sha256": "f456a642f1318ca57293db4b9f08243e40ad34f5572cd214e7bd230aacd57eea"
     },
     {
       "bytes": 72156,
