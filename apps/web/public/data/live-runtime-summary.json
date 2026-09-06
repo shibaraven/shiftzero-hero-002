@@ -152,17 +152,8 @@
         "estimated_duration_seconds": 6.9,
         "estimated_energy_percent": 5.175,
         "map_version": "map-v1",
-        "nodes": [
-          "N04",
-          "N05",
-          "N10",
-          "N12"
-        ],
-        "reservation_groups": [
-          "R4",
-          "R5",
-          "R6"
-        ],
+        "nodes": ["N04", "N05", "N10", "N12"],
+        "reservation_groups": ["R4", "R5", "R6"],
         "route_version": "route-d8c9119af45a",
         "selected_agv": "AGV-03"
       },

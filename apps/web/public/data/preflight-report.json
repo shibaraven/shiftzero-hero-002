@@ -22,7 +22,7 @@
     "duplicate_mission_count": 0,
     "first_schema_valid_rate": 1.0,
     "hero_max_consecutive_successes": 120,
-    "intent_to_proposal_median_seconds": 2e-06,
+    "intent_to_proposal_median_seconds": 2e-6,
     "intent_to_proposal_p95_seconds": 0.001103,
     "measurement": {
       "method": "parse_intent latency plus propose_transport latency; recovery excluded",

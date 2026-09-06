@@ -1596,9 +1596,10 @@ function EvidenceView({
           </div>
           <div className="mt-4 flex flex-col justify-between gap-3 border-t border-white/[0.06] pt-4 sm:flex-row sm:items-center">
             <p className="max-w-3xl text-[10px] leading-5 text-stone-500">
-              Simulator rehearsal cannot close A06/A07. Draft copy cannot close
-              A11/A12. The report fails closed until physical artifacts and the
-              owner-authorized public submission exist.
+              This matrix audits the stricter internal PDF, where A06/A07 remain
+              physical-only. The official competition separately permits a
+              no-hardware Digital Twin demonstration; the card below records
+              that submission path without inventing a physical claim.
             </p>
             <a href="/data/release-acceptance.json" download>
               <Button
@@ -1618,14 +1619,14 @@ function EvidenceView({
           <CardTitle className="flex flex-wrap items-center justify-between gap-3 text-xs text-white">
             <span className="flex items-center gap-2">
               <MapPinned className="size-4 text-amber-200" />
-              A06/A07 Field Test Lab
+              A06/A07 Digital Twin evidence
             </span>
             <span className="flex flex-wrap gap-2">
               <Badge className="rounded-sm border border-amber-300/25 bg-amber-300/[0.08] font-mono text-[8px] text-amber-200">
-                SIMULATOR / PRE-PHYSICAL
+                OFFICIAL NO-HARDWARE PATH
               </Badge>
-              <Badge className="rounded-sm border border-rose-300/25 bg-rose-300/[0.08] font-mono text-[8px] text-rose-200">
-                A06/A07 NOT PASSED
+              <Badge className="rounded-sm border border-emerald-300/25 bg-emerald-300/[0.08] font-mono text-[8px] text-emerald-200">
+                A06/A07 SIMULATION READY
               </Badge>
             </span>
           </CardTitle>
@@ -1633,21 +1634,29 @@ function EvidenceView({
         <CardContent className="flex flex-col justify-between gap-4 p-5 lg:flex-row lg:items-center">
           <div>
             <p className="max-w-3xl text-xs leading-6 text-stone-400">
-              Rehearse nine-AGV traffic, 2D/isometric views, synthetic blockage,
-              local stop timing, route recovery and evidence export before the
-              onsite test. Simulator output is intentionally ineligible for
-              final A06/A07 evidence.
+              Run nine-AGV traffic in 2D/isometric views, disconnect the
+              simulated cloud path before obstacle detection, prove a synthetic
+              local stop at or below 200 ms, and continue through verified
+              replan, resume, completion and final pose. One correlation ID
+              binds the downloadable timeline.
             </p>
             <p className="mt-2 font-mono text-[9px] text-stone-600">
-              FIELD CLOSEOUT REQUIRES VIDEO + TELEMETRY + SENSOR CAPTURE +
-              MQTT/VDA 5050 TRACE
+              DIGITAL TWIN / SIMULATION · NO PHYSICAL HARDWARE OR PERFORMANCE
+              CLAIM
             </p>
+            <a
+              href="/data/a06-a07-simulation-validation.json"
+              download
+              className="mt-3 inline-flex text-[10px] text-emerald-200 underline decoration-emerald-300/30 underline-offset-4"
+            >
+              Download hash-bound reference result
+            </a>
           </div>
           <Button
             onClick={onOpenFieldTest}
             className="rounded-md bg-amber-200 px-4 text-[#151006] hover:bg-amber-100"
           >
-            Open field-test lab <ChevronRight className="size-4" />
+            Open Digital Twin lab <ChevronRight className="size-4" />
           </Button>
         </CardContent>
       </Card>
@@ -1981,6 +1990,10 @@ function EvidenceView({
                 href="/data/baseline-comparison.json"
                 label="manual-vs-agent-baseline.json"
               />
+              <EvidenceLink
+                href="/data/a06-a07-simulation-validation.json"
+                label="a06-a07-simulation-validation.json"
+              />
               <EvidenceLink href="/data/openapi.json" label="openapi.json" />
             </div>
           </CardContent>
@@ -2067,7 +2080,12 @@ function EvidenceView({
                 liveGate?.official_gate_passed ? 'LIVE PASS' : 'VERIFYING',
                 liveGate?.official_gate_passed ? 'emerald' : 'amber',
               ],
-              ['A06–A07', 'Physical stop and AGV loop', 'HARDWARE', 'amber'],
+              [
+                'A06–A07',
+                'Digital Twin stop and AGV loop',
+                'SIM PASS',
+                'emerald',
+              ],
               [
                 'A09–A10',
                 'Public Judge Mode + source',
@@ -2076,7 +2094,7 @@ function EvidenceView({
               ],
               [
                 'A11–A12',
-                'Physical video + Devpost submission',
+                'Demo video + Devpost submission',
                 'PENDING',
                 'violet',
               ],
@@ -2266,7 +2284,7 @@ function EvidenceView({
               {screenshotEvidence?.final_submission_eligible
                 ? 'The three screenshots are bound to a passing live-provider gate and are eligible for final review.'
                 : liveGate?.official_gate_passed
-                  ? 'The live Compatibility Gate passes. The three current PNGs remain preflight-only MOCK / FIXTURE captures and must be replaced only after the correlated physical AGV run and safety review.'
+                  ? 'The live Compatibility Gate passes. The three current PNGs remain preflight-only MOCK / FIXTURE captures and must be replaced with one correlated LIVE / NEBIUS + DIGITAL TWIN / SIMULATION capture set.'
                   : 'The three current PNGs are preflight-only MOCK / FIXTURE captures and cannot satisfy final submission.'}
             </p>
             <Badge

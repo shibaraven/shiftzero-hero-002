@@ -30,6 +30,7 @@ type Phase =
   | 'COMPLETED';
 
 type Point = { x: number; y: number };
+type CloudMode = 'DISCONNECTED_BEFORE_OBSTACLE' | 'CONNECTED';
 
 type SimulationEvent = {
   atMs: number;
@@ -60,7 +61,7 @@ const TRAFFIC_LOOP: Point[] = [
   { x: 135, y: 360 },
 ];
 
-const fieldChecklist = [
+const physicalStretchChecklist = [
   'Clock-sync AGV, edge controller, sensor and recorder (≤20 ms skew)',
   'Record one continuous, uncut physical-test video with visible UTC clock',
   'Export raw sensor capture, AGV telemetry and MQTT/VDA 5050 trace',
@@ -69,7 +70,10 @@ const fieldChecklist = [
   'Hash all four artifacts and obtain the safety-owner attestation',
 ];
 
-function schedule(stopLatencyMs: number): SimulationEvent[] {
+function schedule(
+  stopLatencyMs: number,
+  cloudMode: CloudMode,
+): SimulationEvent[] {
   const stationaryAt = DETECT_AT_MS + stopLatencyMs;
   return [
     {
@@ -77,6 +81,18 @@ function schedule(stopLatencyMs: number): SimulationEvent[] {
       kind: 'mission.started',
       source: 'dispatch.simulator',
       detail: 'AGV-03 accepted route A for P-104',
+    },
+    {
+      atMs: 2600,
+      kind:
+        cloudMode === 'DISCONNECTED_BEFORE_OBSTACLE'
+          ? 'network.cloud_disconnected'
+          : 'network.cloud_retained',
+      source: 'network.fixture',
+      detail:
+        cloudMode === 'DISCONNECTED_BEFORE_OBSTACLE'
+          ? 'Cloud route removed before obstacle injection; edge controller remains active'
+          : 'Cloud route retained for the negative-control run',
     },
     {
       atMs: 2900,
@@ -94,7 +110,10 @@ function schedule(stopLatencyMs: number): SimulationEvent[] {
       atMs: DETECT_AT_MS + 12,
       kind: 'edge.stop_issued',
       source: 'edge.fixture',
-      detail: 'Local stop command issued; cloud path disabled',
+      detail:
+        cloudMode === 'DISCONNECTED_BEFORE_OBSTACLE'
+          ? 'Local stop issued while the cloud route is disconnected'
+          : 'Local stop issued while the cloud route remains connected',
     },
     {
       atMs: stationaryAt,
@@ -177,7 +196,7 @@ function downloadJson(payload: object): void {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = url;
-  anchor.download = 'hero002-a06-a07-prephysical-rehearsal.json';
+  anchor.download = 'hero002-a06-a07-digital-twin-evidence.json';
   anchor.click();
   URL.revokeObjectURL(url);
 }
@@ -188,15 +207,26 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
   const [elapsedMs, setElapsedMs] = useState(0);
   const [speed, setSpeed] = useState(1);
   const [stopLatencyMs, setStopLatencyMs] = useState(150);
+  const [cloudMode, setCloudMode] = useState<CloudMode>(
+    'DISCONNECTED_BEFORE_OBSTACLE',
+  );
   const [mapMode, setMapMode] = useState<'2D' | '3D'>('2D');
   const [sessionStartedAt, setSessionStartedAt] = useState<string | null>(null);
 
-  const events = useMemo(() => schedule(stopLatencyMs), [stopLatencyMs]);
+  const events = useMemo(
+    () => schedule(stopLatencyMs, cloudMode),
+    [cloudMode, stopLatencyMs],
+  );
   const completeAtMs = events[events.length - 1].atMs;
   const phase = phaseAt(elapsedMs, started, stopLatencyMs);
   const visibleEvents = events.filter(
     (event) => event.atMs <= elapsedMs && started,
   );
+  const a06SimulationPassed =
+    phase === 'COMPLETED' &&
+    stopLatencyMs <= 200 &&
+    cloudMode === 'DISCONNECTED_BEFORE_OBSTACLE';
+  const a07SimulationPassed = phase === 'COMPLETED';
 
   useEffect(() => {
     if (!running) return;
@@ -250,24 +280,54 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
   const exportRehearsal = () => {
     if (phase !== 'COMPLETED' || !sessionStartedAt) return;
     const baseTime = new Date(sessionStartedAt).getTime();
+    const sessionId = `SIM-A06A07-${baseTime}`;
     downloadJson({
-      schema_version: 'prephysical-rehearsal-v1',
-      evidence_class: 'simulator_rehearsal',
-      claim_scope: 'a06_a07_rehearsal_only',
-      final_submission_eligible: false,
+      schema_version: 'competition-simulation-evidence-v1',
+      evidence_class: 'digital_twin_simulation',
+      claim_scope: 'official_competition_no_hardware_path',
+      official_rule_basis: {
+        url: 'https://nebiusglobalaihackathon.devpost.com/rules',
+        interpretation:
+          'Physical AI entries without physical hardware may demonstrate the key application modules in action.',
+      },
+      eligibility: {
+        competition_submission_usable_without_hardware:
+          a06SimulationPassed && a07SimulationPassed,
+        physical_hardware_claimed: false,
+        physical_measurement_claimed: false,
+        passes_internal_physical_field_gate: false,
+      },
+      identifiers: {
+        session_id: sessionId,
+        trace_id: sessionId,
+        correlation_id: sessionId,
+        mission_id: 'SIM-MISSION-P104-A12',
+        vehicle_id: 'AGV-03',
+        pallet_id: 'P-104',
+      },
       simulator: {
-        name: 'ShiftZero A06/A07 Field Test Lab',
+        name: 'ShiftZero A06/A07 Digital Twin Lab',
         vehicle_count: 9,
         map_mode: mapMode,
         speed_multiplier: speed,
         synthetic_sensor_to_stop_ms: stopLatencyMs,
-        cloud_path: 'disabled_in_rehearsal',
+        cloud_mode:
+          cloudMode === 'DISCONNECTED_BEFORE_OBSTACLE'
+            ? 'disconnected_before_obstacle'
+            : 'connected_negative_control',
       },
-      result: {
-        rehearsal_completed: true,
-        a06_threshold_rehearsed: stopLatencyMs <= 200,
+      assertions: {
+        a06_simulation_passed: a06SimulationPassed,
+        a06_cloud_disconnect_precedes_detection:
+          cloudMode === 'DISCONNECTED_BEFORE_OBSTACLE',
+        a06_sensor_to_stationary_at_most_200_ms: stopLatencyMs <= 200,
+        a07_simulation_passed: a07SimulationPassed,
+        a07_synchronized_sequence_complete: a07SimulationPassed,
         a06_physical_passed: false,
         a07_physical_passed: false,
+      },
+      outcome: {
+        status: 'COMPLETED',
         route_version_before: 'sim-route-a',
         route_version_after: 'sim-route-b',
         final_pose: { node_id: 'N12', x: 842, y: 135, heading_deg: 315 },
@@ -278,14 +338,18 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
         source: event.source,
         timestamp: new Date(baseTime + event.atMs).toISOString(),
         elapsed_ms: event.atMs,
+        session_id: sessionId,
+        trace_id: sessionId,
+        correlation_id: sessionId,
+        mission_id: 'SIM-MISSION-P104-A12',
         detail: event.detail,
       })),
       limitations: [
         'All sensors, AGVs, timing and motion in this file are synthetic.',
-        'This rehearsal cannot satisfy A06 or A07 physical-hardware gates.',
-        'Do not upload this file as final physical evidence.',
+        'This demonstrates the official no-hardware application path, not real AGV performance.',
+        'Do not describe this file as physical sensor-to-stop evidence.',
       ],
-      physical_evidence_required: [
+      optional_physical_extension_requires: [
         'continuous_video',
         'raw_telemetry',
         'raw_sensor_capture',
@@ -310,22 +374,23 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
           </Button>
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <Badge className="rounded-sm border border-amber-300/30 bg-amber-300/[0.1] font-mono text-[9px] text-amber-200">
-              SIMULATOR / PRE-PHYSICAL
+              DIGITAL TWIN / SIMULATION
             </Badge>
-            <Badge className="rounded-sm border border-rose-300/30 bg-rose-300/[0.08] font-mono text-[9px] text-rose-200">
-              A06 NOT PASSED
+            <Badge className="rounded-sm border border-emerald-300/30 bg-emerald-300/[0.08] font-mono text-[9px] text-emerald-200">
+              OFFICIAL NO-HARDWARE PATH
             </Badge>
-            <Badge className="rounded-sm border border-rose-300/30 bg-rose-300/[0.08] font-mono text-[9px] text-rose-200">
-              A07 NOT PASSED
+            <Badge className="rounded-sm border border-stone-300/20 bg-stone-300/[0.06] font-mono text-[9px] text-stone-300">
+              NO PHYSICAL CLAIM
             </Badge>
           </div>
           <h1 className="text-3xl font-semibold tracking-[-0.03em] text-white sm:text-4xl">
-            A06/A07 Field Test Lab
+            A06/A07 Digital Twin Lab
           </h1>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-stone-400">
-            Nine-AGV rehearsal for sensor-stop timing, local safety, blockage
-            replan, mission recovery and evidence capture. It prepares the field
-            test; only synchronized physical evidence can close the two gates.
+            Nine-AGV simulation for cloud-disconnect, local safety,
+            sensor-to-stop timing, blockage replan, recovery and evidence
+            capture. Devpost explicitly permits Physical AI entries without
+            hardware to demonstrate their key application modules.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -339,7 +404,7 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
             ) : (
               <Play className="size-4" />
             )}
-            {running ? 'Pause' : started ? 'Continue' : 'Run rehearsal'}
+            {running ? 'Pause' : started ? 'Continue' : 'Run simulation'}
           </Button>
           <Button
             onClick={injectBlockage}
@@ -387,7 +452,7 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="grid grid-cols-2 border-b border-white/[0.06] sm:grid-cols-4">
+            <div className="grid grid-cols-2 border-b border-white/[0.06] sm:grid-cols-5">
               <SimulatorMetric label="Phase" value={phase} tone="cyan" />
               <SimulatorMetric
                 label="Elapsed"
@@ -395,6 +460,19 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
                 tone="slate"
               />
               <SimulatorMetric label="Fleet" value="9 / 9" tone="emerald" />
+              <SimulatorMetric
+                label="Cloud"
+                value={
+                  cloudMode === 'DISCONNECTED_BEFORE_OBSTACLE'
+                    ? 'DISCONNECTED'
+                    : 'CONNECTED'
+                }
+                tone={
+                  cloudMode === 'DISCONNECTED_BEFORE_OBSTACLE'
+                    ? 'emerald'
+                    : 'rose'
+                }
+              />
               <SimulatorMetric
                 label="Synthetic stop"
                 value={`${stopLatencyMs} ms`}
@@ -680,28 +758,65 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
                   </Button>
                 ))}
               </ControlRow>
+              <ControlRow label="Cloud path before obstacle">
+                <Button
+                  size="xs"
+                  variant="outline"
+                  disabled={started}
+                  onClick={() => setCloudMode('DISCONNECTED_BEFORE_OBSTACLE')}
+                  className={
+                    cloudMode === 'DISCONNECTED_BEFORE_OBSTACLE'
+                      ? 'border-emerald-200/40 bg-emerald-200/10 text-emerald-100'
+                      : 'border-white/10 text-stone-500'
+                  }
+                >
+                  Disconnect
+                </Button>
+                <Button
+                  size="xs"
+                  variant="outline"
+                  disabled={started}
+                  onClick={() => setCloudMode('CONNECTED')}
+                  className={
+                    cloudMode === 'CONNECTED'
+                      ? 'border-rose-200/40 bg-rose-200/10 text-rose-100'
+                      : 'border-white/10 text-stone-500'
+                  }
+                >
+                  Connected control
+                </Button>
+              </ControlRow>
               <div className="rounded-md border border-white/[0.07] bg-[#1d130e] p-3">
                 <div className="flex items-center justify-between gap-3">
                   <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-stone-500">
                     Cloud path
                   </span>
-                  <Badge className="rounded-sm bg-emerald-300/10 font-mono text-[8px] text-emerald-200">
-                    DISABLED
+                  <Badge
+                    className={`rounded-sm font-mono text-[8px] ${
+                      cloudMode === 'DISCONNECTED_BEFORE_OBSTACLE'
+                        ? 'bg-emerald-300/10 text-emerald-200'
+                        : 'bg-rose-300/10 text-rose-200'
+                    }`}
+                  >
+                    {cloudMode === 'DISCONNECTED_BEFORE_OBSTACLE'
+                      ? 'DISCONNECTS AT +2600 MS'
+                      : 'CONNECTED CONTROL'}
                   </Badge>
                 </div>
                 <p className="mt-2 text-[10px] leading-5 text-stone-500">
-                  Rehearses a local edge stop. This is a software assertion
-                  until the physical network path is disconnected and filmed.
+                  The default run removes the simulated cloud route 400 ms
+                  before filtered obstacle detection. The edge stop remains
+                  local; all timing is explicitly synthetic.
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <GateStatus
-                  label="A06 rehearsal"
-                  passed={phase === 'COMPLETED' && stopLatencyMs <= 200}
+                  label="A06 simulation"
+                  passed={a06SimulationPassed}
                 />
                 <GateStatus
-                  label="A07 rehearsal"
-                  passed={phase === 'COMPLETED'}
+                  label="A07 simulation"
+                  passed={a07SimulationPassed}
                 />
               </div>
               <Button
@@ -710,7 +825,7 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
                 variant="outline"
                 className="w-full rounded-md border-violet-300/25 bg-violet-300/[0.06] text-violet-100 hover:bg-violet-300/[0.12]"
               >
-                <Download className="size-4" /> Download rehearsal JSON
+                <Download className="size-4" /> Download simulation evidence
               </Button>
             </CardContent>
           </Card>
@@ -744,6 +859,9 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
                     <p className="mt-1 text-[10px] leading-4 text-stone-500">
                       {event.detail}
                     </p>
+                    <p className="mt-1 font-mono text-[8px] text-stone-700">
+                      {event.source} · SIM-A06A07
+                    </p>
                   </div>
                 ))
               )}
@@ -752,30 +870,59 @@ export function FieldTestSimulator({ onBack }: { onBack: () => void }) {
         </div>
       </div>
 
-      <Card className="mt-4 rounded-lg border-amber-300/20 bg-amber-300/[0.035] shadow-none">
-        <CardHeader className="border-b border-amber-300/10 px-5 py-4">
+      <Card className="mt-4 rounded-lg border-emerald-300/20 bg-emerald-300/[0.035] shadow-none">
+        <CardHeader className="border-b border-emerald-300/10 px-5 py-4">
           <CardTitle className="flex flex-wrap items-center justify-between gap-3 text-xs text-white">
             <span className="flex items-center gap-2">
-              <AlertTriangle className="size-4 text-amber-200" /> Physical
-              evidence still required
+              <CheckCircle2 className="size-4 text-emerald-200" /> Competition
+              scope: simulation is accepted
             </span>
-            <span className="font-mono text-[9px] text-amber-200">
-              FAIL CLOSED UNTIL ONSITE TEST
+            <span className="font-mono text-[9px] text-emerald-200">
+              PHYSICAL HARDWARE NOT REQUIRED
             </span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-3 p-5 md:grid-cols-2 xl:grid-cols-3">
-          {fieldChecklist.map((item, index) => (
-            <div
-              key={item}
-              className="flex gap-3 rounded-md border border-white/[0.06] bg-[#1d130e] p-3"
+        <CardContent className="grid gap-4 p-5 xl:grid-cols-[0.8fr_1.2fr]">
+          <div className="rounded-md border border-emerald-300/15 bg-[#1d130e] p-4">
+            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-emerald-200">
+              Submission claim
+            </p>
+            <p className="mt-3 text-xs leading-6 text-stone-400">
+              This lab demonstrates the key application modules for the
+              competition&apos;s explicit no-hardware path. Use the 65-second
+              uninterrupted simulator sequence in the demo video and keep the
+              Digital Twin label visible.
+            </p>
+            <a
+              href="https://nebiusglobalaihackathon.devpost.com/rules"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 inline-flex text-[10px] text-emerald-200 underline decoration-emerald-300/30 underline-offset-4"
             >
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full border border-amber-300/20 font-mono text-[9px] text-amber-200">
-                {index + 1}
-              </span>
-              <p className="text-[11px] leading-5 text-stone-400">{item}</p>
+              Read the official Devpost rule basis
+            </a>
+          </div>
+          <div>
+            <div className="mb-3 flex items-center gap-2">
+              <AlertTriangle className="size-4 text-amber-200" />
+              <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-amber-200">
+                Optional future physical extension
+              </p>
             </div>
-          ))}
+            <div className="grid gap-2 md:grid-cols-2">
+              {physicalStretchChecklist.map((item, index) => (
+                <div
+                  key={item}
+                  className="flex gap-3 rounded-md border border-white/[0.06] bg-[#1d130e] p-3"
+                >
+                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full border border-amber-300/20 font-mono text-[9px] text-amber-200">
+                    {index + 1}
+                  </span>
+                  <p className="text-[11px] leading-5 text-stone-400">{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

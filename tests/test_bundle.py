@@ -6,6 +6,7 @@ from pathlib import Path
 from zipfile import ZipFile
 
 from shiftzero.bundle import REQUIRED_PATHS, build_evidence_bundle
+from shiftzero.competition_simulation import build_competition_simulation_evidence
 from shiftzero.domain import canonical_hash
 from shiftzero.evidence import EvidenceRecorder
 
@@ -171,6 +172,9 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
     (tmp_path / "evidence/release-acceptance.json").write_text(
         json.dumps(release_acceptance), encoding="utf-8"
     )
+    build_competition_simulation_evidence(
+        output_path=tmp_path / "evidence/a06-a07-simulation-validation.json"
+    )
     (tmp_path / "THIRD_PARTY_LICENSES.json").write_text(
         json.dumps(
             {
@@ -196,7 +200,9 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         "# Devpost\n\n## Existing work\n\nDeclared.\n", encoding="utf-8"
     )
     (tmp_path / "docs/VIDEO_SHOTLIST.md").write_text(
-        "Encoded target: 2:58\n\nContinuous physical segment: 65 seconds\n",
+        "Encoded target: 2:58\n\n"
+        "Continuous key-module simulation segment: 65 seconds\n"
+        "DIGITAL TWIN / SIMULATION\n",
         encoding="utf-8",
     )
     (tmp_path / "docs/A06_A07_FIELD_TEST_PROTOCOL.md").write_text(
@@ -207,10 +213,12 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     (tmp_path / "apps/web/components/field-test-simulator.tsx").write_text(
-        "SIMULATOR / PRE-PHYSICAL\n"
+        "DIGITAL TWIN / SIMULATION\n"
+        "a06_simulation_passed\n"
+        "a07_simulation_passed\n"
         "a06_physical_passed: false\n"
         "a07_physical_passed: false\n"
-        "physical_evidence_required\n",
+        "optional_physical_extension_requires\n",
         encoding="utf-8",
     )
     sample = EvidenceRecorder(tmp_path / "evidence/sample-verified-run")
@@ -239,7 +247,7 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
     assert first["official_gate_passed"] is False
     with ZipFile(first_zip) as archive:
         embedded = json.loads(archive.read("MANIFEST.json"))
-        assert embedded["bundle_version"] == "hero002-evidence-v9"
+        assert embedded["bundle_version"] == "hero002-evidence-v10"
         assert embedded["evidence_class"] == "preflight_fixture"
         assert embedded["claim_scope"] == "reference_simulator_and_fixture_provider_only"
         assert embedded["final_release_ready"] is False
@@ -260,7 +268,13 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         )
         assert embedded["completeness_checks"]["devpost_has_existing_work_section"] is True
         assert (
-            embedded["completeness_checks"]["video_plan_has_continuous_65_second_physical_segment"]
+            embedded["completeness_checks"][
+                "video_plan_has_continuous_65_second_no_hardware_segment"
+            ]
+            is True
+        )
+        assert (
+            embedded["completeness_checks"]["competition_no_hardware_simulation_passed"]
             is True
         )
         assert embedded["completeness_checks"]["local_preflight_passed"] is True

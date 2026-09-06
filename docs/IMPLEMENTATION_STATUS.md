@@ -52,19 +52,26 @@
 - Interactive Judge Mode website with Run Hero, Architecture, Evidence and GitHub/source-gate
   entrances, explicit MOCK labeling, final pose, load evidence, impact projection, typed
   model-tool and release-acceptance evidence.
-- Evidence now links to an A06/A07 Field Test Lab with nine simulated AGVs, functional 2D and
-  isometric views, speed/latency controls, manual blockage injection, local-stop/replan/resume
-  timeline and downloadable rehearsal JSON. It is permanently marked `SIMULATOR / PRE-PHYSICAL`,
-  `A06 NOT PASSED`, and `A07 NOT PASSED`.
+- Evidence now links to an A06/A07 Digital Twin Lab with nine simulated AGVs, functional 2D and
+  isometric views, speed/latency controls, a cloud-disconnect negative control, manual blockage
+  injection, local-stop/replan/resume timeline and correlated downloadable JSON. The default
+  reference run passes both simulation assertions and is permanently marked `DIGITAL TWIN /
+  SIMULATION` and `NO PHYSICAL CLAIM`.
+- A hash-bound `competition-simulation-evidence-v1` artifact records the official Devpost
+  no-hardware rule basis, a pre-obstacle cloud disconnect, 150 ms synthetic sensor-to-stationary
+  interval, the complete blockage/stop/replan/resume/completion sequence and final pose under one
+  correlation ID.
 - A strict `physical-field-evidence-v1` schema, field-test protocol, CLI validator and regression
-  tests are complete. Simulator exports deliberately use a different, ineligible evidence class;
-  only correlated onsite video/telemetry/sensor/protocol artifacts can pass the validator.
+  tests remain available for an optional future hardware claim. Simulator exports deliberately
+  use a different evidence class and cannot be promoted into physical measurements.
 - A hash-bound A01–A12 release-acceptance report is generated from the underlying evidence and
   shown in Judge Mode. It passes 8/12, has no unresolved software-evidence failures, and identifies
   A06/A07/A11/A12 as external evidence gates rather than silently marking them complete.
 - Devpost draft, anonymous judge runbook, submission checklist, and three-minute video shot list.
-- Spec-aligned 2:58 video plan with a 15-second opening, at most 20 seconds of architecture and an
-  uninterrupted 65-second physical segment; Devpost includes an explicit existing-work section.
+- Official-rule-aligned 2:58 no-hardware video plan with a 15-second opening, at most 20 seconds
+  of architecture and an uninterrupted 65-second Digital Twin module sequence; Devpost includes
+  an explicit existing-work section. The stricter internal PDF's physical-video variant is kept
+  as an optional future extension, not a competition eligibility blocker.
 - Complete resolved Python/npm dependency inventory with exact versions, license identifiers,
   source URLs and a frozen Python verification lock.
 - Public Judge Mode deployment at `https://shiftzero-hero-002.mingjen.chatgpt.site`; v14 and its
@@ -77,17 +84,19 @@
 
 ## Current external blockers
 
-1. No AGV/OEM protocol, broker credentials, PLC/edge stop interface, test map, or safety-owner
-   approval has been supplied. Real hardware integration remains locked as required by the spec.
-2. Physical video and Devpost submission require the final hardware/test evidence and video URL.
-3. The current three screenshots are preflight layout/evidence checks only. The live Compatibility
-   Gate and provider receipts now pass, but final capture still requires the correlated physical
-   mission result and safety-owner review.
-4. Nebius Serverless cloud execution requires an AI Cloud project ID, configured Nebius CLI,
+1. The final no-hardware demo video, final `LIVE / NEBIUS` screenshots and Devpost submit action
+   remain external publication work; they no longer depend on an AGV.
+2. Nebius Serverless cloud execution requires an AI Cloud project ID, configured Nebius CLI,
    registry image URI, VM quota and a successful job receipt. None is present on this machine;
    the Token Factory inference key does not supply those project resources.
-5. The project owner must verify the private-history disclosure and sign/date
+3. The project owner must verify the private-history disclosure and sign/date
    `PRE_EXISTING_WORK.md`; automation cannot truthfully make that attestation for the owner.
+
+## Optional physical extension
+
+No AGV/OEM protocol, broker credentials, PLC/edge stop interface, test map, or safety-owner
+approval has been supplied. This does not block the official no-hardware competition path. It
+only blocks a claim that the synthetic stop latency or mission loop was measured on real hardware.
 
 ## Live gate result and next external gate
 
@@ -98,6 +107,7 @@ The completed command was:
 .\.venv\Scripts\python.exe -m shiftzero.cli compatibility --provider nebius --repetitions 20 --evidence-root evidence/runs/live-compatibility --report evidence/compatibility/live-gate.json
 ```
 
-`live-gate.json` contains `official_gate_passed=true`. Real AGV adapter implementation may begin
-only after the site supplies the OEM protocol, mapped test area, edge-stop interface and explicit
-safety-owner approval. The API key remains outside Git and the Evidence Bundle.
+`live-gate.json` contains `official_gate_passed=true`. The official competition path now uses the
+Digital Twin demonstration. Real AGV adapter implementation remains an optional extension and may
+begin only after the site supplies the OEM protocol, mapped test area, edge-stop interface and
+explicit safety-owner approval. The API key remains outside Git and the Evidence Bundle.

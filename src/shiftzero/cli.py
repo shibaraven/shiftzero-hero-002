@@ -9,6 +9,7 @@ from shiftzero.auth import AuthSettings, issue_access_token
 from shiftzero.baseline import run_fair_baseline
 from shiftzero.bundle import build_evidence_bundle
 from shiftzero.compatibility import run_compatibility_gate
+from shiftzero.competition_simulation import build_competition_simulation_evidence
 from shiftzero.config import TokenFactorySettings
 from shiftzero.evaluation import evaluate_scenarios
 from shiftzero.evidence_summary import build_hero_summary
@@ -178,6 +179,17 @@ def main() -> None:
     physical_evidence.add_argument("--input", type=Path, required=True)
     physical_evidence.add_argument("--output", type=Path)
 
+    competition_simulation = subparsers.add_parser(
+        "build-competition-simulation-evidence",
+        help="Build hash-bound A06/A07 Digital Twin evidence for the no-hardware track",
+    )
+    competition_simulation.add_argument(
+        "--output",
+        type=Path,
+        default=Path("evidence/a06-a07-simulation-validation.json"),
+    )
+    competition_simulation.add_argument("--sensor-to-stop-ms", type=int, default=150)
+
     release_acceptance = subparsers.add_parser(
         "build-release-acceptance",
         help="Build the evidence-backed A01-A12 release acceptance ledger",
@@ -263,6 +275,14 @@ def main() -> None:
         print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
         if not report["passed"]:
             raise SystemExit(2)
+        return
+
+    if args.command == "build-competition-simulation-evidence":
+        report = build_competition_simulation_evidence(
+            output_path=args.output.resolve(),
+            sensor_to_stop_ms=args.sensor_to_stop_ms,
+        )
+        print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
         return
 
     if args.command == "build-release-acceptance":

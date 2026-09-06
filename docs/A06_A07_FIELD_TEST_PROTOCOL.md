@@ -1,8 +1,12 @@
 # A06/A07 field-test protocol
 
-The Field Test Lab is a rehearsal and evidence-capture aid. Its nine-vehicle traffic, 2D/3D
-views, blockage injection, simulated stop latency and downloadable report are always labeled
-`SIMULATOR / PRE-PHYSICAL`. They do not satisfy A06 or A07.
+This protocol is only for an optional future physical-performance claim. The official competition
+also permits a no-hardware Physical AI entry that demonstrates its key application modules; that
+path is completed separately by `evidence/a06-a07-simulation-validation.json`.
+
+The Digital Twin Lab's nine-vehicle traffic, 2D/3D views, blockage injection, simulated stop
+latency and downloadable report are always labeled `DIGITAL TWIN / SIMULATION` and `NO PHYSICAL
+CLAIM`. They pass the competition simulation assertions but never satisfy this physical validator.
 
 ## A06 - local sensor-to-stop measurement
 

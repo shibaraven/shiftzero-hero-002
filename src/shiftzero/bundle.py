@@ -8,7 +8,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 from shiftzero.domain import canonical_hash
 from shiftzero.evidence import EvidenceRecorder
 
-BUNDLE_VERSION = "hero002-evidence-v9"
+BUNDLE_VERSION = "hero002-evidence-v10"
 LIVE_GATE_PATH = "evidence/compatibility/live-gate.json"
 LIVE_TRACE_ROOT = "evidence/runs/live-compatibility"
 LIVE_PROVIDER = "nebius_token_factory"
@@ -51,6 +51,7 @@ REQUIRED_PATHS = (
     "evidence/public-repository.json",
     "evidence/serverless-readiness.json",
     "evidence/release-acceptance.json",
+    "evidence/a06-a07-simulation-validation.json",
     "evidence/screenshots/manifest.json",
     "evidence/METHODOLOGY.md",
     "evidence/screenshots/01-completed.png",
@@ -230,6 +231,11 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
     release_acceptance = json.loads(
         (root / "evidence/release-acceptance.json").read_text(encoding="utf-8")
     )
+    competition_simulation = json.loads(
+        (root / "evidence/a06-a07-simulation-validation.json").read_text(
+            encoding="utf-8"
+        )
+    )
     license_inventory = json.loads(
         (root / "THIRD_PARTY_LICENSES.json").read_text(encoding="utf-8")
     )
@@ -303,6 +309,9 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
     release_without_hash = dict(release_acceptance)
     release_hash = release_without_hash.pop("report_hash", None)
     release_hash_valid = release_hash == canonical_hash(release_without_hash)
+    simulation_without_hash = dict(competition_simulation)
+    simulation_hash = simulation_without_hash.pop("report_hash", None)
+    simulation_hash_valid = simulation_hash == canonical_hash(simulation_without_hash)
 
     def proof_has_approval_integrity(events: list[dict[str, object]], kind: str) -> bool:
         return any(
@@ -494,9 +503,30 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         and license_inventory["summary"]["total_packages"]
         == len(license_inventory["packages"]),
         "devpost_has_existing_work_section": "## Existing work" in devpost,
-        "video_plan_has_continuous_65_second_physical_segment": (
-            "Continuous physical segment: 65 seconds" in video_shotlist
+        "video_plan_has_continuous_65_second_no_hardware_segment": (
+            "Continuous key-module simulation segment: 65 seconds" in video_shotlist
             and "Encoded target: 2:58" in video_shotlist
+            and "DIGITAL TWIN / SIMULATION" in video_shotlist
+        ),
+        "competition_no_hardware_simulation_passed": bool(
+            simulation_hash_valid
+            and competition_simulation.get("evidence_class")
+            == "digital_twin_simulation"
+            and competition_simulation.get("claim_scope")
+            == "official_competition_no_hardware_path"
+            and competition_simulation.get("passed") is True
+            and competition_simulation.get("assertions", {}).get(
+                "a06_simulation_passed"
+            )
+            is True
+            and competition_simulation.get("assertions", {}).get(
+                "a07_simulation_passed"
+            )
+            is True
+            and competition_simulation.get("eligibility", {}).get(
+                "physical_hardware_claimed"
+            )
+            is False
         ),
         "physical_field_test_harness_ready": all(
             marker in physical_protocol
@@ -510,10 +540,12 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         and all(
             marker in field_test_ui
             for marker in (
-                "SIMULATOR / PRE-PHYSICAL",
+                "DIGITAL TWIN / SIMULATION",
+                "a06_simulation_passed",
+                "a07_simulation_passed",
                 "a06_physical_passed: false",
                 "a07_physical_passed: false",
-                "physical_evidence_required",
+                "optional_physical_extension_requires",
             )
         ),
         "release_acceptance_has_only_external_blockers": bool(
@@ -545,7 +577,8 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         "impact_range_covers_400_to_500_pallets",
         "third_party_inventory_complete",
         "devpost_has_existing_work_section",
-        "video_plan_has_continuous_65_second_physical_segment",
+        "video_plan_has_continuous_65_second_no_hardware_segment",
+        "competition_no_hardware_simulation_passed",
         "physical_field_test_harness_ready",
         "release_acceptance_has_only_external_blockers",
         "serverless_job_artifact_ready",

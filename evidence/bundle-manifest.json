@@ -1,13 +1,14 @@
 {
-  "bundle_bytes": 3937743,
+  "bundle_bytes": 3941783,
   "bundle_path": "evidence/HERO002-evidence-bundle.zip",
-  "bundle_sha256": "6d9cda8ab769aefb5f60b21849cd1022c60eeca6846f8cb5b3cc3f9bf3e28a3f",
-  "bundle_version": "hero002-evidence-v9",
+  "bundle_sha256": "7ae15bbbecabf84312441fdf8abbd599c33616adfdca46fa2e1608cde2290629",
+  "bundle_version": "hero002-evidence-v10",
   "claim_scope": "live_nebius_token_factory_with_reference_simulator_no_physical_hardware",
   "completeness_checks": {
     "all_included_trace_chains_valid": true,
     "approval_integrity_in_every_replan_proof": true,
     "approval_integrity_in_every_safety_proof": true,
+    "competition_no_hardware_simulation_passed": true,
     "devpost_has_existing_work_section": true,
     "final_real_screenshots_ready": false,
     "fixture_screenshots_are_preflight_only": true,
@@ -30,7 +31,7 @@
     "physical_field_test_harness_ready": true,
     "public_repository_ready": true,
     "release_acceptance_has_only_external_blockers": true,
-    "required_file_count": 357,
+    "required_file_count": 358,
     "scenario_all_outcomes_valid": true,
     "scenario_count_is_100": true,
     "scenario_safety_violations_zero": true,
@@ -41,7 +42,7 @@
     "third_party_inventory_complete": true,
     "three_png_screenshots_present": true,
     "typed_operation_metrics_for_every_trace": true,
-    "video_plan_has_continuous_65_second_physical_segment": true
+    "video_plan_has_continuous_65_second_no_hardware_segment": true
   },
   "evidence_class": "live_provider_with_reference_simulator",
   "files": [
@@ -61,9 +62,9 @@
       "sha256": "c1873b5c09013202962379f8b81f090b29c71e9b3bddcb0a495d3a867a7108b5"
     },
     {
-      "bytes": 9615,
+      "bytes": 10206,
       "path": "README.md",
-      "sha256": "7c424345fa6fc1c7ec8b8543349e5d7efc9e0f1b737915d41865d08c92789ad9"
+      "sha256": "abfe4529f2bafd5d398b392d254bc7ebd4635372f352e330cdd2db20e9e0b1eb"
     },
     {
       "bytes": 192322,
@@ -76,14 +77,14 @@
       "sha256": "98b4b2303d63ba74258f556e0aa8f96c530a828c72fdd9ed0cf7b2aad0f53d18"
     },
     {
-      "bytes": 29382,
+      "bytes": 35375,
       "path": "apps/web/components/field-test-simulator.tsx",
-      "sha256": "96199da68204d6cafe0e8fc6ac173e1836071dd3cdc4807fe1db35e0ac0080a8"
+      "sha256": "e81ee5cd5e58a894c60bc55eb16a8d973f679c7e1b862843eecca6103bef09b2"
     },
     {
-      "bytes": 3014,
+      "bytes": 3332,
       "path": "docs/A06_A07_FIELD_TEST_PROTOCOL.md",
-      "sha256": "727968b3fb74fca923ea43afb4431fc8fc4b25c0a01be0d17e6cac954256f28c"
+      "sha256": "adf5dd544f560423202e7f60ad008595549158b63ea41f021e552aea4684964c"
     },
     {
       "bytes": 2003,
@@ -96,14 +97,14 @@
       "sha256": "f9449aae2ed6ba0369d5a52d9e5ca3f7220e6770c4c3c3590569f4883f5f6de1"
     },
     {
-      "bytes": 7837,
+      "bytes": 8293,
       "path": "docs/DEVPOST_DRAFT.md",
-      "sha256": "62a09f8aa6ed9f2bf9ddd5877f1f26e61d9c42aff707169030a5a6f657d32c0b"
+      "sha256": "41ce27b51cd282dccff2ddc88a52b1ccd8c4d0d7616bc486c5dd978d63b0b0a7"
     },
     {
-      "bytes": 2044,
+      "bytes": 2083,
       "path": "docs/FINAL_EVIDENCE_CAPTURE.md",
-      "sha256": "4e625056c729a7ceb1d597c9cd4c52b24b29a6c95e16de3ab016adad7df20f3d"
+      "sha256": "7ebd67947af84c0718fdbab5c48b4940b09134a6630c7549727f9a5edff1f3c9"
     },
     {
       "bytes": 1278,
@@ -131,19 +132,24 @@
       "sha256": "d555d71b179647fe1c1884392e393401a0feb5817b5edf9ce5772307e3d0affc"
     },
     {
-      "bytes": 6375,
+      "bytes": 7077,
       "path": "docs/SPEC_COMPLIANCE.md",
-      "sha256": "010919802f9314ad2d32d363c0c5b76b55aea38a163eb55d9a3d5e7e6127e608"
+      "sha256": "02b786cb87ab472aaf2faf55d249a59b061db72322f3a94a8f70dda992e73d57"
     },
     {
-      "bytes": 3641,
+      "bytes": 4091,
       "path": "docs/VIDEO_SHOTLIST.md",
-      "sha256": "d5b88baf8372fdcd6aa226cefe7551ea906e6ae963f784cadec5ea9d1d754cb7"
+      "sha256": "0f73015807914fd48acaa744714101c6dfb7b952e5a7fcc1e18b103f148a41a6"
     },
     {
       "bytes": 4733,
       "path": "evidence/METHODOLOGY.md",
       "sha256": "ed9d31b90d5af6559a9ba9e5e98478d1f45269be8905baaf32edda74e2ca3198"
+    },
+    {
+      "bytes": 6131,
+      "path": "evidence/a06-a07-simulation-validation.json",
+      "sha256": "a19347308e4e47f6fa21be7fdbeb869aa932fcbafd94f691347a08118e4c4114"
     },
     {
       "bytes": 7573,

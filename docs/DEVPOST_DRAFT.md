@@ -67,6 +67,9 @@ and kept emergency stopping on the edge path.
 - Per-tool arguments/result hashes, latency/error fields and structured JSON replay artifacts.
 - Public, anonymous Judge Mode with downloadable, hash-indexed evidence and a deployment receipt
   binding the production version to its exact source commit.
+- Official no-hardware Physical AI path: the nine-AGV Digital Twin disconnects the simulated cloud
+  route before obstacle detection, records a 150 ms synthetic sensor-to-stationary interval, then
+  stops, replans, resumes and completes at a final `x/y/heading` pose under one correlation ID.
 
 The control-flow, safety and throughput results are scoped to the reference simulator. Model-call
 compatibility results are from the live Nebius Token Factory provider; no physical AGV claim is
@@ -93,8 +96,8 @@ three facts made the KPI useful without overstating what the evidence says.
 The live six-variant Compatibility Gate now passes. The project path is explicit:
 
 1. **Project:** finish the competition release with a public Judge Mode, public source snapshot,
-   Nebius deployment receipt, correlated physical-AGV trace, continuous 65-second physical clip,
-   and three final `LIVE / NEBIUS` screenshots.
+   Nebius deployment receipt, correlated Digital Twin trace, continuous 65-second visibly labeled
+   key-module clip, and three final `LIVE / NEBIUS` screenshots.
 2. **IP:** preserve the pre-existing-work declaration, keep customer/OEM adapters outside the
    public core, and record the provenance and licenses of every shipped dependency.
 3. **Product:** turn the frozen mission/safety contracts into a site-configurable governance layer
@@ -102,9 +105,10 @@ The live six-variant Compatibility Gate now passes. The project path is explicit
 4. **License/OEM:** keep the reference core Apache-2.0 and offer separately reviewed OEM protocol
    adapters, safety-controller integrations, support, and commercial deployment terms.
 
-The physical phase requires an OEM protocol, MQTT or VDA 5050 gateway, PLC/edge stop contract,
-mapped test area and safety-owner approval. Only after that integration will we record the
-continuous physical segment and replace the fixture screenshots with one correlated evidence set.
+The official rules explicitly allow a Physical AI submission without hardware to show the key
+application modules in action, so the competition version uses the Digital Twin path and makes no
+physical-performance claim. A future hardware phase would require an OEM protocol, MQTT or VDA
+5050 gateway, PLC/edge stop contract, mapped test area and safety-owner approval.
 
 ## Existing work
 
@@ -117,8 +121,9 @@ During the HERO-002 competition period, this repository added the Nebius Token F
 provider implementation, the six-variant Compatibility Gate, state-gated typed contracts,
 three-layer validation, signed approval and idempotency controls, proof-carrying mission objects,
 the reproducible 100-scenario suite, public-release-gated Judge Mode, and the hardware integration
-boundary. Live-provider compatibility is now evidenced; Serverless deployment and physical claims
-remain pending until their corresponding external evidence exists.
+boundary. Live-provider compatibility and the official no-hardware Digital Twin path are now
+evidenced; Serverless deployment and any optional physical claim remain pending until their
+corresponding external evidence exists.
 
 The detailed file-level declaration is maintained in `PRE_EXISTING_WORK.md`. The project owner
 must confirm that declaration against the complete private history and sign/date it before final

@@ -18,17 +18,10 @@
   },
   "final_status": "COMPLETED",
   "human_interventions": 1,
-  "initial_route": [
-    "N01",
-    "N04",
-    "N09",
-    "N12"
-  ],
+  "initial_route": ["N01", "N04", "N09", "N12"],
   "initial_route_version": "route-44000c8e3339",
   "intent": {
-    "constraints": [
-      "avoid-human-zone"
-    ],
+    "constraints": ["avoid-human-zone"],
     "destination": "RACK-A12",
     "pallet_id": "P-104",
     "requested_agv": null,
@@ -130,12 +123,7 @@
     "total_duration_ms": 21.5201
   },
   "proposal_id": "TP-60A79074CF",
-  "replan_route": [
-    "N04",
-    "N05",
-    "N10",
-    "N12"
-  ],
+  "replan_route": ["N04", "N05", "N10", "N12"],
   "replan_route_version": "route-d8c9119af45a",
   "safety_checks": [
     {

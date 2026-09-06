@@ -1,8 +1,9 @@
 # SPEC V2.1 compliance ledger
 
-This ledger separates local engineering completion from evidence that requires a credential,
-physical hardware, public exposure, or a third-party submission action. `Complete` never means a
-fixture result is equivalent to Nebius or physical evidence.
+This ledger separates two authorities: the project PDF's stricter physical acceptance gates and
+the official Devpost competition rules. Devpost explicitly permits a Physical AI entry with no
+physical hardware to show its key application modules in action. `Complete` never means a fixture
+result is equivalent to Nebius or a physical measurement.
 
 | Requirement | Status | Evidence or gate |
 |---|---|---|
@@ -14,7 +15,7 @@ fixture result is equivalent to Nebius or physical evidence.
 | API idempotency and optimistic concurrency | Complete locally | every write requires key/version; SQLite exact-response receipts survive process replacement |
 | Digital Twin core model | Complete locally | pose, pallet/location state, obstacle geometry/TTL, route windows, reservations and wait-for graph; completed outcome seals final `x/y/heading` |
 | 100-case evaluation | Complete locally | differentiated S01-S06 results and method in Evidence Bundle |
-| Evidence Bundle and reproducibility hashes | Complete for simulator + live provider | JSON+JSONL traces, 360 live provider receipts, tool latency/error/result hashes, visibly timestamped MOCK screenshots, outcome metrics and source/map/policy hashes; manifest sets `official_gate_passed=true` and keeps `final_release_ready=false` until physical capture |
+| Evidence Bundle and reproducibility hashes | Complete for simulator + live provider | JSON+JSONL traces, 360 live provider receipts, tool latency/error/result hashes, visibly timestamped MOCK screenshots, outcome metrics and source/map/policy hashes; manifest sets `official_gate_passed=true` and keeps `final_release_ready=false` until final screenshots, Serverless receipt and publication actions are complete |
 | Complete P0 typed-tool trace | Complete locally | every bundled Hero trace contains snapshot, inspection, planning, proposal, approval, mission status, replan and metrics spans; status is read at started/safe-stop/completed checkpoints |
 | A01–A12 release ledger | Complete and fail-closed | hash-bound machine report passes A01–A05/A08–A10, has no software-evidence failures, and labels A06/A07/A11/A12 `external_evidence_required` |
 | Approval-integrity Safety Proof | Complete locally | execution and replan proofs contain a passing hashed check bound to proposal hash, actor, expiry and goal; bundle validation fails if it is absent |
@@ -31,16 +32,19 @@ fixture result is equivalent to Nebius or physical evidence.
 | Serverless Jobs artifact | Complete locally | dedicated job image, immutable CLI entrypoint, 100/100 smoke output and hash-bound readiness receipt |
 | Serverless Jobs cloud deployment | Account-gated | no AI Cloud project/CLI profile, image URI, VM quota or successful job receipt is available |
 | Real AGV adapter | Gate + hardware-gated | interface, nine-AGV pre-physical harness, field protocol and fail-closed evidence validator complete; OEM protocol/safety approval absent |
-| Physical sensor-to-stop under 200 ms | Harness complete; hardware-gated | Field Test Lab rehearses pass/fail timing and exports ineligible synthetic evidence; strict physical schema/validator requires correlated clocked field events |
+| A06 no-hardware simulation | Complete for official competition path | hash-bound reference run disconnects the simulated cloud before detection, records 150 ms sensor-to-stationary, and keeps all events under one correlation ID |
+| A07 no-hardware simulation | Complete for official competition path | one synchronized Digital Twin sequence records blockage, local stop, changed route, resume, completion and final `x/y/heading` pose |
+| Physical sensor-to-stop under 200 ms | Optional extension; not claimed | strict physical schema/validator still requires correlated clocked field events and rejects the simulation evidence class |
 | Public GitHub repository | Complete | `https://github.com/shibaraven/shiftzero-hero-002`; public visibility, `main`, immutable commit and anonymous HTTP checks captured in `evidence/public-repository.json` |
 | Anonymous public Judge Mode | Complete | public v14 deployment, source SHA and four unauthenticated HTTP 200 checks are captured in `evidence/judge-mode-publication.json` |
-| Physical demo video | Hardware/publication-gated | shot list complete; recording is not fabricated |
+| No-hardware demo video | Publication-gated | 2:58 shot list devotes 65 continuous seconds to visibly labeled key Digital Twin modules, as allowed by official rules |
 | Devpost submission | External action | draft/checklist complete; final URLs and submit action pending |
 | Third-party dependency inventory | Complete locally | all resolved Python/npm packages have exact versions, license identifiers and sources; final legal review remains a release action |
 
 The live runtime trace and official Compatibility Gate satisfy the machine-verifiable A01/A02
 provider requirements while remaining explicitly scoped to the reference simulator. Public Judge
-Mode and source release satisfy A09/A10's publication gates. A06/A07 still require physical AGV
-evidence; the software rehearsal, physical evidence schema, capture protocol and validator are
-complete, but do not change that gate. A11/A12 still require the final physical video, eligible screenshots, owner disclosure
-attestation and Devpost submission.
+Mode and source release satisfy A09/A10's publication gates. For the official no-hardware route,
+A06/A07 simulation evidence is complete. The internal PDF ledger deliberately remains 8/12 because
+its A06/A07 wording requires real AGV evidence; that is now an optional stretch gate, not a Devpost
+eligibility blocker. A11/A12 still require the final demo video, eligible screenshots, owner
+disclosure attestation and Devpost submission.

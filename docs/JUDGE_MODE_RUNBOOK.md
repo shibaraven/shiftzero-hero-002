@@ -17,8 +17,9 @@ recorded live-provider Compatibility Gate without loading an API key in the brow
    preflight, official live Compatibility Gate, fair baseline, Judge load report, 400–500
    pallets/day projection, typed tool spans, the evidence-backed A01–A12 release matrix, and
    downloadable Evidence Bundle. Select
-   **Open field-test lab** to rehearse the nine-AGV A06/A07 blockage sequence in 2D or isometric
-   view and export an explicitly ineligible simulator report.
+   **Open Digital Twin lab** to run the nine-AGV A06/A07 sequence in 2D or isometric view. The
+   default proof disconnects the simulated cloud path before the obstacle, stops locally within
+   the synthetic 200 ms threshold, replans, resumes, completes and exports one correlated report.
 5. Open **GitHub** to inspect the public source repository, required release files and the
    machine-readable public-repository receipt.
 
@@ -47,10 +48,12 @@ python -m venv .venv
 - `MOCK / FIXTURE` means locally reproducible simulator evidence and is visible in every capture.
 - `LIVE GATE PASSED` refers only to the archived Token Factory/Nemotron Compatibility Gate.
 - `MOCK / FIXTURE` refers to the interactive replay and current screenshots.
-- Physical AGV execution remains unavailable until the site safety owner supplies the approved
-  OEM transport, mapped test area and edge-stop interfaces.
-- The Field Test Lab prepares the onsite procedure but always reports `A06 NOT PASSED` and
-  `A07 NOT PASSED`; see `docs/A06_A07_FIELD_TEST_PROTOCOL.md` for the physical closeout.
+- `DIGITAL TWIN / SIMULATION` is the official competition no-hardware path; the Devpost rules
+  allow such an entry to demonstrate its key application modules in action.
+- The Digital Twin Lab reports `A06 SIMULATION PASS` and `A07 SIMULATION PASS` only after the
+  synchronized scenario completes. It never reports physical performance.
+- Physical AGV execution is an optional extension requiring the approved OEM transport, mapped
+  test area, edge-stop interfaces and safety owner. See `docs/A06_A07_FIELD_TEST_PROTOCOL.md`.
 
 The offline demo never reads secrets and never falls back from a failed live provider to a
 fixture while retaining a live label.

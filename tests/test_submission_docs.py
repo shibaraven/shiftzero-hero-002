@@ -8,8 +8,10 @@ def test_video_plan_matches_competition_timing_constraints() -> None:
     assert "Encoded target: 2:58" in shotlist
     assert "0:00-0:15" in shotlist
     assert "0:15-0:35" in shotlist
-    assert "Continuous physical segment: 65 seconds" in shotlist
+    assert "Continuous key-module simulation segment: 65 seconds" in shotlist
     assert "0:58-2:03" in shotlist
+    assert "DIGITAL TWIN / SIMULATION" in shotlist
+    assert "no-hardware" in shotlist
 
 
 def test_devpost_has_explicit_existing_work_section() -> None:

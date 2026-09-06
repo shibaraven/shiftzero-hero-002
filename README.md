@@ -101,8 +101,8 @@ $0.001925 median per simulator mission and $0.232801 for the complete gate. Cost
 captured list-price estimate, not a billing invoice.
 
 The checked-in screenshots are preflight-only `MOCK / FIXTURE` captures. They cannot be promoted
-to final evidence. After the live gate and physical capture, validate their provider receipts,
-hashes, UTC timestamps and visible `LIVE / NEBIUS` labels with:
+to final evidence. After the live gate and final Digital Twin capture, validate their provider
+receipts, hashes, UTC timestamps and visible `LIVE / NEBIUS` labels with:
 
 ```powershell
 .\.venv\Scripts\python.exe -m shiftzero.cli validate-final-evidence
@@ -110,15 +110,27 @@ hashes, UTC timestamps and visible `LIVE / NEBIUS` labels with:
 
 See `docs/FINAL_EVIDENCE_CAPTURE.md` for the exact three-file replacement procedure.
 
-## A06/A07 field-test rehearsal
+## A06/A07 Digital Twin evidence
 
-Judge Mode **Evidence → Open field-test lab** contains a nine-AGV rehearsal inspired by the
-provided dispatch simulator: switchable 2D/isometric views, speed controls, synthetic blockage,
-local-stop timing presets, route recovery, event timeline, final pose, and downloadable rehearsal
-JSON. Every screen and export says `SIMULATOR / PRE-PHYSICAL`; the export uses
-`evidence_class=simulator_rehearsal`, is never final-submission eligible, and cannot pass A06/A07.
+Judge Mode **Evidence → Open Digital Twin lab** contains a nine-AGV simulation inspired by the
+provided dispatch simulator: switchable 2D/isometric views, speed controls, a pre-obstacle cloud
+disconnect, synthetic blockage, local-stop timing presets, route recovery, a correlated event
+timeline, final pose and downloadable JSON. Every screen and export says `DIGITAL TWIN /
+SIMULATION` and `NO PHYSICAL CLAIM`.
 
-For the onsite closeout, collect one synchronized physical session following
+The official competition rules permit a Physical AI entry without a hardware component to show
+the key application modules in action. Build the checked-in, hash-bound 150 ms reference result:
+
+```powershell
+.\.venv\Scripts\python.exe -m shiftzero.cli build-competition-simulation-evidence
+```
+
+The generated `evidence/a06-a07-simulation-validation.json` passes A06/A07 for that no-hardware
+demonstration path: cloud disconnect precedes detection, local stop remains active, the route
+version changes, and the same correlation ID continues through resume, completion and final pose.
+It does not claim physical timing or real AGV behavior.
+
+For an optional future physical claim, collect one synchronized session following
 `docs/A06_A07_FIELD_TEST_PROTOCOL.md`. Create a JSON file matching
 `schemas/physical-field-evidence.schema.json`, then fail closed with:
 
@@ -133,9 +145,9 @@ completion events; a sensor-to-stop result no greater than 200 ms; changed route
 `x/y/heading`; four colocated source artifacts whose bytes match their declared SHA-256 hashes;
 clock synchronization; cloud-disconnected stop proof; and a named safety-owner attestation.
 
-`evidence/release-acceptance.json` evaluates the PDF's A01–A12 gates from checked-in evidence.
-The current report passes A01–A05 and A08–A10, reports no software-evidence failures, and keeps
-A06/A07/A11/A12 blocked on physical or owner-controlled artifacts.
+`evidence/release-acceptance.json` evaluates the stricter project PDF's A01–A12 gates from
+checked-in evidence. It intentionally keeps physical A06/A07 open while the separate official
+competition path records both Digital Twin assertions as passed.
 
 Official API references: [Token Factory function calling](https://docs.tokenfactory.nebius.com/ai-models-inference/function-calling)
 and the [Nebius Nemotron 3 Super guide](https://github.com/nebius/token-factory-cookbook/blob/main/models/nemotron/nemotron3-super-120B.md).

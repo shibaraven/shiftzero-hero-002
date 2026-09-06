@@ -1,0 +1,170 @@
+{
+  "assertions": {
+    "a06_cloud_disconnect_precedes_detection": true,
+    "a06_local_stop_without_cloud": true,
+    "a06_sensor_to_stationary_at_most_200_ms": true,
+    "a06_simulation_passed": true,
+    "a07_final_pose_present": true,
+    "a07_route_version_changed": true,
+    "a07_simulation_passed": true,
+    "a07_synchronized_sequence_complete": true
+  },
+  "claim_scope": "official_competition_no_hardware_path",
+  "eligibility": {
+    "competition_submission_usable_without_hardware": true,
+    "passes_internal_physical_field_gate": false,
+    "physical_hardware_claimed": false,
+    "physical_measurement_claimed": false
+  },
+  "events": [
+    {
+      "correlation_id": "SIM-A06A07-REFERENCE-001",
+      "detail": "AGV-03 accepted route sim-route-a",
+      "elapsed_ms": 0,
+      "kind": "mission.started",
+      "mission_id": "SIM-MISSION-P104-A12",
+      "sequence": 1,
+      "session_id": "SIM-A06A07-REFERENCE-001",
+      "source": "dispatch.simulator",
+      "timestamp": "2026-09-06T03:06:56.737678+00:00",
+      "trace_id": "SIM-TRACE-A06A07-001"
+    },
+    {
+      "correlation_id": "SIM-A06A07-REFERENCE-001",
+      "detail": "Cloud route removed before obstacle injection; edge controller remains active",
+      "elapsed_ms": 2600,
+      "kind": "network.cloud_disconnected",
+      "mission_id": "SIM-MISSION-P104-A12",
+      "sequence": 2,
+      "session_id": "SIM-A06A07-REFERENCE-001",
+      "source": "network.fixture",
+      "timestamp": "2026-09-06T03:06:59.337678+00:00",
+      "trace_id": "SIM-TRACE-A06A07-001"
+    },
+    {
+      "correlation_id": "SIM-A06A07-REFERENCE-001",
+      "detail": "Synthetic return entered the detection envelope",
+      "elapsed_ms": 2900,
+      "kind": "sensor.raw_detected",
+      "mission_id": "SIM-MISSION-P104-A12",
+      "sequence": 3,
+      "session_id": "SIM-A06A07-REFERENCE-001",
+      "source": "lidar.fixture",
+      "timestamp": "2026-09-06T03:06:59.637678+00:00",
+      "trace_id": "SIM-TRACE-A06A07-001"
+    },
+    {
+      "correlation_id": "SIM-A06A07-REFERENCE-001",
+      "detail": "Synthetic obstacle confirmed at N09",
+      "elapsed_ms": 3000,
+      "kind": "sensor.filtered_obstacle",
+      "mission_id": "SIM-MISSION-P104-A12",
+      "sequence": 4,
+      "session_id": "SIM-A06A07-REFERENCE-001",
+      "source": "edge.fixture",
+      "timestamp": "2026-09-06T03:06:59.737678+00:00",
+      "trace_id": "SIM-TRACE-A06A07-001"
+    },
+    {
+      "correlation_id": "SIM-A06A07-REFERENCE-001",
+      "detail": "Local stop issued while the cloud route is disconnected",
+      "elapsed_ms": 3012,
+      "kind": "edge.stop_issued",
+      "mission_id": "SIM-MISSION-P104-A12",
+      "sequence": 5,
+      "session_id": "SIM-A06A07-REFERENCE-001",
+      "source": "edge.fixture",
+      "timestamp": "2026-09-06T03:06:59.749678+00:00",
+      "trace_id": "SIM-TRACE-A06A07-001"
+    },
+    {
+      "correlation_id": "SIM-A06A07-REFERENCE-001",
+      "detail": "Synthetic stationary confirmation (150 ms)",
+      "elapsed_ms": 3150,
+      "kind": "agv.stationary_confirmed",
+      "mission_id": "SIM-MISSION-P104-A12",
+      "sequence": 6,
+      "session_id": "SIM-A06A07-REFERENCE-001",
+      "source": "agv-03.fixture",
+      "timestamp": "2026-09-06T03:06:59.887678+00:00",
+      "trace_id": "SIM-TRACE-A06A07-001"
+    },
+    {
+      "correlation_id": "SIM-A06A07-REFERENCE-001",
+      "detail": "Route version sim-route-a -> sim-route-b",
+      "elapsed_ms": 4000,
+      "kind": "replan.accepted",
+      "mission_id": "SIM-MISSION-P104-A12",
+      "sequence": 7,
+      "session_id": "SIM-A06A07-REFERENCE-001",
+      "source": "planner.fixture",
+      "timestamp": "2026-09-06T03:07:00.737678+00:00",
+      "trace_id": "SIM-TRACE-A06A07-001"
+    },
+    {
+      "correlation_id": "SIM-A06A07-REFERENCE-001",
+      "detail": "AGV-03 resumed on the verified detour",
+      "elapsed_ms": 4900,
+      "kind": "mission.resumed",
+      "mission_id": "SIM-MISSION-P104-A12",
+      "sequence": 8,
+      "session_id": "SIM-A06A07-REFERENCE-001",
+      "source": "dispatch.simulator",
+      "timestamp": "2026-09-06T03:07:01.637678+00:00",
+      "trace_id": "SIM-TRACE-A06A07-001"
+    },
+    {
+      "correlation_id": "SIM-A06A07-REFERENCE-001",
+      "detail": "P-104 reached N12 with final pose captured",
+      "elapsed_ms": 7850,
+      "kind": "mission.completed",
+      "mission_id": "SIM-MISSION-P104-A12",
+      "sequence": 9,
+      "session_id": "SIM-A06A07-REFERENCE-001",
+      "source": "agv-03.fixture",
+      "timestamp": "2026-09-06T03:07:04.587678+00:00",
+      "trace_id": "SIM-TRACE-A06A07-001"
+    }
+  ],
+  "evidence_class": "digital_twin_simulation",
+  "generated_at": "2026-09-06T03:06:56.737678+00:00",
+  "identifiers": {
+    "correlation_id": "SIM-A06A07-REFERENCE-001",
+    "mission_id": "SIM-MISSION-P104-A12",
+    "pallet_id": "P-104",
+    "session_id": "SIM-A06A07-REFERENCE-001",
+    "trace_id": "SIM-TRACE-A06A07-001",
+    "vehicle_id": "AGV-03"
+  },
+  "limitations": [
+    "All sensor, network, vehicle, timing and motion data in this artifact are synthetic.",
+    "This artifact demonstrates application behavior, not real AGV performance.",
+    "It must not be submitted or described as physical sensor-to-stop evidence."
+  ],
+  "official_rule_basis": {
+    "checked_at": "2026-09-06T03:06:56.737678+00:00",
+    "interpretation": "Physical AI entries without physical hardware may demonstrate the key application modules in action.",
+    "url": "https://nebiusglobalaihackathon.devpost.com/rules"
+  },
+  "outcome": {
+    "final_pose": {
+      "heading_deg": 315,
+      "node_id": "N12",
+      "x": 842,
+      "y": 135
+    },
+    "route_version_after": "sim-route-b",
+    "route_version_before": "sim-route-a",
+    "status": "COMPLETED"
+  },
+  "passed": true,
+  "report_hash": "ebbc8ed8f5b82f143f906d629a1e3260915ad3357f5e415eaf4d62655201013e",
+  "schema_version": "competition-simulation-evidence-v1",
+  "simulator": {
+    "clock": "deterministic_synthetic_elapsed_time",
+    "cloud_mode": "disconnected_before_obstacle",
+    "name": "ShiftZero A06/A07 Digital Twin Lab",
+    "sensor_to_stationary_ms": 150,
+    "vehicle_count": 9
+  }
+}

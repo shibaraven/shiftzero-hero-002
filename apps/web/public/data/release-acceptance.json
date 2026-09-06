@@ -1,11 +1,6 @@
 {
   "all_acceptance_passed": false,
-  "blocked_external_ids": [
-    "A06",
-    "A07",
-    "A11",
-    "A12"
-  ],
+  "blocked_external_ids": ["A06", "A07", "A11", "A12"],
   "claim_boundary": "Passed means the checked evidence satisfies that item. Simulator rehearsal never satisfies physical A06/A07, and draft assets never satisfy A11/A12.",
   "failed_ids": [],
   "generated_at": "2026-09-06T02:40:14.194790+00:00",
@@ -23,9 +18,7 @@
     },
     {
       "detail": "120/120 runs; every declared threshold passes with no failures.",
-      "evidence": [
-        "evidence/compatibility/live-gate.json"
-      ],
+      "evidence": ["evidence/compatibility/live-gate.json"],
       "id": "A02",
       "passed": true,
       "requirement": "Compatibility Gate: 120 runs and every hard threshold passes",
@@ -33,9 +26,7 @@
     },
     {
       "detail": "20/20 independent reference-simulator runs pass with valid trace chains.",
-      "evidence": [
-        "evidence/hero-reliability/report.json"
-      ],
+      "evidence": ["evidence/hero-reliability/report.json"],
       "id": "A03",
       "passed": true,
       "requirement": "HERO-002 succeeds end to end 20 consecutive times",
@@ -43,9 +34,7 @@
     },
     {
       "detail": "Fault controls fail closed; duplicate and wrong-entity dispatch counts are zero.",
-      "evidence": [
-        "evidence/compatibility/live-gate.json"
-      ],
+      "evidence": ["evidence/compatibility/live-gate.json"],
       "id": "A04",
       "passed": true,
       "requirement": "Timeout/429 retry creates no duplicate mission or wrong dispatch",
@@ -53,9 +42,7 @@
     },
     {
       "detail": "100/100 outcomes validated; 0 safety violations; unsafe recall 100%.",
-      "evidence": [
-        "evidence/scenario-evaluation/metrics.json"
-      ],
+      "evidence": ["evidence/scenario-evaluation/metrics.json"],
       "id": "A05",
       "passed": true,
       "requirement": "100 scenarios complete with zero safety violations",
@@ -122,9 +109,7 @@
     },
     {
       "detail": "Needs the final 1080p onsite recording and public video URL.",
-      "evidence": [
-        "docs/VIDEO_SHOTLIST.md"
-      ],
+      "evidence": ["docs/VIDEO_SHOTLIST.md"],
       "id": "A11",
       "passed": false,
       "requirement": "Video is under three minutes with 65 seconds physical and English narration/subtitles",
@@ -132,10 +117,7 @@
     },
     {
       "detail": "Needs the final video URL, Devpost submission URL and owner-authorized submit action.",
-      "evidence": [
-        "docs/DEVPOST_DRAFT.md",
-        "docs/SUBMISSION_CHECKLIST.md"
-      ],
+      "evidence": ["docs/DEVPOST_DRAFT.md", "docs/SUBMISSION_CHECKLIST.md"],
       "id": "A12",
       "passed": false,
       "requirement": "Every Devpost link is anonymously verified and the entry is submitted",
