@@ -59,6 +59,9 @@
   source URLs and a frozen Python verification lock.
 - Public Judge Mode deployment at `https://shiftzero-hero-002.mingjen.chatgpt.site`; v11 and its
   source SHA are captured in a deployment receipt, and four anonymous HTTP checks return 200.
+- Public GitHub repository at `https://github.com/shibaraven/shiftzero-hero-002`; visibility,
+  default branch, remote head, immutable commit URL and unauthenticated HTTP reachability are
+  captured in `evidence/public-repository.json`.
 - A dedicated non-interactive `Dockerfile.serverless` job artifact and fail-closed readiness
   report. Its 100-scenario local entrypoint passes 100/100 with zero observed safety violations.
 
@@ -66,15 +69,15 @@
 
 1. No AGV/OEM protocol, broker credentials, PLC/edge stop interface, test map, or safety-owner
    approval has been supplied. Real hardware integration remains locked as required by the spec.
-2. The source repository has no public remote yet. Judge Mode itself is now public and anonymous.
-3. Physical video, anonymous-access verification, and Devpost submission require the final public
-   URLs and hardware/test evidence.
-4. The current three screenshots are preflight layout/evidence checks only. The live Compatibility
+2. Physical video and Devpost submission require the final hardware/test evidence and video URL.
+3. The current three screenshots are preflight layout/evidence checks only. The live Compatibility
    Gate and provider receipts now pass, but final capture still requires the correlated physical
    mission result and safety-owner review.
-5. Nebius Serverless cloud execution requires an AI Cloud project ID, configured Nebius CLI,
+4. Nebius Serverless cloud execution requires an AI Cloud project ID, configured Nebius CLI,
    registry image URI, VM quota and a successful job receipt. None is present on this machine;
    the Token Factory inference key does not supply those project resources.
+5. The project owner must verify the private-history disclosure and sign/date
+   `PRE_EXISTING_WORK.md`; automation cannot truthfully make that attestation for the owner.
 
 ## Live gate result and next external gate
 

@@ -31,12 +31,14 @@ fixture result is equivalent to Nebius or physical evidence.
 | Serverless Jobs cloud deployment | Account-gated | no AI Cloud project/CLI profile, image URI, VM quota or successful job receipt is available |
 | Real AGV adapter | Gate + hardware-gated | interface and handoff complete; OEM protocol/safety approval absent |
 | Physical sensor-to-stop under 200 ms | Hardware-gated | simulator timings are never presented as physical timings |
-| Public GitHub repository | Release authorization required | local Git complete; no remote configured |
+| Public GitHub repository | Complete | `https://github.com/shibaraven/shiftzero-hero-002`; public visibility, `main`, immutable commit and anonymous HTTP checks captured in `evidence/public-repository.json` |
 | Anonymous public Judge Mode | Complete | public v11 deployment, source SHA and four unauthenticated HTTP 200 checks are captured in `evidence/judge-mode-publication.json` |
 | Physical demo video | Hardware/publication-gated | shot list complete; recording is not fabricated |
 | Devpost submission | External action | draft/checklist complete; final URLs and submit action pending |
 | Third-party dependency inventory | Complete locally | all resolved Python/npm packages have exact versions, license identifiers and sources; final legal review remains a release action |
 
-The live runtime trace and official Compatibility Gate now satisfy the machine-verifiable A01/A02
-provider requirements while remaining explicitly scoped to the reference simulator. A06, A07,
-A09, A10, A11 and A12 still require their named hardware, public-access or submission evidence.
+The live runtime trace and official Compatibility Gate satisfy the machine-verifiable A01/A02
+provider requirements while remaining explicitly scoped to the reference simulator. Public Judge
+Mode and source release satisfy A09/A10's publication gates. A06/A07 still require physical AGV
+evidence; A11/A12 still require the final physical video, eligible screenshots, owner disclosure
+attestation and Devpost submission.

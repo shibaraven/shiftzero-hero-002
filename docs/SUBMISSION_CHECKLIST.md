@@ -42,17 +42,19 @@
       120 raw hash-chained traces in the Evidence Bundle.
 - [ ] Replace all three preflight screenshots with one correlated `LIVE / NEBIUS` capture set and
       make `validate-final-evidence` exit successfully.
-- [ ] Publish the Git repository and add its immutable revision URL.
-- [ ] Explicitly authorize public access for the owner-private Judge Mode deployment.
-- [ ] Verify Judge Mode in an anonymous/private browser session.
+- [x] Publish the Git repository and record an immutable verified revision URL.
+- [x] Explicitly authorize public access for Judge Mode.
+- [x] Verify Judge Mode without authentication and capture the deployment receipt.
 - [ ] Record and upload the final demo video.
 - [ ] Supply AGV protocol, site map, edge stop interface and safety-owner approval before any
       physical integration or physical-performance claim.
 
 ## Final integrity checks
 
-- [ ] Public repository contains no secret, credential or customer data.
-- [ ] Evidence numbers in Devpost exactly match `evidence/scenario-evaluation/metrics.json`.
+- [x] Public repository secret-pattern scan contains no detected API key, GitHub token or customer
+      credential.
+- [x] Evidence numbers in Devpost match the checked-in live runtime, scenario and KPI reports.
 - [x] Simulator, live provider and physical evidence are visually and verbally distinguished.
 - [x] Evidence Bundle SHA-256 matches `evidence/bundle-manifest.json`.
-- [ ] All public links resolve without authentication.
+- [x] Current Judge Mode, public evidence artifacts and GitHub source links resolve without
+      authentication; the final video link remains unavailable until recording.

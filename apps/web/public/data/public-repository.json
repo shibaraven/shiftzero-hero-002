@@ -1,0 +1,27 @@
+{
+  "anonymous_http_checks": [
+    {
+      "bytes": 335152,
+      "content_type": "text/html; charset=utf-8",
+      "status": 200,
+      "url": "https://github.com/shibaraven/shiftzero-hero-002"
+    },
+    {
+      "bytes": 5751,
+      "content_type": "application/json; charset=utf-8",
+      "status": 200,
+      "url": "https://api.github.com/repos/shibaraven/shiftzero-hero-002"
+    }
+  ],
+  "default_branch": "main",
+  "host": "github.com",
+  "remote_head_at_verification": "c622808bdad3459f54add487a1d654399da5dc6e",
+  "repository_full_name": "shibaraven/shiftzero-hero-002",
+  "repository_url": "https://github.com/shibaraven/shiftzero-hero-002",
+  "schema_version": "public-repository-v1",
+  "verification_method": "GitHub repository metadata and commit APIs, git ls-remote, and unauthenticated HTTP GET",
+  "verified_at": "2026-09-06T00:55:26.8950802Z",
+  "verified_commit": "c622808bdad3459f54add487a1d654399da5dc6e",
+  "verified_commit_url": "https://github.com/shibaraven/shiftzero-hero-002/commit/c622808bdad3459f54add487a1d654399da5dc6e",
+  "visibility": "public"
+}

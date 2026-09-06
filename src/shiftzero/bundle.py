@@ -8,7 +8,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 from shiftzero.domain import canonical_hash
 from shiftzero.evidence import EvidenceRecorder
 
-BUNDLE_VERSION = "hero002-evidence-v6"
+BUNDLE_VERSION = "hero002-evidence-v7"
 LIVE_GATE_PATH = "evidence/compatibility/live-gate.json"
 LIVE_TRACE_ROOT = "evidence/runs/live-compatibility"
 LIVE_PROVIDER = "nebius_token_factory"
@@ -48,6 +48,7 @@ REQUIRED_PATHS = (
     "evidence/impact-load-model.json",
     "evidence/judge-mode-load.json",
     "evidence/judge-mode-publication.json",
+    "evidence/public-repository.json",
     "evidence/serverless-readiness.json",
     "evidence/screenshots/manifest.json",
     "evidence/METHODOLOGY.md",
@@ -209,6 +210,9 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
     )
     judge_publication = json.loads(
         (root / "evidence/judge-mode-publication.json").read_text(encoding="utf-8")
+    )
+    public_repository = json.loads(
+        (root / "evidence/public-repository.json").read_text(encoding="utf-8")
     )
     impact_load = json.loads(
         (root / "evidence/impact-load-model.json").read_text(encoding="utf-8")
@@ -448,6 +452,19 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
                 for row in judge_publication.get("anonymous_http_checks", [])
             )
         ),
+        "public_repository_ready": bool(
+            public_repository.get("visibility") == "public"
+            and public_repository.get("default_branch") == "main"
+            and public_repository.get("repository_url", "").startswith("https://github.com/")
+            and len(public_repository.get("verified_commit", "")) == 40
+            and public_repository.get("remote_head_at_verification")
+            == public_repository.get("verified_commit")
+            and len(public_repository.get("anonymous_http_checks", [])) >= 2
+            and all(
+                row.get("status") == 200
+                for row in public_repository.get("anonymous_http_checks", [])
+            )
+        ),
         "impact_range_covers_400_to_500_pallets": {
             row["pallets_per_day"]
             for row in impact_load["loads"]
@@ -489,6 +506,7 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         "video_plan_has_continuous_65_second_physical_segment",
         "serverless_job_artifact_ready",
         "judge_mode_public_and_anonymous",
+        "public_repository_ready",
     )
     checks["local_preflight_passed"] = all(checks[name] is True for name in local_preflight_checks)
     checks["passed"] = (

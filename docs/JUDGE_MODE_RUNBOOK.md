@@ -16,8 +16,8 @@ recorded live-provider Compatibility Gate without loading an API key in the brow
 4. Open **Evidence** to inspect the 100-scenario result, run manifest, fixture compatibility
    preflight, official live Compatibility Gate, fair baseline, Judge load report, 400–500
    pallets/day projection, typed tool spans, and downloadable Evidence Bundle.
-5. Open **GitHub** to inspect repository readiness and the explicit public-release gate. The page
-   never fabricates a source URL while no public remote exists.
+5. Open **GitHub** to inspect the public source repository, required release files and the
+   machine-readable public-repository receipt.
 
 Expected hero outcome: the simulated AGV stops after the N09 obstruction, takes the alternate
 route only after re-verification, and completes at `N12` with final pose `x=6.0`, `y=0.0`,
@@ -49,3 +49,5 @@ python -m venv .venv
 
 The offline demo never reads secrets and never falls back from a failed live provider to a
 fixture while retaining a live label.
+
+Public source: `https://github.com/shibaraven/shiftzero-hero-002`

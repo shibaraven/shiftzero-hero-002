@@ -124,10 +124,11 @@ The detailed file-level declaration is maintained in `PRE_EXISTING_WORK.md`. The
 must confirm that declaration against the complete private history and sign/date it before final
 submission; this draft does not impersonate that owner confirmation.
 
-## Links to fill at submission time
+## Submission links
 
 - Judge Mode: `https://shiftzero-hero-002.mingjen.chatgpt.site` (public; anonymous HTTP verified)
-- Source repository: `[ADD PUBLIC REPOSITORY URL]`
+- Source repository: `https://github.com/shibaraven/shiftzero-hero-002` (public; `main` verified)
 - Demo video: `[ADD VIDEO URL]`
-- Live compatibility report: included in the downloadable Evidence Bundle; `[ADD PUBLIC ARTIFACT
-  URL AT RELEASE]`
+- Evidence Bundle: `https://shiftzero-hero-002.mingjen.chatgpt.site/data/evidence-bundle.zip`
+- Live compatibility report:
+  `https://shiftzero-hero-002.mingjen.chatgpt.site/data/live-runtime-summary.json`

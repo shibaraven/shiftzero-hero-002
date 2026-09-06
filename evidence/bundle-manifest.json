@@ -1,8 +1,8 @@
 {
-  "bundle_bytes": 3923219,
+  "bundle_bytes": 3923962,
   "bundle_path": "evidence/HERO002-evidence-bundle.zip",
-  "bundle_sha256": "87ada83ff3b131f0266cbdbe3032692b5c2c03d4d81c80c86b1055ef16377412",
-  "bundle_version": "hero002-evidence-v6",
+  "bundle_sha256": "d1f438f7bed3c8c5edc249afa8989427862eab8c7961bbbeb5a21ba8c47350bc",
+  "bundle_version": "hero002-evidence-v7",
   "claim_scope": "live_nebius_token_factory_with_reference_simulator_no_physical_hardware",
   "completeness_checks": {
     "all_included_trace_chains_valid": true,
@@ -27,7 +27,8 @@
     "local_preflight_passed": true,
     "p0_tool_spans_for_every_trace": true,
     "passed": false,
-    "required_file_count": 352,
+    "public_repository_ready": true,
+    "required_file_count": 353,
     "scenario_all_outcomes_valid": true,
     "scenario_count_is_100": true,
     "scenario_safety_violations_zero": true,
@@ -58,9 +59,9 @@
       "sha256": "c1873b5c09013202962379f8b81f090b29c71e9b3bddcb0a495d3a867a7108b5"
     },
     {
-      "bytes": 7925,
+      "bytes": 7990,
       "path": "README.md",
-      "sha256": "a4c5cc803b9850d0dd1edcebac1b9b3bfa5496a01a1ce7396b844ea076b0458e"
+      "sha256": "ba169c54cd596502d3f8a324bb55f223498afb653757da39c027aa592d7ed37d"
     },
     {
       "bytes": 192322,
@@ -83,9 +84,9 @@
       "sha256": "f9449aae2ed6ba0369d5a52d9e5ca3f7220e6770c4c3c3590569f4883f5f6de1"
     },
     {
-      "bytes": 7716,
+      "bytes": 7837,
       "path": "docs/DEVPOST_DRAFT.md",
-      "sha256": "8f07c607b13ab5c4afdc8592194ab68868ebcd881b673b56b49c2b842a3ca9f7"
+      "sha256": "62a09f8aa6ed9f2bf9ddd5877f1f26e61d9c42aff707169030a5a6f657d32c0b"
     },
     {
       "bytes": 2044,
@@ -118,9 +119,9 @@
       "sha256": "d555d71b179647fe1c1884392e393401a0feb5817b5edf9ce5772307e3d0affc"
     },
     {
-      "bytes": 5622,
+      "bytes": 5859,
       "path": "docs/SPEC_COMPLIANCE.md",
-      "sha256": "8eb608231b113f1c23639a3a8937462b8bd03e2ad81b9d8c1b295d903f46f977"
+      "sha256": "d1c73daa65d1eceaa2170413abd633db3fd57d462a5ef9fa1e7872d0a22ff49b"
     },
     {
       "bytes": 3641,
@@ -381,6 +382,11 @@
       "bytes": 6559,
       "path": "evidence/live-runtime-summary.json",
       "sha256": "dbfd8701ea571afff226685622925872de367a1b7faff00c6426dbc66ab2a000"
+    },
+    {
+      "bytes": 1078,
+      "path": "evidence/public-repository.json",
+      "sha256": "9bb5ff91ca8090b008e97692bd2e6d35e6b63ac04bcaed524266a05e58fddeb6"
     },
     {
       "bytes": 72156,

@@ -105,6 +105,19 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         ),
         encoding="utf-8",
     )
+    (tmp_path / "evidence/public-repository.json").write_text(
+        json.dumps(
+            {
+                "visibility": "public",
+                "default_branch": "main",
+                "repository_url": "https://github.com/example/project",
+                "verified_commit": "a" * 40,
+                "remote_head_at_verification": "a" * 40,
+                "anonymous_http_checks": [{"status": 200}] * 2,
+            }
+        ),
+        encoding="utf-8",
+    )
     (tmp_path / "evidence/impact-load-model.json").write_text(
         json.dumps(
             {
@@ -202,7 +215,7 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
     assert first["official_gate_passed"] is False
     with ZipFile(first_zip) as archive:
         embedded = json.loads(archive.read("MANIFEST.json"))
-        assert embedded["bundle_version"] == "hero002-evidence-v6"
+        assert embedded["bundle_version"] == "hero002-evidence-v7"
         assert embedded["evidence_class"] == "preflight_fixture"
         assert embedded["claim_scope"] == "reference_simulator_and_fixture_provider_only"
         assert embedded["final_release_ready"] is False
@@ -230,6 +243,7 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         assert embedded["completeness_checks"]["serverless_job_artifact_ready"] is True
         assert embedded["completeness_checks"]["serverless_cloud_deployed"] is False
         assert embedded["completeness_checks"]["judge_mode_public_and_anonymous"] is True
+        assert embedded["completeness_checks"]["public_repository_ready"] is True
         assert embedded["completeness_checks"]["final_real_screenshots_ready"] is False
         assert embedded["completeness_checks"]["passed"] is False
 

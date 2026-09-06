@@ -1835,10 +1835,11 @@ function EvidenceView({
                 liveGate?.official_gate_passed ? 'emerald' : 'amber',
               ],
               ['A06–A07', 'Physical stop and AGV loop', 'HARDWARE', 'amber'],
+              ['A09–A10', 'Public Judge Mode + source', 'PUBLIC PASS', 'emerald'],
               [
-                'A09–A12',
-                'Public links, video, submission',
-                'RELEASE',
+                'A11–A12',
+                'Physical video + Devpost submission',
+                'PENDING',
                 'violet',
               ],
             ].map(([id, label, status, tone]) => (
@@ -1997,14 +1998,14 @@ function SourceView() {
           GitHub / source release gate
         </div>
         <h1 className="text-3xl font-semibold tracking-[-0.03em] text-white sm:text-4xl">
-          Source is release-ready.{' '}
-          <span className="text-amber-200">Publication is not authorized.</span>
+          Source is public.{' '}
+          <span className="text-emerald-200">Release boundary verified.</span>
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-400">
           The local repository contains the required public boundary, build
           instructions, licenses, disclosures, schemas, simulator and evidence.
-          No GitHub remote is configured, so this page does not invent a public
-          URL.
+          GitHub reports public visibility on the main branch, and the captured
+          receipt binds the public remote to a verified immutable commit.
         </p>
       </div>
       <div className="grid gap-4 lg:grid-cols-[1fr_.7fr]">
@@ -2026,24 +2027,34 @@ function SourceView() {
             ))}
           </CardContent>
         </Card>
-        <Card className="rounded-lg border-amber-300/20 bg-amber-300/[0.035] shadow-none">
+        <Card className="rounded-lg border-emerald-300/20 bg-emerald-300/[0.035] shadow-none">
           <CardContent className="p-6">
-            <LockKeyhole className="mb-4 size-6 text-amber-200" />
+            <GitBranch className="mb-4 size-6 text-emerald-200" />
             <p className="text-sm font-semibold text-white">
-              Public remote pending
+              Public GitHub repository
             </p>
             <p className="mt-2 text-xs leading-5 text-slate-400">
-              A public GitHub, GitLab or Bitbucket URL must be supplied before
-              A10 and the anonymous Judge path can pass. Publishing is a
-              deliberate IP exposure action and remains outside this private
-              replay.
+              Source, reproducibility instructions and evidence are available
+              on the public main branch. Repository and commit reachability were
+              independently checked before this release receipt was generated.
             </p>
+            <a
+              href="https://github.com/shibaraven/shiftzero-hero-002"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-4 inline-flex text-xs font-medium text-cyan-200 underline decoration-cyan-300/30 underline-offset-4 hover:text-cyan-100"
+            >
+              github.com/shibaraven/shiftzero-hero-002
+            </a>
             <Badge
               variant="outline"
-              className="mt-5 border-amber-300/20 bg-amber-300/[0.06] font-mono text-[9px] text-amber-200"
+              className="mt-5 border-emerald-300/20 bg-emerald-300/[0.06] font-mono text-[9px] text-emerald-200"
             >
-              NO PUBLIC REMOTE CONFIGURED
+              PUBLIC · MAIN · VERIFIED
             </Badge>
+            <div className="mt-3">
+              <EvidenceLink href="/data/public-repository.json" label="public-repository.json" />
+            </div>
           </CardContent>
         </Card>
       </div>
