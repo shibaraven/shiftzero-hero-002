@@ -1,0 +1,176 @@
+{
+  "claim_scope": "live_nebius_model_calls_and_reference_simulator_no_physical_hardware",
+  "compatibility": {
+    "all_trace_chains_valid": true,
+    "gate_report_hash": "391238682a5243522d61a9af904c5b49845e4eb122c08a14ca6b44ff00b81aaf",
+    "http_200_count": 360,
+    "live_run_count": 120,
+    "model_call_count": 360,
+    "official_gate_passed": true,
+    "repair_count": 0,
+    "retry_count": 0,
+    "tool_call_finish_count": 360,
+    "unique_request_id_count": 360
+  },
+  "evidence_class": "live_provider_with_reference_simulator",
+  "generated_at": "2026-09-06T00:36:00.518432Z",
+  "limitations": [
+    "Model calls are live Nebius Token Factory receipts; motion is the reference simulator.",
+    "Cost is calculated from measured tokens and a captured catalog list price, not an invoice.",
+    "Prompt and schema hashes bind the files that match the tested Git commit."
+  ],
+  "measurements": {
+    "cost_kpi": {
+      "catalog_captured_at": "2026-09-06T00:36:00.518432Z",
+      "catalog_source": "https://api.tokenfactory.us-central1.nebius.com/v1/models?verbose=true",
+      "completion_usd_per_million_tokens": 0.9,
+      "currency": "USD",
+      "measurement_kind": "measured_tokens_x_captured_catalog_list_price_not_invoice",
+      "per_mission_estimated_usd": {
+        "maximum": 0.0025395,
+        "median": 0.0019251,
+        "p95": 0.002361
+      },
+      "prompt_usd_per_million_tokens": 0.3,
+      "total_gate_estimated_usd": 0.2328006
+    },
+    "model_calls": {
+      "input_tokens": 284662,
+      "latency_ms": {
+        "maximum": 7340.239,
+        "median": 1400.318,
+        "p95": 4297.957
+      },
+      "output_tokens": 163780,
+      "sample_size": 360
+    },
+    "replan_mission": {
+      "latency_ms": {
+        "maximum": 0.1693,
+        "median": 0.1215,
+        "p95": 0.1427
+      },
+      "measurement_scope": "deterministic planner inside live-provider reference-simulator runs",
+      "sample_size": 120,
+      "successful_result_count": 120
+    }
+  },
+  "metadata": {
+    "endpoint_base_url": "https://api.tokenfactory.us-central1.nebius.com/v1/",
+    "endpoint_region": "us-central1",
+    "map_sha256": "63b5d635f5fefd3c48e852c96489cf895537a74e15877752ffdf534822cd05ab",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "prompt_contract": {
+      "matches_tested_commit": true,
+      "path": "src/shiftzero/agent.py",
+      "sha256": "302fb41e67258fa790ef117837c8bd16e2c85f7da2c4e16de56683ad2f5f7262",
+      "version": "nemotron-forced-tools@260d61ac6754"
+    },
+    "provider": "nebius_token_factory",
+    "safety_policy": {
+      "path": "schemas/safety-policy.json",
+      "sha256": "7df7c37a947b28e3b255eb69cb79768c003e1207db570b14343cdcff137890a0",
+      "version": "safety-v2"
+    },
+    "tested_git_commit": "260d61ac675429961cf0f4825229c6198b4642c9",
+    "tested_source_tree_hash": "30aab463a9c4b86453b8efd8ef5e677e875b23f4300ffdd332decd40e3cb0c25",
+    "tool_schema": {
+      "matches_tested_commit": true,
+      "path": "schemas/tool-catalog.json",
+      "sha256": "0f15bf99977ceee525572f8eda6497ba6f06bdd0d637a828c05edb09c96950dc",
+      "version": "tools-v3"
+    }
+  },
+  "report_hash": "a2902a57fc069df4bd410eda88b11bcf7336eee580040b41eedc8593f9ce564f",
+  "representative_live_trace": {
+    "model_calls": [
+      {
+        "completed_at": "2026-09-06T00:12:16.419557Z",
+        "finish_reason": "tool_calls",
+        "http_status": 200,
+        "input_tokens": 587,
+        "latency_ms": 2223.724,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "output_tokens": 830,
+        "provider": "nebius_token_factory",
+        "repair_count": 0,
+        "request_id": "2c0f35fe8b3ae67a01a064c00c9dd24f",
+        "retry_count": 0,
+        "span_kind": "llm.intent",
+        "tool_arguments_hash": "fdda98071ef7cf1ed1ce64522fdf4aa1ad99d7629004e19d0c2a864f630aa714",
+        "tool_name": "parse_mission_intent",
+        "tool_result_hash": "fdda98071ef7cf1ed1ce64522fdf4aa1ad99d7629004e19d0c2a864f630aa714"
+      },
+      {
+        "completed_at": "2026-09-06T00:12:18.908129Z",
+        "finish_reason": "tool_calls",
+        "http_status": 200,
+        "input_tokens": 1006,
+        "latency_ms": 2485.195,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "output_tokens": 620,
+        "provider": "nebius_token_factory",
+        "repair_count": 0,
+        "request_id": "2252fcc3b98533d1fcad5ba868aec481",
+        "retry_count": 0,
+        "span_kind": "llm.proposal",
+        "tool_arguments_hash": "50a0a00809f686e71eb785b4827a43a97753815c1761235a9f4112fd05e1fdf5",
+        "tool_name": "propose_transport",
+        "tool_result_hash": "50a0a00809f686e71eb785b4827a43a97753815c1761235a9f4112fd05e1fdf5"
+      },
+      {
+        "completed_at": "2026-09-06T00:12:20.123153Z",
+        "finish_reason": "tool_calls",
+        "http_status": 200,
+        "input_tokens": 778,
+        "latency_ms": 1205.905,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "output_tokens": 439,
+        "provider": "nebius_token_factory",
+        "repair_count": 0,
+        "request_id": "bf4f251770503c617691dbb3c3f427ee",
+        "retry_count": 0,
+        "span_kind": "llm.recovery",
+        "tool_arguments_hash": "566f257e5929c3993fe1575dfb91771c986fb14d4d2c8844bb16e8158593be2c",
+        "tool_name": "propose_recovery",
+        "tool_result_hash": "566f257e5929c3993fe1575dfb91771c986fb14d4d2c8844bb16e8158593be2c"
+      }
+    ],
+    "replan": {
+      "arguments": {
+        "force_agv": "AGV-03",
+        "mission_id": "M-8DB69248BA",
+        "snapshot_id": "SNAP-0002",
+        "start_node": "N04"
+      },
+      "arguments_hash": "9ad66b07bd462fa99665c63201b451cdcf6149422b88d0bb5186e7a6e2641ad9",
+      "latency_ms": 0.126,
+      "result": {
+        "candidate_count": 1,
+        "cost": 6.9,
+        "distance_m": 6.9,
+        "estimated_duration_seconds": 6.9,
+        "estimated_energy_percent": 5.175,
+        "map_version": "map-v1",
+        "nodes": [
+          "N04",
+          "N05",
+          "N10",
+          "N12"
+        ],
+        "reservation_groups": [
+          "R4",
+          "R5",
+          "R6"
+        ],
+        "route_version": "route-d8c9119af45a",
+        "selected_agv": "AGV-03"
+      },
+      "result_hash": "c97f9221c19e9177f4299bccf7e88e315e3f0ea9ddea76211a334451ca675472"
+    },
+    "trace_id": "TR-00DFB0274809",
+    "trace_jsonl_path": "evidence/runs/live-compatibility/TR-00DFB0274809/hero-run.jsonl",
+    "trace_jsonl_sha256": "75d26145942783bad2090b8b58323536032f1403e7a1aa3b9e685678d6373743"
+  },
+  "summary_version": "live-runtime-v1"
+}

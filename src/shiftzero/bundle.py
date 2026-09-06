@@ -8,7 +8,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 from shiftzero.domain import canonical_hash
 from shiftzero.evidence import EvidenceRecorder
 
-BUNDLE_VERSION = "hero002-evidence-v5"
+BUNDLE_VERSION = "hero002-evidence-v6"
 LIVE_GATE_PATH = "evidence/compatibility/live-gate.json"
 LIVE_TRACE_ROOT = "evidence/runs/live-compatibility"
 LIVE_PROVIDER = "nebius_token_factory"
@@ -30,6 +30,7 @@ P0_TOOL_SPAN_KINDS = frozenset(
 )
 REQUIRED_PATHS = (
     "LICENSE",
+    "Dockerfile.serverless",
     "PRE_EXISTING_WORK.md",
     "README.md",
     "THIRD_PARTY_LICENSES.json",
@@ -39,11 +40,14 @@ REQUIRED_PATHS = (
     "evidence/scenario-evaluation/run-manifest.json",
     "evidence/scenario-evaluation/scenario-results.jsonl",
     "evidence/compatibility/preflight-report.json",
+    "evidence/compatibility/token-factory-model-catalog.json",
+    "evidence/live-runtime-summary.json",
     "evidence/hero-reliability/report.json",
     "evidence/hero-summary.json",
     "evidence/baseline-comparison.json",
     "evidence/impact-load-model.json",
     "evidence/judge-mode-load.json",
+    "evidence/serverless-readiness.json",
     "evidence/screenshots/manifest.json",
     "evidence/METHODOLOGY.md",
     "evidence/screenshots/01-completed.png",
@@ -205,6 +209,12 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
     impact_load = json.loads(
         (root / "evidence/impact-load-model.json").read_text(encoding="utf-8")
     )
+    live_summary = json.loads(
+        (root / "evidence/live-runtime-summary.json").read_text(encoding="utf-8")
+    )
+    serverless = json.loads(
+        (root / "evidence/serverless-readiness.json").read_text(encoding="utf-8")
+    )
     license_inventory = json.loads(
         (root / "THIRD_PARTY_LICENSES.json").read_text(encoding="utf-8")
     )
@@ -262,6 +272,13 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         report_without_hash = dict(live_gate)
         report_hash = report_without_hash.pop("report_hash", None)
         live_gate_hash_valid = report_hash == canonical_hash(report_without_hash)
+
+    live_summary_without_hash = dict(live_summary)
+    live_summary_hash = live_summary_without_hash.pop("report_hash", None)
+    live_summary_hash_valid = live_summary_hash == canonical_hash(live_summary_without_hash)
+    serverless_without_hash = dict(serverless)
+    serverless_hash = serverless_without_hash.pop("report_hash", None)
+    serverless_hash_valid = serverless_hash == canonical_hash(serverless_without_hash)
 
     def proof_has_approval_integrity(events: list[dict[str, object]], kind: str) -> bool:
         return any(
@@ -365,6 +382,52 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
             and all(isinstance(request_id, str) and request_id for request_id in live_request_ids)
             and len(live_request_ids) == len(set(live_request_ids))
         ),
+        "live_runtime_metadata_complete": bool(
+            live_summary_hash_valid
+            and live_summary.get("evidence_class")
+            == "live_provider_with_reference_simulator"
+            and live_summary.get("metadata", {}).get("provider") == LIVE_PROVIDER
+            and live_summary.get("metadata", {}).get("model") == LIVE_MODEL
+            and live_summary.get("metadata", {})
+            .get("prompt_contract", {})
+            .get("matches_tested_commit")
+            is True
+            and live_summary.get("metadata", {})
+            .get("tool_schema", {})
+            .get("matches_tested_commit")
+            is True
+            and live_summary.get("compatibility", {}).get("model_call_count")
+            == len(live_model_events)
+            and live_summary.get("compatibility", {}).get("unique_request_id_count")
+            == len(set(live_request_ids))
+        ),
+        "live_replan_and_cost_kpis_complete": bool(
+            live_summary_hash_valid
+            and live_summary.get("measurements", {})
+            .get("replan_mission", {})
+            .get("sample_size")
+            == expected_live_runs
+            and live_summary.get("measurements", {})
+            .get("replan_mission", {})
+            .get("successful_result_count")
+            == expected_live_runs
+            and live_summary.get("measurements", {})
+            .get("cost_kpi", {})
+            .get("total_gate_estimated_usd", 0)
+            > 0
+            and live_summary.get("measurements", {})
+            .get("cost_kpi", {})
+            .get("measurement_kind")
+            == "measured_tokens_x_captured_catalog_list_price_not_invoice"
+        ),
+        "serverless_job_artifact_ready": bool(
+            serverless_hash_valid
+            and serverless.get("artifact_ready") is True
+            and serverless.get("local_artifact", {}).get("smoke_test_passed") is True
+        ),
+        "serverless_cloud_deployed": bool(
+            serverless_hash_valid and serverless.get("cloud_deployed") is True
+        ),
         "live_trace_count": len(live_trace_paths),
         "live_model_call_count": len(live_model_events),
         "judge_mode_load_under_five_seconds": judge_load["acceptance_passed"] is True
@@ -409,6 +472,7 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         "third_party_inventory_complete",
         "devpost_has_existing_work_section",
         "video_plan_has_continuous_65_second_physical_segment",
+        "serverless_job_artifact_ready",
     )
     checks["local_preflight_passed"] = all(checks[name] is True for name in local_preflight_checks)
     checks["passed"] = (
@@ -417,6 +481,9 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         and checks["live_trace_count_matches_gate"] is True
         and checks["live_provider_receipts_complete"] is True
         and checks["live_request_ids_unique"] is True
+        and checks["live_runtime_metadata_complete"] is True
+        and checks["live_replan_and_cost_kpis_complete"] is True
+        and checks["serverless_cloud_deployed"] is True
         and checks["final_real_screenshots_ready"] is True
     )
     return checks

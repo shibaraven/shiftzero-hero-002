@@ -47,7 +47,9 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m shiftzero.cli build-license-inventory
 .\.venv\Scripts\python.exe -m shiftzero.cli compatibility --provider fixture --repetitions 20
 .\.venv\Scripts\python.exe -m shiftzero.cli build-hero-summary
+.\.venv\Scripts\python.exe -m shiftzero.cli build-live-evidence-summary
 .\.venv\Scripts\python.exe -m shiftzero.cli build-screenshot-manifest
+.\.venv\Scripts\python.exe -m shiftzero.cli serverless-readiness --smoke-output tmp/serverless-smoke
 .\.venv\Scripts\python.exe -m shiftzero.cli build-evidence-bundle
 ```
 
@@ -89,6 +91,12 @@ validity, p95 intent-to-proposal 6.500 seconds, and zero reported failures. The 
 ignored as standalone working files but are hash-indexed inside the checked-in Evidence Bundle;
 the API key is included in neither artifact.
 
+`evidence/live-runtime-summary.json` aggregates the live request IDs and runtime metadata and
+binds the prompt/tool schema to the tested commit. It also records 120/120 successful replans
+(0.1215 ms median, 0.1427 ms p95) and a catalog-price KPI calculated from measured tokens:
+$0.001925 median per simulator mission and $0.232801 for the complete gate. Cost is explicitly a
+captured list-price estimate, not a billing invoice.
+
 The checked-in screenshots are preflight-only `MOCK / FIXTURE` captures. They cannot be promoted
 to final evidence. After the live gate and physical capture, validate their provider receipts,
 hashes, UTC timestamps and visible `LIVE / NEBIUS` labels with:
@@ -112,6 +120,10 @@ and the [Nebius Nemotron 3 Super guide](https://github.com/nebius/token-factory-
 - `schemas`: checked-in JSON Schemas generated from the Pydantic contracts.
 - `evidence`: verified run and compatibility outputs. The aggregate live report and Evidence
   Bundle are checked in; standalone generated live traces are ignored by Git.
+
+The deterministic evaluator has a separate non-interactive `Dockerfile.serverless`. Its checked-in
+readiness report distinguishes a locally verified job artifact from an actual Nebius Serverless
+deployment; `cloud_deployed` remains false until a successful cloud job receipt is captured.
 
 All mutating Agent API calls require a signed bearer identity, idempotency key and expected version.
 Stale writes return HTTP 409, verified-role violations return HTTP 403, and

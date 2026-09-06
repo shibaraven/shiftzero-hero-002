@@ -1,0 +1,19 @@
+{
+  "captured_at": "2026-09-06T00:36:00.518432Z",
+  "endpoint_base_url": "https://api.tokenfactory.us-central1.nebius.com/v1/",
+  "endpoint_region": "us-central1",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "model_display_name": "Nemotron-3-Super-120b-a12b",
+  "pricing_usd_per_token": {
+    "completion": "0.0000009",
+    "prompt": "0.0000003"
+  },
+  "query": "GET /v1/models?verbose=true",
+  "response_fields_preserved": [
+    "id",
+    "name",
+    "pricing.prompt",
+    "pricing.completion"
+  ],
+  "source_url": "https://api.tokenfactory.us-central1.nebius.com/v1/models?verbose=true"
+}

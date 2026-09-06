@@ -14,12 +14,14 @@ from shiftzero.evaluation import evaluate_scenarios
 from shiftzero.evidence_summary import build_hero_summary
 from shiftzero.impact import run_impact_load_model
 from shiftzero.license_inventory import build_license_inventory
+from shiftzero.live_evidence import build_live_evidence_summary
 from shiftzero.reliability import run_hero_reliability
 from shiftzero.schema_export import export_schemas
 from shiftzero.screenshot_manifest import (
     build_screenshot_manifest,
     validate_final_screenshot_manifest,
 )
+from shiftzero.serverless import build_serverless_readiness
 from shiftzero.simulator import load_default_scenario
 from shiftzero.workflow import WorkflowController
 
@@ -86,6 +88,27 @@ def main() -> None:
     )
     summary.add_argument("--root", type=Path, default=Path.cwd())
     summary.add_argument("--output", type=Path, default=Path("evidence/hero-summary.json"))
+
+    live_summary = subparsers.add_parser(
+        "build-live-evidence-summary",
+        help="Aggregate live Token Factory receipts, replan latency, and catalog-price cost",
+    )
+    live_summary.add_argument("--root", type=Path, default=Path.cwd())
+    live_summary.add_argument(
+        "--output", type=Path, default=Path("evidence/live-runtime-summary.json")
+    )
+
+    serverless = subparsers.add_parser(
+        "serverless-readiness",
+        help="Validate the Serverless job artifact and record cloud-account blockers",
+    )
+    serverless.add_argument("--root", type=Path, default=Path.cwd())
+    serverless.add_argument(
+        "--smoke-output", type=Path, default=Path("tmp/serverless-smoke")
+    )
+    serverless.add_argument(
+        "--output", type=Path, default=Path("evidence/serverless-readiness.json")
+    )
 
     auth_token = subparsers.add_parser(
         "issue-auth-token", help="Issue a short-lived signed Agent API bearer token"
@@ -289,6 +312,22 @@ def main() -> None:
 
     if args.command == "build-hero-summary":
         result = build_hero_summary(root=args.root.resolve(), output_path=args.output.resolve())
+        print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+        return
+
+    if args.command == "build-live-evidence-summary":
+        result = build_live_evidence_summary(
+            root=args.root.resolve(), output_path=args.output.resolve()
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+        return
+
+    if args.command == "serverless-readiness":
+        result = build_serverless_readiness(
+            root=args.root.resolve(),
+            output_path=args.output.resolve(),
+            smoke_output=args.smoke_output.resolve(),
+        )
         print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
 
 

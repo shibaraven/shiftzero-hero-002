@@ -1,8 +1,8 @@
 {
-  "bundle_bytes": 3915740,
+  "bundle_bytes": 3922407,
   "bundle_path": "evidence/HERO002-evidence-bundle.zip",
-  "bundle_sha256": "dfa366da0380ab86a8bb8e96b17bbb18181b6eca9df1f32737b91c34520f94ae",
-  "bundle_version": "hero002-evidence-v5",
+  "bundle_sha256": "d9808088a4085e783debe59f455bee437399de726127acbeccabb8b57464aa12",
+  "bundle_version": "hero002-evidence-v6",
   "claim_scope": "live_nebius_token_factory_with_reference_simulator_no_physical_hardware",
   "completeness_checks": {
     "all_included_trace_chains_valid": true,
@@ -18,17 +18,21 @@
     "live_model_call_count": 360,
     "live_nebius_gate_passed": true,
     "live_provider_receipts_complete": true,
+    "live_replan_and_cost_kpis_complete": true,
     "live_request_ids_unique": true,
+    "live_runtime_metadata_complete": true,
     "live_trace_count": 120,
     "live_trace_count_matches_gate": true,
     "local_preflight_passed": true,
     "p0_tool_spans_for_every_trace": true,
     "passed": false,
-    "required_file_count": 347,
+    "required_file_count": 351,
     "scenario_all_outcomes_valid": true,
     "scenario_count_is_100": true,
     "scenario_safety_violations_zero": true,
     "screenshots_have_capture_manifest": true,
+    "serverless_cloud_deployed": false,
+    "serverless_job_artifact_ready": true,
     "structured_hero_json_for_every_trace": true,
     "third_party_inventory_complete": true,
     "three_png_screenshots_present": true,
@@ -37,6 +41,11 @@
   },
   "evidence_class": "live_provider_with_reference_simulator",
   "files": [
+    {
+      "bytes": 335,
+      "path": "Dockerfile.serverless",
+      "sha256": "46026228107d75bd249c4bb7839817fb4a89c0376dcfc645f501ef5a0a1d7e20"
+    },
     {
       "bytes": 10857,
       "path": "LICENSE",
@@ -48,9 +57,9 @@
       "sha256": "c1873b5c09013202962379f8b81f090b29c71e9b3bddcb0a495d3a867a7108b5"
     },
     {
-      "bytes": 7048,
+      "bytes": 7940,
       "path": "README.md",
-      "sha256": "86b2de226a46fb13afa4df672488af9f81620cee2f6ccf3dc725bb069ff25876"
+      "sha256": "c6c7c96d732ac08d512ff757600b67cd4b3531c7bca19c4d41f4c220bf583505"
     },
     {
       "bytes": 192322,
@@ -73,9 +82,9 @@
       "sha256": "f9449aae2ed6ba0369d5a52d9e5ca3f7220e6770c4c3c3590569f4883f5f6de1"
     },
     {
-      "bytes": 5512,
+      "bytes": 7737,
       "path": "docs/DEVPOST_DRAFT.md",
-      "sha256": "6c8d42d07ae6a894e2c85888f8bf1146259806e67a413b63f30f32ab26c2cb1f"
+      "sha256": "d77276ee723c159fa4e763da3a5d814d38783b6f8b326cf5f882b58ac74fcce9"
     },
     {
       "bytes": 2044,
@@ -103,14 +112,14 @@
       "sha256": "b23727175ccf8475bc033a248fcd3235268425e6b3dc64e4af53220686391a40"
     },
     {
-      "bytes": 902,
+      "bytes": 2430,
       "path": "docs/SERVERLESS_JOB.md",
-      "sha256": "702be6a9b53aa0fca269ed7805918a1e63831737c39a2a2675052cb12dc8c534"
+      "sha256": "d555d71b179647fe1c1884392e393401a0feb5817b5edf9ce5772307e3d0affc"
     },
     {
-      "bytes": 5025,
+      "bytes": 5597,
       "path": "docs/SPEC_COMPLIANCE.md",
-      "sha256": "0adc044bcd6fe314c6e2de190e077c4454f7ffc45f5806f164c9398979778a9b"
+      "sha256": "1edfbe5b8afe0de8d3b61fb3325ebb8caab6fbf366088416292a63da4d9aa886"
     },
     {
       "bytes": 3641,
@@ -136,6 +145,11 @@
       "bytes": 2404,
       "path": "evidence/compatibility/preflight-report.json",
       "sha256": "5e01ccd6aea865efb13232103215827aaefbdd61253caa1fa40999fa23193c39"
+    },
+    {
+      "bytes": 597,
+      "path": "evidence/compatibility/token-factory-model-catalog.json",
+      "sha256": "1ecdabc02c9e45240220d175ed544427f20795ecf9365cb097649e9e6540390b"
     },
     {
       "bytes": 19471,
@@ -356,6 +370,11 @@
       "bytes": 2658,
       "path": "evidence/judge-mode-load.json",
       "sha256": "b1290062cf327492316002aa562c827680795b3da4398b32cad1be12dade7d97"
+    },
+    {
+      "bytes": 6559,
+      "path": "evidence/live-runtime-summary.json",
+      "sha256": "dbfd8701ea571afff226685622925872de367a1b7faff00c6426dbc66ab2a000"
     },
     {
       "bytes": 72156,
@@ -1691,6 +1710,11 @@
       "bytes": 1841,
       "path": "evidence/screenshots/manifest.json",
       "sha256": "d7933472aa08da3b2b9654aa1f07276061cf54fcfd0689b2e6a56666ee4101ee"
+    },
+    {
+      "bytes": 1513,
+      "path": "evidence/serverless-readiness.json",
+      "sha256": "e36ddf8c3b8044df876fbf95cdac96c08dfbd864114c7c6c99133716ec17ab1a"
     },
     {
       "bytes": 590,

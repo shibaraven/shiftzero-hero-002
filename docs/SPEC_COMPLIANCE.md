@@ -24,8 +24,11 @@ fixture result is equivalent to Nebius or physical evidence.
 | Six variants x 20 Compatibility preflight | Complete locally, unofficial | fixture report remains `official_gate_passed=false` |
 | Real Token Factory/Nemotron trace | Complete | 120 live runs, 360 HTTP-200 forced tool-call receipts, unique request IDs, exact provider/model identifiers and valid trace chains |
 | Official Compatibility Gate | Complete | `official_gate_passed=true`; 120/120 complete, first/post-repair schema validity 100%, p95 6.500 s, no failures |
+| Live runtime metadata / real-call UI | Complete | endpoint region, exact model, tested commit, prompt/schema hashes and representative request IDs/receipts are published separately from the MOCK replay |
+| Replan and cost KPI | Complete for live-provider simulator scope | 120/120 replans; median/p95 latency; measured tokens × captured catalog list price with explicit non-invoice boundary |
 | Final three competition screenshots | Hardware-gated | current PNGs remain `preflight_fixture`; the live gate passes, but `validate-final-evidence` correctly rejects them until correlated physical results, `LIVE / NEBIUS` labels and replacement hashes exist |
-| Serverless Jobs deployment | Account-gated | job contract/CLI complete; project, registry and storage target required |
+| Serverless Jobs artifact | Complete locally | dedicated job image, immutable CLI entrypoint, 100/100 smoke output and hash-bound readiness receipt |
+| Serverless Jobs cloud deployment | Account-gated | no AI Cloud project/CLI profile, image URI, VM quota or successful job receipt is available |
 | Real AGV adapter | Gate + hardware-gated | interface and handoff complete; OEM protocol/safety approval absent |
 | Physical sensor-to-stop under 200 ms | Hardware-gated | simulator timings are never presented as physical timings |
 | Public GitHub repository | Release authorization required | local Git complete; no remote configured |

@@ -1,0 +1,11 @@
+.git
+.pytest_cache
+.ruff_cache
+.venv
+apps/web/node_modules
+apps/web/dist
+evidence/runs
+output
+tmp
+*.pyc
+__pycache__

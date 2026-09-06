@@ -1,0 +1,49 @@
+{
+  "artifact_ready": true,
+  "blockers": [
+    "Nebius CLI is not installed",
+    "Nebius CLI profile/project configuration is absent",
+    "NEBIUS_PROJECT_ID is not configured",
+    "NEBIUS_SERVERLESS_IMAGE_URI is not configured",
+    "A local container engine is not installed",
+    "No successful Nebius Serverless deployment receipt exists"
+  ],
+  "checked_at": "2026-09-06T00:41:25.821088+00:00",
+  "claim_boundary": "Container job artifact is locally smoke-tested; no Nebius cloud deployment is claimed.",
+  "cloud_deployed": false,
+  "cloud_environment": {
+    "container_engine_present": false,
+    "image_uri_present": false,
+    "nebius_cli_present": false,
+    "nebius_cli_profile_present": false,
+    "project_id_present": false
+  },
+  "job": {
+    "dockerfile": "Dockerfile.serverless",
+    "entrypoint": [
+      "shiftzero",
+      "evaluate-scenarios",
+      "--manifest",
+      "scenarios/evaluation_manifest.json",
+      "--output",
+      "/output"
+    ],
+    "expected_outputs": [
+      "metrics.json",
+      "run-manifest.json",
+      "scenario-results.jsonl"
+    ],
+    "network_or_api_key_required": false,
+    "provider": "fixture"
+  },
+  "local_artifact": {
+    "dockerfile_present": true,
+    "safety_violation_count": 0,
+    "scenario_count": 100,
+    "smoke_output": "tmp/serverless-smoke",
+    "smoke_test_passed": true,
+    "validated_count": 100
+  },
+  "readiness_version": "nebius-serverless-v1",
+  "report_hash": "33785740d427995c15fc85474c5d2645e323753e0dd7a92efab5fe48c0fcb51d"
+}

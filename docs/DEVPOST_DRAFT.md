@@ -55,6 +55,14 @@ and kept emergency stopping on the edge path.
 - Official live Token Factory Compatibility Gate: 120/120 simulator missions, 360/360 forced
   Nemotron tool calls with HTTP 200 and unique request IDs, 100% schema-valid output, p95
   intent-to-proposal 6.500 seconds and zero reported failures.
+- A hash-bound live runtime report exposes the exact endpoint region, model, tested commit,
+  prompt-contract hash, tool-schema hash, request IDs, per-call latency/tokens, and retry/repair
+  counts without exposing an API key.
+- Across those same 120 live-provider simulator runs, deterministic `replan_mission` succeeded
+  120/120 times with 0.1215 ms median and 0.1427 ms p95 latency.
+- Using measured token counts and the Token Factory model catalog snapshot ($0.30/M prompt,
+  $0.90/M completion), the estimated median model cost was $0.001925 per mission and $0.232801
+  for the 120-run gate. This is a reproducible list-price estimate, not a billing invoice.
 - 20+20 matched Manual UI versus Agent Flow simulator baseline with method and sample size.
 - Per-tool arguments/result hashes, latency/error fields and structured JSON replay artifacts.
 - Credential-free owner-private Judge Mode staging and downloadable, hash-indexed evidence;
@@ -70,12 +78,33 @@ Physical AI demos become more credible when the failure path is the centerpiece.
 artifact is not a success animation; it is a linked record of what the system believed, which
 rule authorized each transition, who approved it, and why it stopped.
 
+We also learned that forced `tool_choice` is necessary but not sufficient. A provider can return
+HTTP 200 and valid JSON while the arguments are still stale or semantically unsafe, so every
+model result must pass schema, live-entity/version, and deterministic policy checks. Request IDs,
+model name, region, prompt/schema hashes, latency, token counts, retries, repairs, and result hashes
+must travel together; otherwise a polished UI cannot prove which runtime produced a decision.
+
+Finally, cost needs the same claim discipline as safety. Token counts are measured, catalog prices
+are time-stamped inputs, and their product is an estimate—not a cloud invoice. Separating those
+three facts made the KPI useful without overstating what the evidence says.
+
 ## What's next
 
-The live six-variant Compatibility Gate now passes. The next physical phase requires an OEM
-protocol, MQTT or VDA 5050 gateway, PLC/edge stop contract, mapped test area and safety-owner
-approval. After that integration, record the continuous physical segment and replace the three
-fixture screenshots with one correlated `LIVE / NEBIUS` evidence set.
+The live six-variant Compatibility Gate now passes. The project path is explicit:
+
+1. **Project:** finish the competition release with a public Judge Mode, public source snapshot,
+   Nebius deployment receipt, correlated physical-AGV trace, continuous 65-second physical clip,
+   and three final `LIVE / NEBIUS` screenshots.
+2. **IP:** preserve the pre-existing-work declaration, keep customer/OEM adapters outside the
+   public core, and record the provenance and licenses of every shipped dependency.
+3. **Product:** turn the frozen mission/safety contracts into a site-configurable governance layer
+   with observability, role management, WMS integration, and deployment support.
+4. **License/OEM:** keep the reference core Apache-2.0 and offer separately reviewed OEM protocol
+   adapters, safety-controller integrations, support, and commercial deployment terms.
+
+The physical phase requires an OEM protocol, MQTT or VDA 5050 gateway, PLC/edge stop contract,
+mapped test area and safety-owner approval. Only after that integration will we record the
+continuous physical segment and replace the fixture screenshots with one correlated evidence set.
 
 ## Existing work
 

@@ -106,6 +106,36 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         ),
         encoding="utf-8",
     )
+    live_summary = {
+        "evidence_class": "live_provider_with_reference_simulator",
+        "metadata": {
+            "provider": "nebius_token_factory",
+            "model": "nvidia/nemotron-3-super-120b-a12b",
+            "prompt_contract": {"matches_tested_commit": True},
+            "tool_schema": {"matches_tested_commit": True},
+        },
+        "compatibility": {"model_call_count": 0, "unique_request_id_count": 0},
+        "measurements": {
+            "replan_mission": {"sample_size": 0, "successful_result_count": 0},
+            "cost_kpi": {
+                "total_gate_estimated_usd": 1.0,
+                "measurement_kind": "measured_tokens_x_captured_catalog_list_price_not_invoice",
+            },
+        },
+    }
+    live_summary["report_hash"] = canonical_hash(live_summary)
+    (tmp_path / "evidence/live-runtime-summary.json").write_text(
+        json.dumps(live_summary), encoding="utf-8"
+    )
+    serverless = {
+        "artifact_ready": True,
+        "cloud_deployed": False,
+        "local_artifact": {"smoke_test_passed": True},
+    }
+    serverless["report_hash"] = canonical_hash(serverless)
+    (tmp_path / "evidence/serverless-readiness.json").write_text(
+        json.dumps(serverless), encoding="utf-8"
+    )
     (tmp_path / "THIRD_PARTY_LICENSES.json").write_text(
         json.dumps(
             {
@@ -160,7 +190,7 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
     assert first["official_gate_passed"] is False
     with ZipFile(first_zip) as archive:
         embedded = json.loads(archive.read("MANIFEST.json"))
-        assert embedded["bundle_version"] == "hero002-evidence-v5"
+        assert embedded["bundle_version"] == "hero002-evidence-v6"
         assert embedded["evidence_class"] == "preflight_fixture"
         assert embedded["claim_scope"] == "reference_simulator_and_fixture_provider_only"
         assert embedded["final_release_ready"] is False
@@ -185,6 +215,8 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
             is True
         )
         assert embedded["completeness_checks"]["local_preflight_passed"] is True
+        assert embedded["completeness_checks"]["serverless_job_artifact_ready"] is True
+        assert embedded["completeness_checks"]["serverless_cloud_deployed"] is False
         assert embedded["completeness_checks"]["final_real_screenshots_ready"] is False
         assert embedded["completeness_checks"]["passed"] is False
 

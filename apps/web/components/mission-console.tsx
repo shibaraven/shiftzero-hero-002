@@ -139,6 +139,81 @@ type LiveGateEvidence = {
   };
 };
 
+type LiveRuntimeSummary = {
+  generated_at: string;
+  report_hash: string;
+  evidence_class: string;
+  metadata: {
+    provider: string;
+    model: string;
+    endpoint_base_url: string;
+    endpoint_region: string;
+    tested_git_commit: string;
+    prompt_contract: { version: string; sha256: string; matches_tested_commit: boolean };
+    tool_schema: { version: string; sha256: string; matches_tested_commit: boolean };
+    safety_policy: { version: string; sha256: string };
+  };
+  compatibility: {
+    live_run_count: number;
+    model_call_count: number;
+    unique_request_id_count: number;
+    http_200_count: number;
+    retry_count: number;
+    repair_count: number;
+    all_trace_chains_valid: boolean;
+  };
+  measurements: {
+    replan_mission: {
+      measurement_scope: string;
+      sample_size: number;
+      successful_result_count: number;
+      latency_ms: { median: number; p95: number; maximum: number };
+    };
+    cost_kpi: {
+      measurement_kind: string;
+      catalog_captured_at: string;
+      prompt_usd_per_million_tokens: number;
+      completion_usd_per_million_tokens: number;
+      total_gate_estimated_usd: number;
+      per_mission_estimated_usd: { median: number; p95: number; maximum: number };
+    };
+  };
+  representative_live_trace: {
+    trace_id: string;
+    trace_jsonl_sha256: string;
+    model_calls: Array<{
+      completed_at: string;
+      provider: string;
+      model: string;
+      request_id: string;
+      http_status: number;
+      finish_reason: string;
+      tool_name: string;
+      latency_ms: number;
+      input_tokens: number;
+      output_tokens: number;
+      retry_count: number;
+      repair_count: number;
+      tool_arguments_hash: string;
+      tool_result_hash: string;
+    }>;
+  };
+};
+
+type ServerlessReadiness = {
+  artifact_ready: boolean;
+  cloud_deployed: boolean;
+  checked_at: string;
+  report_hash: string;
+  blockers: Array<string>;
+  local_artifact: {
+    smoke_test_passed: boolean;
+    scenario_count: number;
+    validated_count: number;
+    safety_violation_count: number;
+  };
+};
+
 const views: Array<{ id: View; label: string }> = [
   { id: 'mission', label: 'Run Hero' },
   { id: 'architecture', label: 'Architecture' },
@@ -321,6 +396,8 @@ export default function MissionConsole() {
   const [screenshotEvidence, setScreenshotEvidence] =
     useState<ScreenshotEvidence | null>(null);
   const [liveGate, setLiveGate] = useState<LiveGateEvidence | null>(null);
+  const [liveRuntime, setLiveRuntime] = useState<LiveRuntimeSummary | null>(null);
+  const [serverless, setServerless] = useState<ServerlessReadiness | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -365,6 +442,20 @@ export default function MissionConsole() {
         return response.json() as Promise<LiveGateEvidence>;
       })
       .then(setLiveGate)
+      .catch(() => setEvidenceError(true));
+    fetch('/data/live-runtime-summary.json')
+      .then((response) => {
+        if (!response.ok) throw new Error('live runtime evidence unavailable');
+        return response.json() as Promise<LiveRuntimeSummary>;
+      })
+      .then(setLiveRuntime)
+      .catch(() => setEvidenceError(true));
+    fetch('/data/serverless-readiness.json')
+      .then((response) => {
+        if (!response.ok) throw new Error('Serverless readiness evidence unavailable');
+        return response.json() as Promise<ServerlessReadiness>;
+      })
+      .then(setServerless)
       .catch(() => setEvidenceError(true));
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -576,6 +667,8 @@ export default function MissionConsole() {
           impactLoad={impactLoad}
           screenshotEvidence={screenshotEvidence}
           liveGate={liveGate}
+          liveRuntime={liveRuntime}
+          serverless={serverless}
           evidenceError={evidenceError}
         />
       )}
@@ -1332,6 +1425,8 @@ function EvidenceView({
   impactLoad,
   screenshotEvidence,
   liveGate,
+  liveRuntime,
+  serverless,
   evidenceError,
 }: {
   heroSummary: HeroSummary | null;
@@ -1340,6 +1435,8 @@ function EvidenceView({
   impactLoad: ImpactLoadModel | null;
   screenshotEvidence: ScreenshotEvidence | null;
   liveGate: LiveGateEvidence | null;
+  liveRuntime: LiveRuntimeSummary | null;
+  serverless: ServerlessReadiness | null;
   evidenceError: boolean;
 }) {
   return (
@@ -1462,6 +1559,96 @@ function EvidenceView({
         </CardContent>
       </Card>
 
+      <Card className="mb-4 rounded-lg border-cyan-300/20 bg-cyan-300/[0.035] shadow-none">
+        <CardHeader className="border-b border-cyan-300/10 px-5 py-4">
+          <CardTitle className="flex flex-wrap items-center justify-between gap-3 text-xs text-white">
+            <span className="flex items-center gap-2">
+              <TerminalSquare className="size-4 text-cyan-200" />
+              Real-call receipts · one representative live trace
+            </span>
+            <Badge className="rounded-sm border border-emerald-300/20 bg-emerald-300/[0.08] font-mono text-[8px] text-emerald-200">
+              LIVE / NEBIUS
+            </Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-5">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <EvidenceStat
+              label="Region / endpoint"
+              value={liveRuntime ? liveRuntime.metadata.endpoint_region : '—'}
+            />
+            <EvidenceStat
+              label="Prompt contract"
+              value={liveRuntime ? liveRuntime.metadata.prompt_contract.version : '—'}
+            />
+            <EvidenceStat
+              label="Tool schema"
+              value={liveRuntime ? liveRuntime.metadata.tool_schema.version : '—'}
+            />
+            <EvidenceStat
+              label="Trace"
+              value={liveRuntime ? liveRuntime.representative_live_trace.trace_id : '—'}
+            />
+          </div>
+          <p className="mt-4 break-all font-mono text-[9px] leading-4 text-slate-500">
+            {liveRuntime
+              ? `${liveRuntime.metadata.provider} · ${liveRuntime.metadata.model} · ${liveRuntime.metadata.endpoint_base_url}`
+              : 'Loading live runtime metadata…'}
+          </p>
+          <div className="mt-4 grid gap-3 lg:grid-cols-3">
+            {liveRuntime?.representative_live_trace.model_calls.map((call) => (
+              <div
+                key={call.request_id}
+                className="border border-emerald-300/15 bg-emerald-300/[0.025] p-3"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-mono text-[10px] text-emerald-200">
+                    {call.tool_name}
+                  </span>
+                  <span className="font-mono text-[9px] text-emerald-300">
+                    HTTP {call.http_status} · {call.finish_reason}
+                  </span>
+                </div>
+                <p className="mt-2 break-all font-mono text-[9px] leading-4 text-slate-400">
+                  request_id {call.request_id}
+                </p>
+                <p className="mt-1 font-mono text-[9px] leading-4 text-slate-500">
+                  {call.latency_ms.toFixed(3)} ms · {call.input_tokens} in / {call.output_tokens} out · retry {call.retry_count} · repair {call.repair_count}
+                </p>
+                <p className="mt-1 truncate font-mono text-[9px] text-slate-600">
+                  args {call.tool_arguments_hash.slice(0, 16)}… · result {call.tool_result_hash.slice(0, 16)}…
+                </p>
+              </div>
+            )) ?? <p className="text-xs text-slate-500">Loading real-call receipts…</p>}
+          </div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <EvidenceStat
+              label="Replan median / p95"
+              value={liveRuntime ? `${liveRuntime.measurements.replan_mission.latency_ms.median.toFixed(4)} / ${liveRuntime.measurements.replan_mission.latency_ms.p95.toFixed(4)} ms` : '—'}
+            />
+            <EvidenceStat
+              label="Replan successes"
+              value={liveRuntime ? `${liveRuntime.measurements.replan_mission.successful_result_count}/${liveRuntime.measurements.replan_mission.sample_size}` : '—'}
+            />
+            <EvidenceStat
+              label="Cost / mission median"
+              value={liveRuntime ? `$${liveRuntime.measurements.cost_kpi.per_mission_estimated_usd.median.toFixed(6)}` : '—'}
+            />
+            <EvidenceStat
+              label="120-run estimated cost"
+              value={liveRuntime ? `$${liveRuntime.measurements.cost_kpi.total_gate_estimated_usd.toFixed(6)}` : '—'}
+            />
+          </div>
+          <p className="mt-4 text-[10px] leading-5 text-slate-500">
+            Replan is measured inside 120 live-provider reference-simulator runs. Cost uses measured token counts × the Token Factory catalog snapshot ($0.30/M prompt, $0.90/M completion); it is not an invoice or a physical-AGV result.
+          </p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            <EvidenceLink href="/data/live-runtime-summary.json" label="live-runtime-summary.json" />
+            <EvidenceLink href="/data/token-factory-model-catalog.json" label="token-factory-model-catalog.json" />
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4 lg:grid-cols-[1.2fr_.8fr]">
         <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
           <CardHeader className="border-b border-white/[0.06] px-5 py-4">
@@ -1540,6 +1727,10 @@ function EvidenceView({
               <EvidenceLink
                 href="/data/live-gate.json"
                 label="compatibility-live-gate.json"
+              />
+              <EvidenceLink
+                href="/data/live-runtime-summary.json"
+                label="live-runtime-summary.json"
               />
               <EvidenceLink
                 href="/data/hero-reliability.json"
@@ -1719,6 +1910,43 @@ function EvidenceView({
           </CardContent>
         </Card>
       </div>
+
+      <Card className="mt-4 rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
+        <CardHeader className="border-b border-white/[0.06] px-5 py-4">
+          <CardTitle className="flex flex-wrap items-center justify-between gap-3 text-xs text-white">
+            <span className="flex items-center gap-2">
+              <Cpu className="size-4 text-cyan-200" /> Nebius Serverless job boundary
+            </span>
+            <Badge className={classNames(
+              'rounded-sm font-mono text-[8px]',
+              serverless?.cloud_deployed
+                ? 'bg-emerald-300/10 text-emerald-300'
+                : 'bg-amber-300/10 text-amber-200',
+            )}>
+              {serverless?.cloud_deployed ? 'CLOUD DEPLOYED' : 'ACCOUNT-GATED'}
+            </Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-5">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <EvidenceStat label="Job artifact" value={serverless?.artifact_ready ? 'READY' : 'VERIFYING'} />
+            <EvidenceStat label="Local smoke" value={serverless?.local_artifact.smoke_test_passed ? '100/100 PASS' : '—'} />
+            <EvidenceStat label="Safety violations" value={serverless ? `${serverless.local_artifact.safety_violation_count}` : '—'} />
+            <EvidenceStat label="Nebius deployment" value={serverless?.cloud_deployed ? 'SUCCEEDED' : 'NO RECEIPT'} />
+          </div>
+          <p className="mt-4 text-[10px] leading-5 text-slate-500">
+            The non-interactive Serverless image and entrypoint are locally verified. A Token Factory key is not an AI Cloud project credential; cloud deployment remains closed until a Nebius project, CLI profile, registry image, quota, and successful job receipt exist.
+          </p>
+          {!serverless?.cloud_deployed && serverless?.blockers && (
+            <p className="mt-2 font-mono text-[9px] leading-4 text-amber-200/70">
+              {serverless.blockers.join(' · ')}
+            </p>
+          )}
+          <div className="mt-3">
+            <EvidenceLink href="/data/serverless-readiness.json" label="serverless-readiness.json" />
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="mt-4 border border-amber-300/20 bg-amber-300/[0.045] p-4">
         <div className="flex gap-3">
