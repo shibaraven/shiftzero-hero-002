@@ -52,6 +52,13 @@
 - Interactive Judge Mode website with Run Hero, Architecture, Evidence and GitHub/source-gate
   entrances, explicit MOCK labeling, final pose, load evidence, impact projection, typed
   model-tool and release-acceptance evidence.
+- Evidence now links to an A06/A07 Field Test Lab with nine simulated AGVs, functional 2D and
+  isometric views, speed/latency controls, manual blockage injection, local-stop/replan/resume
+  timeline and downloadable rehearsal JSON. It is permanently marked `SIMULATOR / PRE-PHYSICAL`,
+  `A06 NOT PASSED`, and `A07 NOT PASSED`.
+- A strict `physical-field-evidence-v1` schema, field-test protocol, CLI validator and regression
+  tests are complete. Simulator exports deliberately use a different, ineligible evidence class;
+  only correlated onsite video/telemetry/sensor/protocol artifacts can pass the validator.
 - Devpost draft, anonymous judge runbook, submission checklist, and three-minute video shot list.
 - Spec-aligned 2:58 video plan with a 15-second opening, at most 20 seconds of architecture and an
   uninterrupted 65-second physical segment; Devpost includes an explicit existing-work section.

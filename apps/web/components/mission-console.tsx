@@ -26,11 +26,12 @@ import {
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
+import { FieldTestSimulator } from '@/components/field-test-simulator';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-type View = 'mission' | 'architecture' | 'evidence' | 'source';
+type View = 'mission' | 'architecture' | 'evidence' | 'field-test' | 'source';
 type ReplayDecision = 'approved' | 'rejected' | 'stopped' | null;
 
 type HeroSummary = {
@@ -670,7 +671,11 @@ export default function MissionConsole() {
           liveRuntime={liveRuntime}
           serverless={serverless}
           evidenceError={evidenceError}
+          onOpenFieldTest={() => setView('field-test')}
         />
+      )}
+      {view === 'field-test' && (
+        <FieldTestSimulator onBack={() => setView('evidence')} />
       )}
       {view === 'source' && <SourceView />}
     </main>
@@ -1428,6 +1433,7 @@ function EvidenceView({
   liveRuntime,
   serverless,
   evidenceError,
+  onOpenFieldTest,
 }: {
   heroSummary: HeroSummary | null;
   scenarioMetrics: ScenarioMetrics | null;
@@ -1438,6 +1444,7 @@ function EvidenceView({
   liveRuntime: LiveRuntimeSummary | null;
   serverless: ServerlessReadiness | null;
   evidenceError: boolean;
+  onOpenFieldTest: () => void;
 }) {
   return (
     <div className="mx-auto max-w-[1300px] px-4 py-10 sm:px-6 lg:px-8">
@@ -1465,6 +1472,44 @@ function EvidenceView({
           </Button>
         </a>
       </div>
+
+      <Card className="mb-4 rounded-lg border-amber-300/20 bg-amber-300/[0.035] shadow-none">
+        <CardHeader className="border-b border-amber-300/10 px-5 py-4">
+          <CardTitle className="flex flex-wrap items-center justify-between gap-3 text-xs text-white">
+            <span className="flex items-center gap-2">
+              <MapPinned className="size-4 text-amber-200" />
+              A06/A07 Field Test Lab
+            </span>
+            <span className="flex flex-wrap gap-2">
+              <Badge className="rounded-sm border border-amber-300/25 bg-amber-300/[0.08] font-mono text-[8px] text-amber-200">
+                SIMULATOR / PRE-PHYSICAL
+              </Badge>
+              <Badge className="rounded-sm border border-rose-300/25 bg-rose-300/[0.08] font-mono text-[8px] text-rose-200">
+                A06/A07 NOT PASSED
+              </Badge>
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col justify-between gap-4 p-5 lg:flex-row lg:items-center">
+          <div>
+            <p className="max-w-3xl text-xs leading-6 text-slate-400">
+              Rehearse nine-AGV traffic, 2D/isometric views, synthetic blockage,
+              local stop timing, route recovery and evidence export before the
+              onsite test. Simulator output is intentionally ineligible for final
+              A06/A07 evidence.
+            </p>
+            <p className="mt-2 font-mono text-[9px] text-slate-600">
+              FIELD CLOSEOUT REQUIRES VIDEO + TELEMETRY + SENSOR CAPTURE + MQTT/VDA 5050 TRACE
+            </p>
+          </div>
+          <Button
+            onClick={onOpenFieldTest}
+            className="rounded-md bg-amber-200 px-4 text-[#151006] hover:bg-amber-100"
+          >
+            Open field-test lab <ChevronRight className="size-4" />
+          </Button>
+        </CardContent>
+      </Card>
 
       <div className="mb-4 grid grid-cols-2 border border-white/[0.08] bg-[#0a1828] md:grid-cols-3 xl:grid-cols-6">
         <Metric

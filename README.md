@@ -109,6 +109,29 @@ hashes, UTC timestamps and visible `LIVE / NEBIUS` labels with:
 
 See `docs/FINAL_EVIDENCE_CAPTURE.md` for the exact three-file replacement procedure.
 
+## A06/A07 field-test rehearsal
+
+Judge Mode **Evidence → Open field-test lab** contains a nine-AGV rehearsal inspired by the
+provided dispatch simulator: switchable 2D/isometric views, speed controls, synthetic blockage,
+local-stop timing presets, route recovery, event timeline, final pose, and downloadable rehearsal
+JSON. Every screen and export says `SIMULATOR / PRE-PHYSICAL`; the export uses
+`evidence_class=simulator_rehearsal`, is never final-submission eligible, and cannot pass A06/A07.
+
+For the onsite closeout, collect one synchronized physical session following
+`docs/A06_A07_FIELD_TEST_PROTOCOL.md`. Create a JSON file matching
+`schemas/physical-field-evidence.schema.json`, then fail closed with:
+
+```powershell
+.\.venv\Scripts\python.exe -m shiftzero.cli validate-physical-evidence `
+  --input evidence/physical/field-session.json `
+  --output evidence/physical/validation-report.json
+```
+
+The physical validator requires the correlated sensor, local stop, stationary, replan, resume and
+completion events; a sensor-to-stop result no greater than 200 ms; changed route version; final
+`x/y/heading`; four colocated source artifacts whose bytes match their declared SHA-256 hashes;
+clock synchronization; cloud-disconnected stop proof; and a named safety-owner attestation.
+
 Official API references: [Token Factory function calling](https://docs.tokenfactory.nebius.com/ai-models-inference/function-calling)
 and the [Nebius Nemotron 3 Super guide](https://github.com/nebius/token-factory-cookbook/blob/main/models/nemotron/nemotron3-super-120B.md).
 

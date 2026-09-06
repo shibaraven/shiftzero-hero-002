@@ -8,7 +8,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 from shiftzero.domain import canonical_hash
 from shiftzero.evidence import EvidenceRecorder
 
-BUNDLE_VERSION = "hero002-evidence-v7"
+BUNDLE_VERSION = "hero002-evidence-v8"
 LIVE_GATE_PATH = "evidence/compatibility/live-gate.json"
 LIVE_TRACE_ROOT = "evidence/runs/live-compatibility"
 LIVE_PROVIDER = "nebius_token_factory"
@@ -71,7 +71,10 @@ REQUIRED_PATHS = (
     "docs/DEVPOST_DRAFT.md",
     "docs/FINAL_EVIDENCE_CAPTURE.md",
     "docs/VIDEO_SHOTLIST.md",
+    "docs/A06_A07_FIELD_TEST_PROTOCOL.md",
     "schemas/openapi.json",
+    "schemas/physical-field-evidence.schema.json",
+    "apps/web/components/field-test-simulator.tsx",
 )
 
 
@@ -228,6 +231,12 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
     )
     devpost = (root / "docs/DEVPOST_DRAFT.md").read_text(encoding="utf-8")
     video_shotlist = (root / "docs/VIDEO_SHOTLIST.md").read_text(encoding="utf-8")
+    physical_protocol = (root / "docs/A06_A07_FIELD_TEST_PROTOCOL.md").read_text(
+        encoding="utf-8"
+    )
+    field_test_ui = (root / "apps/web/components/field-test-simulator.tsx").read_text(
+        encoding="utf-8"
+    )
     trace_events = {
         path: [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
         for path in trace_paths
@@ -482,6 +491,24 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
             "Continuous physical segment: 65 seconds" in video_shotlist
             and "Encoded target: 2:58" in video_shotlist
         ),
+        "physical_field_test_harness_ready": all(
+            marker in physical_protocol
+            for marker in (
+                "agv.stationary_confirmed - sensor.filtered_obstacle <= 200 ms",
+                "validate-physical-evidence",
+                "Simulator exports use a",
+                "different evidence class",
+            )
+        )
+        and all(
+            marker in field_test_ui
+            for marker in (
+                "SIMULATOR / PRE-PHYSICAL",
+                "a06_physical_passed: false",
+                "a07_physical_passed: false",
+                "physical_evidence_required",
+            )
+        ),
         "required_file_count": len(files),
     }
     local_preflight_checks = (
@@ -504,6 +531,7 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         "third_party_inventory_complete",
         "devpost_has_existing_work_section",
         "video_plan_has_continuous_65_second_physical_segment",
+        "physical_field_test_harness_ready",
         "serverless_job_artifact_ready",
         "judge_mode_public_and_anonymous",
         "public_repository_ready",

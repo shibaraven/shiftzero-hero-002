@@ -9,7 +9,7 @@
     "dev": "vinext dev",
     "build": "vinext build",
     "start": "wrangler dev --config dist/server/wrangler.json",
-    "lint": "oxlint app components/mission-console.tsx components/ui/badge.tsx components/ui/button.tsx components/ui/card.tsx lib",
+    "lint": "oxlint app components/mission-console.tsx components/field-test-simulator.tsx components/ui/badge.tsx components/ui/button.tsx components/ui/card.tsx lib",
     "format": "oxfmt"
   },
   "dependencies": {

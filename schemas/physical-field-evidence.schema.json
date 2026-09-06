@@ -1,0 +1,389 @@
+{
+  "$defs": {
+    "ClockEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "maximum_skew_ms": {
+          "maximum": 20,
+          "minimum": 0,
+          "title": "Maximum Skew Ms",
+          "type": "number"
+        },
+        "source": {
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "synchronized": {
+          "const": true,
+          "title": "Synchronized",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "synchronized",
+        "maximum_skew_ms"
+      ],
+      "title": "ClockEvidence",
+      "type": "object"
+    },
+    "FinalPhysicalPose": {
+      "additionalProperties": false,
+      "properties": {
+        "heading_deg": {
+          "exclusiveMaximum": 360,
+          "minimum": 0,
+          "title": "Heading Deg",
+          "type": "number"
+        },
+        "node_id": {
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "node_id",
+        "x",
+        "y",
+        "heading_deg"
+      ],
+      "title": "FinalPhysicalPose",
+      "type": "object"
+    },
+    "PhysicalArtifactReference": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "exclusiveMinimum": 0,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "title": "PhysicalArtifactReference",
+      "type": "object"
+    },
+    "PhysicalArtifacts": {
+      "additionalProperties": false,
+      "properties": {
+        "continuous_video": {
+          "$ref": "#/$defs/PhysicalArtifactReference"
+        },
+        "mqtt_or_vda5050_trace": {
+          "$ref": "#/$defs/PhysicalArtifactReference"
+        },
+        "sensor_capture": {
+          "$ref": "#/$defs/PhysicalArtifactReference"
+        },
+        "telemetry": {
+          "$ref": "#/$defs/PhysicalArtifactReference"
+        }
+      },
+      "required": [
+        "continuous_video",
+        "telemetry",
+        "sensor_capture",
+        "mqtt_or_vda5050_trace"
+      ],
+      "title": "PhysicalArtifacts",
+      "type": "object"
+    },
+    "PhysicalEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "correlation_id": {
+          "minLength": 1,
+          "title": "Correlation Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "mission.started",
+            "sensor.raw_detected",
+            "sensor.filtered_obstacle",
+            "edge.stop_issued",
+            "agv.stationary_confirmed",
+            "replan.accepted",
+            "mission.resumed",
+            "mission.completed"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "sequence": {
+          "minimum": 1,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "source": {
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "timestamp": {
+          "format": "date-time",
+          "title": "Timestamp",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sequence",
+        "kind",
+        "timestamp",
+        "source",
+        "correlation_id"
+      ],
+      "title": "PhysicalEvent",
+      "type": "object"
+    },
+    "PhysicalHardware": {
+      "additionalProperties": false,
+      "properties": {
+        "agv_id": {
+          "minLength": 1,
+          "title": "Agv Id",
+          "type": "string"
+        },
+        "edge_controller": {
+          "minLength": 1,
+          "title": "Edge Controller",
+          "type": "string"
+        },
+        "protocol": {
+          "minLength": 1,
+          "title": "Protocol",
+          "type": "string"
+        },
+        "sensor": {
+          "minLength": 1,
+          "title": "Sensor",
+          "type": "string"
+        },
+        "stop_interface": {
+          "minLength": 1,
+          "title": "Stop Interface",
+          "type": "string"
+        },
+        "test_area": {
+          "minLength": 1,
+          "title": "Test Area",
+          "type": "string"
+        }
+      },
+      "required": [
+        "agv_id",
+        "protocol",
+        "sensor",
+        "edge_controller",
+        "stop_interface",
+        "test_area"
+      ],
+      "title": "PhysicalHardware",
+      "type": "object"
+    },
+    "PhysicalMeasurements": {
+      "additionalProperties": false,
+      "properties": {
+        "cloud_disconnected_stop_verified": {
+          "const": true,
+          "title": "Cloud Disconnected Stop Verified",
+          "type": "boolean"
+        },
+        "final_pose": {
+          "$ref": "#/$defs/FinalPhysicalPose"
+        },
+        "local_path_only": {
+          "const": true,
+          "title": "Local Path Only",
+          "type": "boolean"
+        },
+        "route_version_after": {
+          "minLength": 1,
+          "title": "Route Version After",
+          "type": "string"
+        },
+        "route_version_before": {
+          "minLength": 1,
+          "title": "Route Version Before",
+          "type": "string"
+        },
+        "sensor_to_stop_ms": {
+          "maximum": 200,
+          "minimum": 0,
+          "title": "Sensor To Stop Ms",
+          "type": "number"
+        }
+      },
+      "required": [
+        "sensor_to_stop_ms",
+        "local_path_only",
+        "cloud_disconnected_stop_verified",
+        "route_version_before",
+        "route_version_after",
+        "final_pose"
+      ],
+      "title": "PhysicalMeasurements",
+      "type": "object"
+    },
+    "PhysicalSession": {
+      "additionalProperties": false,
+      "properties": {
+        "completed_at": {
+          "format": "date-time",
+          "title": "Completed At",
+          "type": "string"
+        },
+        "mission_id": {
+          "minLength": 1,
+          "title": "Mission Id",
+          "type": "string"
+        },
+        "session_id": {
+          "minLength": 1,
+          "title": "Session Id",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "trace_id": {
+          "minLength": 1,
+          "title": "Trace Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "session_id",
+        "trace_id",
+        "mission_id",
+        "started_at",
+        "completed_at"
+      ],
+      "title": "PhysicalSession",
+      "type": "object"
+    },
+    "SafetyAttestation": {
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "minLength": 1,
+          "title": "Role",
+          "type": "string"
+        },
+        "safety_owner": {
+          "minLength": 1,
+          "title": "Safety Owner",
+          "type": "string"
+        },
+        "signed_at": {
+          "format": "date-time",
+          "title": "Signed At",
+          "type": "string"
+        },
+        "test_window_approved": {
+          "const": true,
+          "title": "Test Window Approved",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "safety_owner",
+        "role",
+        "signed_at",
+        "test_window_approved"
+      ],
+      "title": "SafetyAttestation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "artifacts": {
+      "$ref": "#/$defs/PhysicalArtifacts"
+    },
+    "attestation": {
+      "$ref": "#/$defs/SafetyAttestation"
+    },
+    "claim_scope": {
+      "const": "a06_a07_physical_validation",
+      "title": "Claim Scope",
+      "type": "string"
+    },
+    "clock": {
+      "$ref": "#/$defs/ClockEvidence"
+    },
+    "events": {
+      "items": {
+        "$ref": "#/$defs/PhysicalEvent"
+      },
+      "minItems": 8,
+      "title": "Events",
+      "type": "array"
+    },
+    "evidence_class": {
+      "const": "physical_field_test",
+      "title": "Evidence Class",
+      "type": "string"
+    },
+    "final_submission_eligible": {
+      "const": true,
+      "title": "Final Submission Eligible",
+      "type": "boolean"
+    },
+    "hardware": {
+      "$ref": "#/$defs/PhysicalHardware"
+    },
+    "measurements": {
+      "$ref": "#/$defs/PhysicalMeasurements"
+    },
+    "schema_version": {
+      "const": "physical-field-evidence-v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "session": {
+      "$ref": "#/$defs/PhysicalSession"
+    }
+  },
+  "required": [
+    "schema_version",
+    "evidence_class",
+    "claim_scope",
+    "final_submission_eligible",
+    "session",
+    "hardware",
+    "clock",
+    "events",
+    "measurements",
+    "artifacts",
+    "attestation"
+  ],
+  "title": "PhysicalFieldEvidence",
+  "type": "object"
+}

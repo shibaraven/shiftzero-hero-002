@@ -14,6 +14,7 @@ from shiftzero.domain import (
     SafetyProof,
     TransportProposal,
 )
+from shiftzero.physical_evidence import PhysicalFieldEvidence
 
 SCHEMAS = {
     "mission-intent.schema.json": MissionIntent,
@@ -25,6 +26,7 @@ SCHEMAS = {
     "mission.schema.json": Mission,
     "operation-metrics.schema.json": OperationMetrics,
     "recovery-intent.schema.json": RecoveryIntent,
+    "physical-field-evidence.schema.json": PhysicalFieldEvidence,
 }
 
 

@@ -1,8 +1,8 @@
 {
-  "bundle_bytes": 3923962,
+  "bundle_bytes": 3935330,
   "bundle_path": "evidence/HERO002-evidence-bundle.zip",
-  "bundle_sha256": "d1f438f7bed3c8c5edc249afa8989427862eab8c7961bbbeb5a21ba8c47350bc",
-  "bundle_version": "hero002-evidence-v7",
+  "bundle_sha256": "7ff859e3566ee27f87fa057fc47f7018fc4bcbaea44ea98deb8057f1f61edbd5",
+  "bundle_version": "hero002-evidence-v8",
   "claim_scope": "live_nebius_token_factory_with_reference_simulator_no_physical_hardware",
   "completeness_checks": {
     "all_included_trace_chains_valid": true,
@@ -27,8 +27,9 @@
     "local_preflight_passed": true,
     "p0_tool_spans_for_every_trace": true,
     "passed": false,
+    "physical_field_test_harness_ready": true,
     "public_repository_ready": true,
-    "required_file_count": 353,
+    "required_file_count": 356,
     "scenario_all_outcomes_valid": true,
     "scenario_count_is_100": true,
     "scenario_safety_violations_zero": true,
@@ -59,9 +60,9 @@
       "sha256": "c1873b5c09013202962379f8b81f090b29c71e9b3bddcb0a495d3a867a7108b5"
     },
     {
-      "bytes": 7990,
+      "bytes": 9281,
       "path": "README.md",
-      "sha256": "ba169c54cd596502d3f8a324bb55f223498afb653757da39c027aa592d7ed37d"
+      "sha256": "a570f0ed6dc8fdf504da1bce0f9e916d876eda9f4b5726e12ef4463669dd0f94"
     },
     {
       "bytes": 192322,
@@ -72,6 +73,16 @@
       "bytes": 6254,
       "path": "THIRD_PARTY_NOTICES.md",
       "sha256": "98b4b2303d63ba74258f556e0aa8f96c530a828c72fdd9ed0cf7b2aad0f53d18"
+    },
+    {
+      "bytes": 25109,
+      "path": "apps/web/components/field-test-simulator.tsx",
+      "sha256": "99753bbfa0330d7fbee0540d9d487ca8ec580868f43215ac234b0cfb04526278"
+    },
+    {
+      "bytes": 3014,
+      "path": "docs/A06_A07_FIELD_TEST_PROTOCOL.md",
+      "sha256": "727968b3fb74fca923ea43afb4431fc8fc4b25c0a01be0d17e6cac954256f28c"
     },
     {
       "bytes": 2003,
@@ -119,9 +130,9 @@
       "sha256": "d555d71b179647fe1c1884392e393401a0feb5817b5edf9ce5772307e3d0affc"
     },
     {
-      "bytes": 5859,
+      "bytes": 6172,
       "path": "docs/SPEC_COMPLIANCE.md",
-      "sha256": "d1c73daa65d1eceaa2170413abd633db3fd57d462a5ef9fa1e7872d0a22ff49b"
+      "sha256": "85b8b9c9cc7f7df10ea28a18e4084baa357ed642eee2c205a6e718c2f79c1e05"
     },
     {
       "bytes": 3641,
@@ -1772,6 +1783,11 @@
       "bytes": 11181,
       "path": "schemas/operational-snapshot.schema.json",
       "sha256": "68c93b7e832251f9bc6423c48b17be3a89b63dca2db1b39dc338a26375a0c095"
+    },
+    {
+      "bytes": 9508,
+      "path": "schemas/physical-field-evidence.schema.json",
+      "sha256": "32181e076516bd32eb960b2dc0bb282bc096914ab0c09300fbe76bf80e16cb6f"
     },
     {
       "bytes": 1533,

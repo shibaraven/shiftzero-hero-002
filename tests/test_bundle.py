@@ -189,6 +189,20 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         "Encoded target: 2:58\n\nContinuous physical segment: 65 seconds\n",
         encoding="utf-8",
     )
+    (tmp_path / "docs/A06_A07_FIELD_TEST_PROTOCOL.md").write_text(
+        "agv.stationary_confirmed - sensor.filtered_obstacle <= 200 ms\n"
+        "validate-physical-evidence\n"
+        "Simulator exports use a\n"
+        "different evidence class\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "apps/web/components/field-test-simulator.tsx").write_text(
+        "SIMULATOR / PRE-PHYSICAL\n"
+        "a06_physical_passed: false\n"
+        "a07_physical_passed: false\n"
+        "physical_evidence_required\n",
+        encoding="utf-8",
+    )
     sample = EvidenceRecorder(tmp_path / "evidence/sample-verified-run")
     _record_complete_hero_evidence(sample, "M-SAMPLE")
     sample.export_json()
@@ -215,7 +229,7 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
     assert first["official_gate_passed"] is False
     with ZipFile(first_zip) as archive:
         embedded = json.loads(archive.read("MANIFEST.json"))
-        assert embedded["bundle_version"] == "hero002-evidence-v7"
+        assert embedded["bundle_version"] == "hero002-evidence-v8"
         assert embedded["evidence_class"] == "preflight_fixture"
         assert embedded["claim_scope"] == "reference_simulator_and_fixture_provider_only"
         assert embedded["final_release_ready"] is False
@@ -240,6 +254,7 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
             is True
         )
         assert embedded["completeness_checks"]["local_preflight_passed"] is True
+        assert embedded["completeness_checks"]["physical_field_test_harness_ready"] is True
         assert embedded["completeness_checks"]["serverless_job_artifact_ready"] is True
         assert embedded["completeness_checks"]["serverless_cloud_deployed"] is False
         assert embedded["completeness_checks"]["judge_mode_public_and_anonymous"] is True

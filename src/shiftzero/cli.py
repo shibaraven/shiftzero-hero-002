@@ -15,6 +15,7 @@ from shiftzero.evidence_summary import build_hero_summary
 from shiftzero.impact import run_impact_load_model
 from shiftzero.license_inventory import build_license_inventory
 from shiftzero.live_evidence import build_live_evidence_summary
+from shiftzero.physical_evidence import validate_physical_evidence
 from shiftzero.reliability import run_hero_reliability
 from shiftzero.schema_export import export_schemas
 from shiftzero.screenshot_manifest import (
@@ -169,6 +170,13 @@ def main() -> None:
         default=Path("evidence/compatibility/live-gate.json"),
     )
 
+    physical_evidence = subparsers.add_parser(
+        "validate-physical-evidence",
+        help="Fail closed unless correlated field evidence satisfies A06/A07",
+    )
+    physical_evidence.add_argument("--input", type=Path, required=True)
+    physical_evidence.add_argument("--output", type=Path)
+
     licenses = subparsers.add_parser(
         "build-license-inventory",
         help="Freeze Python packages and inventory Python/npm licenses and sources",
@@ -229,6 +237,16 @@ def main() -> None:
             root=args.root.resolve(),
             manifest_path=args.manifest.resolve(),
             compatibility_report_path=args.compatibility_report.resolve(),
+        )
+        print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
+        if not report["passed"]:
+            raise SystemExit(2)
+        return
+
+    if args.command == "validate-physical-evidence":
+        report = validate_physical_evidence(
+            input_path=args.input.resolve(),
+            output_path=args.output.resolve() if args.output else None,
         )
         print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
         if not report["passed"]:

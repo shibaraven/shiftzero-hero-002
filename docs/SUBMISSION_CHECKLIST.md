@@ -5,6 +5,10 @@
 - [x] Repository and IP boundary documents.
 - [x] Frozen hero scenario, schemas, state machine and safety rules.
 - [x] Reference simulator and complete blockage/safe-stop/replan loop.
+- [x] Nine-AGV A06/A07 pre-physical Field Test Lab with 2D/isometric views, blockage injection,
+      synthetic stop-latency pass/fail, route recovery, event timeline and ineligible JSON export.
+- [x] Physical field-test protocol, frozen evidence schema, fail-closed validator and regression
+      tests; simulator files cannot be promoted into physical evidence.
 - [x] Stateful Agent API and idempotent structured execution.
 - [x] Tamper-evident trace and downloadable Evidence Bundle.
 - [x] 100-scenario deterministic evaluation.
@@ -48,6 +52,8 @@
 - [ ] Record and upload the final demo video.
 - [ ] Supply AGV protocol, site map, edge stop interface and safety-owner approval before any
       physical integration or physical-performance claim.
+- [ ] Run the onsite A06/A07 protocol and make `validate-physical-evidence` pass with one
+      synchronized continuous-video/telemetry/sensor/MQTT-or-VDA5050 evidence set.
 
 ## Final integrity checks
 

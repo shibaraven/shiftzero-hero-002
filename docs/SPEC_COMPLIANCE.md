@@ -29,8 +29,8 @@ fixture result is equivalent to Nebius or physical evidence.
 | Final three competition screenshots | Hardware-gated | current PNGs remain `preflight_fixture`; the live gate passes, but `validate-final-evidence` correctly rejects them until correlated physical results, `LIVE / NEBIUS` labels and replacement hashes exist |
 | Serverless Jobs artifact | Complete locally | dedicated job image, immutable CLI entrypoint, 100/100 smoke output and hash-bound readiness receipt |
 | Serverless Jobs cloud deployment | Account-gated | no AI Cloud project/CLI profile, image URI, VM quota or successful job receipt is available |
-| Real AGV adapter | Gate + hardware-gated | interface and handoff complete; OEM protocol/safety approval absent |
-| Physical sensor-to-stop under 200 ms | Hardware-gated | simulator timings are never presented as physical timings |
+| Real AGV adapter | Gate + hardware-gated | interface, nine-AGV pre-physical harness, field protocol and fail-closed evidence validator complete; OEM protocol/safety approval absent |
+| Physical sensor-to-stop under 200 ms | Harness complete; hardware-gated | Field Test Lab rehearses pass/fail timing and exports ineligible synthetic evidence; strict physical schema/validator requires correlated clocked field events |
 | Public GitHub repository | Complete | `https://github.com/shibaraven/shiftzero-hero-002`; public visibility, `main`, immutable commit and anonymous HTTP checks captured in `evidence/public-repository.json` |
 | Anonymous public Judge Mode | Complete | public v11 deployment, source SHA and four unauthenticated HTTP 200 checks are captured in `evidence/judge-mode-publication.json` |
 | Physical demo video | Hardware/publication-gated | shot list complete; recording is not fabricated |
@@ -40,5 +40,6 @@ fixture result is equivalent to Nebius or physical evidence.
 The live runtime trace and official Compatibility Gate satisfy the machine-verifiable A01/A02
 provider requirements while remaining explicitly scoped to the reference simulator. Public Judge
 Mode and source release satisfy A09/A10's publication gates. A06/A07 still require physical AGV
-evidence; A11/A12 still require the final physical video, eligible screenshots, owner disclosure
+evidence; the software rehearsal, physical evidence schema, capture protocol and validator are
+complete, but do not change that gate. A11/A12 still require the final physical video, eligible screenshots, owner disclosure
 attestation and Devpost submission.
