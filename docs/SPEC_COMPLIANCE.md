@@ -32,7 +32,7 @@ fixture result is equivalent to Nebius or physical evidence.
 | Real AGV adapter | Gate + hardware-gated | interface and handoff complete; OEM protocol/safety approval absent |
 | Physical sensor-to-stop under 200 ms | Hardware-gated | simulator timings are never presented as physical timings |
 | Public GitHub repository | Release authorization required | local Git complete; no remote configured |
-| Anonymous public Judge Mode | Partially complete, release authorization required | local load/UX gate passes; deployed site remains owner-private |
+| Anonymous public Judge Mode | Complete | public v11 deployment, source SHA and four unauthenticated HTTP 200 checks are captured in `evidence/judge-mode-publication.json` |
 | Physical demo video | Hardware/publication-gated | shot list complete; recording is not fabricated |
 | Devpost submission | External action | draft/checklist complete; final URLs and submit action pending |
 | Third-party dependency inventory | Complete locally | all resolved Python/npm packages have exact versions, license identifiers and sources; final legal review remains a release action |

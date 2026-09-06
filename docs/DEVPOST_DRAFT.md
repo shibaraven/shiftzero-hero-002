@@ -65,8 +65,8 @@ and kept emergency stopping on the edge path.
   for the 120-run gate. This is a reproducible list-price estimate, not a billing invoice.
 - 20+20 matched Manual UI versus Agent Flow simulator baseline with method and sample size.
 - Per-tool arguments/result hashes, latency/error fields and structured JSON replay artifacts.
-- Credential-free owner-private Judge Mode staging and downloadable, hash-indexed evidence;
-  public access remains an explicit release action.
+- Public, anonymous Judge Mode with downloadable, hash-indexed evidence and a deployment receipt
+  binding the production version to its exact source commit.
 
 The control-flow, safety and throughput results are scoped to the reference simulator. Model-call
 compatibility results are from the live Nebius Token Factory provider; no physical AGV claim is
@@ -126,8 +126,7 @@ submission; this draft does not impersonate that owner confirmation.
 
 ## Links to fill at submission time
 
-- Judge Mode staging: `https://shiftzero-hero-002.mingjen.chatgpt.site` (owner-private until
-  public access is explicitly approved)
+- Judge Mode: `https://shiftzero-hero-002.mingjen.chatgpt.site` (public; anonymous HTTP verified)
 - Source repository: `[ADD PUBLIC REPOSITORY URL]`
 - Demo video: `[ADD VIDEO URL]`
 - Live compatibility report: included in the downloadable Evidence Bundle; `[ADD PUBLIC ARTIFACT

@@ -1733,6 +1733,10 @@ function EvidenceView({
                 label="live-runtime-summary.json"
               />
               <EvidenceLink
+                href="/data/judge-mode-publication.json"
+                label="judge-mode-publication.json"
+              />
+              <EvidenceLink
                 href="/data/hero-reliability.json"
                 label="hero-reliability.json"
               />

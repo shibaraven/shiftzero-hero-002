@@ -2,7 +2,7 @@
 
 **One sentence in. One verified robot mission out.**
 
-Owner-private Judge Mode staging: https://shiftzero-hero-002.mingjen.chatgpt.site
+Public Judge Mode: https://shiftzero-hero-002.mingjen.chatgpt.site
 
 ShiftZero HERO-002 is a proof-carrying mission-governance layer for warehouse robots. An
 NVIDIA Nemotron model running on Nebius Token Factory may interpret intent and propose typed

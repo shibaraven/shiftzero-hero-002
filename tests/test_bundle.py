@@ -93,6 +93,18 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         ),
         encoding="utf-8",
     )
+    (tmp_path / "evidence/judge-mode-publication.json").write_text(
+        json.dumps(
+            {
+                "access_mode": "public",
+                "deployment_status": "succeeded",
+                "http_authentication_used": False,
+                "url": "https://example.invalid",
+                "anonymous_http_checks": [{"status": 200}] * 4,
+            }
+        ),
+        encoding="utf-8",
+    )
     (tmp_path / "evidence/impact-load-model.json").write_text(
         json.dumps(
             {
@@ -217,6 +229,7 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         assert embedded["completeness_checks"]["local_preflight_passed"] is True
         assert embedded["completeness_checks"]["serverless_job_artifact_ready"] is True
         assert embedded["completeness_checks"]["serverless_cloud_deployed"] is False
+        assert embedded["completeness_checks"]["judge_mode_public_and_anonymous"] is True
         assert embedded["completeness_checks"]["final_real_screenshots_ready"] is False
         assert embedded["completeness_checks"]["passed"] is False
 

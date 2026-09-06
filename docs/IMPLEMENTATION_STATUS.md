@@ -57,7 +57,8 @@
   uninterrupted 65-second physical segment; Devpost includes an explicit existing-work section.
 - Complete resolved Python/npm dependency inventory with exact versions, license identifiers,
   source URLs and a frozen Python verification lock.
-- Owner-private Judge Mode deployment at `https://shiftzero-hero-002.mingjen.chatgpt.site`.
+- Public Judge Mode deployment at `https://shiftzero-hero-002.mingjen.chatgpt.site`; v11 and its
+  source SHA are captured in a deployment receipt, and four anonymous HTTP checks return 200.
 - A dedicated non-interactive `Dockerfile.serverless` job artifact and fail-closed readiness
   report. Its 100-scenario local entrypoint passes 100/100 with zero observed safety violations.
 
@@ -65,8 +66,7 @@
 
 1. No AGV/OEM protocol, broker credentials, PLC/edge stop interface, test map, or safety-owner
    approval has been supplied. Real hardware integration remains locked as required by the spec.
-2. The source repository has no public remote yet, and Judge Mode remains owner-private until the
-   prepared release is published.
+2. The source repository has no public remote yet. Judge Mode itself is now public and anonymous.
 3. Physical video, anonymous-access verification, and Devpost submission require the final public
    URLs and hardware/test evidence.
 4. The current three screenshots are preflight layout/evidence checks only. The live Compatibility

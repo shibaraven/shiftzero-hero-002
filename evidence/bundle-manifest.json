@@ -1,7 +1,7 @@
 {
-  "bundle_bytes": 3922407,
+  "bundle_bytes": 3923219,
   "bundle_path": "evidence/HERO002-evidence-bundle.zip",
-  "bundle_sha256": "d9808088a4085e783debe59f455bee437399de726127acbeccabb8b57464aa12",
+  "bundle_sha256": "87ada83ff3b131f0266cbdbe3032692b5c2c03d4d81c80c86b1055ef16377412",
   "bundle_version": "hero002-evidence-v6",
   "claim_scope": "live_nebius_token_factory_with_reference_simulator_no_physical_hardware",
   "completeness_checks": {
@@ -15,6 +15,7 @@
     "hero_twenty_consecutive_passes": true,
     "impact_range_covers_400_to_500_pallets": true,
     "judge_mode_load_under_five_seconds": true,
+    "judge_mode_public_and_anonymous": true,
     "live_model_call_count": 360,
     "live_nebius_gate_passed": true,
     "live_provider_receipts_complete": true,
@@ -26,7 +27,7 @@
     "local_preflight_passed": true,
     "p0_tool_spans_for_every_trace": true,
     "passed": false,
-    "required_file_count": 351,
+    "required_file_count": 352,
     "scenario_all_outcomes_valid": true,
     "scenario_count_is_100": true,
     "scenario_safety_violations_zero": true,
@@ -57,9 +58,9 @@
       "sha256": "c1873b5c09013202962379f8b81f090b29c71e9b3bddcb0a495d3a867a7108b5"
     },
     {
-      "bytes": 7940,
+      "bytes": 7925,
       "path": "README.md",
-      "sha256": "c6c7c96d732ac08d512ff757600b67cd4b3531c7bca19c4d41f4c220bf583505"
+      "sha256": "a4c5cc803b9850d0dd1edcebac1b9b3bfa5496a01a1ce7396b844ea076b0458e"
     },
     {
       "bytes": 192322,
@@ -82,9 +83,9 @@
       "sha256": "f9449aae2ed6ba0369d5a52d9e5ca3f7220e6770c4c3c3590569f4883f5f6de1"
     },
     {
-      "bytes": 7737,
+      "bytes": 7716,
       "path": "docs/DEVPOST_DRAFT.md",
-      "sha256": "d77276ee723c159fa4e763da3a5d814d38783b6f8b326cf5f882b58ac74fcce9"
+      "sha256": "8f07c607b13ab5c4afdc8592194ab68868ebcd881b673b56b49c2b842a3ca9f7"
     },
     {
       "bytes": 2044,
@@ -117,9 +118,9 @@
       "sha256": "d555d71b179647fe1c1884392e393401a0feb5817b5edf9ce5772307e3d0affc"
     },
     {
-      "bytes": 5597,
+      "bytes": 5622,
       "path": "docs/SPEC_COMPLIANCE.md",
-      "sha256": "1edfbe5b8afe0de8d3b61fb3325ebb8caab6fbf366088416292a63da4d9aa886"
+      "sha256": "8eb608231b113f1c23639a3a8937462b8bd03e2ad81b9d8c1b295d903f46f977"
     },
     {
       "bytes": 3641,
@@ -370,6 +371,11 @@
       "bytes": 2658,
       "path": "evidence/judge-mode-load.json",
       "sha256": "b1290062cf327492316002aa562c827680795b3da4398b32cad1be12dade7d97"
+    },
+    {
+      "bytes": 1284,
+      "path": "evidence/judge-mode-publication.json",
+      "sha256": "9f9449aa98dccc505e47b27aef3bf7a409c2fa6bbc14802aac77860bbf2ab715"
     },
     {
       "bytes": 6559,

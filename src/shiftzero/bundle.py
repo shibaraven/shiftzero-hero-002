@@ -47,6 +47,7 @@ REQUIRED_PATHS = (
     "evidence/baseline-comparison.json",
     "evidence/impact-load-model.json",
     "evidence/judge-mode-load.json",
+    "evidence/judge-mode-publication.json",
     "evidence/serverless-readiness.json",
     "evidence/screenshots/manifest.json",
     "evidence/METHODOLOGY.md",
@@ -205,6 +206,9 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
     screenshot_rows = {row["path"]: row for row in screenshot_manifest["screenshots"]}
     judge_load = json.loads(
         (root / "evidence/judge-mode-load.json").read_text(encoding="utf-8")
+    )
+    judge_publication = json.loads(
+        (root / "evidence/judge-mode-publication.json").read_text(encoding="utf-8")
     )
     impact_load = json.loads(
         (root / "evidence/impact-load-model.json").read_text(encoding="utf-8")
@@ -433,6 +437,17 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         "judge_mode_load_under_five_seconds": judge_load["acceptance_passed"] is True
         and judge_load["sample_count"] >= 20
         and judge_load["p95_ms"] < judge_load["threshold_ms"],
+        "judge_mode_public_and_anonymous": bool(
+            judge_publication.get("access_mode") == "public"
+            and judge_publication.get("deployment_status") == "succeeded"
+            and judge_publication.get("http_authentication_used") is False
+            and judge_publication.get("url", "").startswith("https://")
+            and len(judge_publication.get("anonymous_http_checks", [])) >= 4
+            and all(
+                row.get("status") == 200
+                for row in judge_publication.get("anonymous_http_checks", [])
+            )
+        ),
         "impact_range_covers_400_to_500_pallets": {
             row["pallets_per_day"]
             for row in impact_load["loads"]
@@ -473,6 +488,7 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         "devpost_has_existing_work_section",
         "video_plan_has_continuous_65_second_physical_segment",
         "serverless_job_artifact_ready",
+        "judge_mode_public_and_anonymous",
     )
     checks["local_preflight_passed"] = all(checks[name] is True for name in local_preflight_checks)
     checks["passed"] = (
