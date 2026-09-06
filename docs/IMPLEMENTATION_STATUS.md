@@ -1,4 +1,4 @@
-# Implementation status - 2026-09-05
+# Implementation status - 2026-09-06
 
 ## Completed locally
 
@@ -11,6 +11,10 @@
   per-tool arguments/result hashes, latency and errors.
 - 120-run fixture preflight plus stale snapshot, invalid entity, timeout, HTTP 429, and duplicate
   dispatch controls.
+- Official 120-run live Nebius Token Factory Compatibility Gate: 120/120 complete, 360/360
+  forced Nemotron tool calls returned HTTP 200 with unique provider request IDs, first/post-repair
+  schema validity 100%, p95 intent-to-proposal 6.500 s, no retries, no repairs and no recorded
+  failures. The aggregate report and all raw hash-chained traces are in the Evidence Bundle.
 - Compatibility attestation gate that prevents a fixture report from opening the real adapter.
 - Stateful Agent API for intent, proposal, proof, approval, execution, stop, replan, resume,
   fail-safe override, trace and metric inspection. Signed bearer claims replace self-asserted
@@ -51,25 +55,25 @@
 
 ## Current external blockers
 
-1. `NEBIUS_API_KEY` is not present in the execution environment. The real provider therefore
-   fails closed, and the fixture preflight correctly records `official_gate_passed=false`.
-2. No AGV/OEM protocol, broker credentials, PLC/edge stop interface, test map, or safety-owner
+1. No AGV/OEM protocol, broker credentials, PLC/edge stop interface, test map, or safety-owner
    approval has been supplied. Real hardware integration remains locked as required by the spec.
-3. The source repository has no authorized public remote, and Judge Mode is owner-private. Public
+2. The source repository has no authorized public remote, and Judge Mode is owner-private. Public
    release is a separate exposure decision rather than a local engineering task.
-4. Physical video, anonymous-access verification, and Devpost submission require the final public
+3. Physical video, anonymous-access verification, and Devpost submission require the final public
    URLs and hardware/test evidence.
-5. The current three screenshots are preflight layout/evidence checks only. Final capture cannot
-   pass until the live Compatibility Gate, real provider receipt and physical result exist.
+4. The current three screenshots are preflight layout/evidence checks only. The live Compatibility
+   Gate and provider receipts now pass, but final capture still requires the correlated physical
+   mission result and safety-owner review.
 
-## Deferred external evidence
+## Live gate result and next external gate
 
-Run the following after setting the key:
+The completed command was:
 
 ```powershell
 .\.venv\Scripts\python.exe -m shiftzero.cli verify-token-factory --json
-.\.venv\Scripts\python.exe -m shiftzero.cli compatibility --provider nebius --repetitions 20 --report evidence/compatibility/live-gate.json
+.\.venv\Scripts\python.exe -m shiftzero.cli compatibility --provider nebius --repetitions 20 --evidence-root evidence/runs/live-compatibility --report evidence/compatibility/live-gate.json
 ```
 
-Only if `live-gate.json` contains `official_gate_passed=true` should the site-approved real AGV
-adapter implementation begin.
+`live-gate.json` contains `official_gate_passed=true`. Real AGV adapter implementation may begin
+only after the site supplies the OEM protocol, mapped test area, edge-stop interface and explicit
+safety-owner approval. The API key remains outside Git and the Evidence Bundle.

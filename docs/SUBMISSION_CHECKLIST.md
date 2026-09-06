@@ -10,6 +10,8 @@
 - [x] 100-scenario deterministic evaluation.
 - [x] 20 consecutive complete Hero runs with a valid trace chain and route-version change.
 - [x] 120-call fixture-provider compatibility preflight.
+- [x] 120-run official live Nebius Compatibility Gate with 360 forced Nemotron tool calls,
+      unique request IDs, 100% schema-valid results and a passing aggregate report.
 - [x] Signed identity/RBAC, all-write idempotency/versioning, SQLite audit and exact replay.
 - [x] Temporal collision, circular deadlock, sensor persistence and exact Digital Twin fields.
 - [x] Separate Replan/Resume and fail-safe-only Override with append-only audit.
@@ -34,9 +36,10 @@
 
 ## External prerequisites before final submission claims
 
-- [ ] Register and inject `NEBIUS_API_KEY` without committing it.
-- [ ] Record a real forced Nemotron tool call with provider/model receipt.
-- [ ] Pass the official Token Factory Compatibility Gate and archive the live report.
+- [x] Register and inject `NEBIUS_API_KEY` without committing it.
+- [x] Record real forced Nemotron tool calls with provider/model/request receipts.
+- [x] Pass the official Token Factory Compatibility Gate and archive its aggregate report plus
+      120 raw hash-chained traces in the Evidence Bundle.
 - [ ] Replace all three preflight screenshots with one correlated `LIVE / NEBIUS` capture set and
       make `validate-final-evidence` exit successfully.
 - [ ] Publish the Git repository and add its immutable revision URL.
@@ -50,6 +53,6 @@
 
 - [ ] Public repository contains no secret, credential or customer data.
 - [ ] Evidence numbers in Devpost exactly match `evidence/scenario-evaluation/metrics.json`.
-- [ ] Simulator, live provider and physical evidence are visually and verbally distinguished.
-- [ ] Evidence Bundle SHA-256 matches `evidence/bundle-manifest.json`.
+- [x] Simulator, live provider and physical evidence are visually and verbally distinguished.
+- [x] Evidence Bundle SHA-256 matches `evidence/bundle-manifest.json`.
 - [ ] All public links resolve without authentication.

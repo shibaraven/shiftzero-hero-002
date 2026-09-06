@@ -6,6 +6,7 @@ from pathlib import Path
 from zipfile import ZipFile
 
 from shiftzero.bundle import REQUIRED_PATHS, build_evidence_bundle
+from shiftzero.domain import canonical_hash
 from shiftzero.evidence import EvidenceRecorder
 
 P0_TOOL_SPAN_KINDS = (
@@ -159,7 +160,7 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
     assert first["official_gate_passed"] is False
     with ZipFile(first_zip) as archive:
         embedded = json.loads(archive.read("MANIFEST.json"))
-        assert embedded["bundle_version"] == "hero002-preflight-evidence-v4"
+        assert embedded["bundle_version"] == "hero002-evidence-v5"
         assert embedded["evidence_class"] == "preflight_fixture"
         assert embedded["claim_scope"] == "reference_simulator_and_fixture_provider_only"
         assert embedded["final_release_ready"] is False
@@ -186,3 +187,51 @@ def test_evidence_bundle_is_complete_and_reproducible(tmp_path: Path) -> None:
         assert embedded["completeness_checks"]["local_preflight_passed"] is True
         assert embedded["completeness_checks"]["final_real_screenshots_ready"] is False
         assert embedded["completeness_checks"]["passed"] is False
+
+    live = EvidenceRecorder(tmp_path / "evidence/runs/live-compatibility")
+    _record_complete_hero_evidence(live, "M-LIVE")
+    for kind, tool_name, request_id in (
+        ("llm.intent", "parse_mission_intent", "request-intent"),
+        ("llm.proposal", "propose_transport", "request-proposal"),
+        ("llm.recovery", "propose_recovery", "request-recovery"),
+    ):
+        live.record(
+            kind,
+            {
+                "provider": "nebius_token_factory",
+                "model": "nvidia/nemotron-3-super-120b-a12b",
+                "http_status": 200,
+                "finish_reason": "tool_calls",
+                "tool_name": tool_name,
+                "request_id": request_id,
+                "input_tokens": 100,
+                "output_tokens": 50,
+                "timed_out": False,
+            },
+        )
+    live.export_json()
+    live_gate = {
+        "provider": "nebius_token_factory",
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "real_provider": True,
+        "official_gate_passed": True,
+        "all_thresholds_passed": True,
+        "failures": [],
+        "metrics": {"requested_runs": 1, "completed_runs": 1},
+    }
+    live_gate["report_hash"] = canonical_hash(live_gate)
+    (tmp_path / "evidence/compatibility/live-gate.json").write_text(
+        json.dumps(live_gate), encoding="utf-8"
+    )
+    live_bundle = build_evidence_bundle(
+        root=tmp_path,
+        output_zip=tmp_path / "evidence/live.zip",
+        manifest_path=tmp_path / "evidence/live-manifest.json",
+    )
+    assert live_bundle["official_gate_passed"] is True
+    assert live_bundle["evidence_class"] == "live_provider_with_reference_simulator"
+    assert live_bundle["completeness_checks"]["live_nebius_gate_passed"] is True
+    assert live_bundle["completeness_checks"]["live_trace_count_matches_gate"] is True
+    assert live_bundle["completeness_checks"]["live_provider_receipts_complete"] is True
+    assert live_bundle["completeness_checks"]["live_request_ids_unique"] is True
+    assert live_bundle["final_release_ready"] is False

@@ -26,8 +26,10 @@ tamper-evident evidence. They do not demonstrate live Nebius behavior or physica
   `get_operation_metrics` read tool. Its `operation-metrics-v1` result records one completed
   mission, duration, interventions, stop timing, model cost and final pose; the trace stores its
   arguments, result, hashes and measured tool latency.
-- The Compatibility preflight is explicitly unofficial. The official gate remains false until the
-  same test matrix runs against live Token Factory/Nemotron and its raw request evidence is stored.
+- The fixture Compatibility preflight is explicitly unofficial. On 2026-09-06 the same six-variant
+  matrix ran 20 times against live Token Factory/Nemotron: 120/120 runs completed and 360 model
+  calls produced provider receipts. The aggregate report and every raw hash-chained trace are
+  included in the Evidence Bundle; this remains simulator execution, not physical AGV evidence.
 - Judge Mode first-load evidence uses browser end-to-end wall time from navigation start until the
   page load state. The current report contains one new-tab navigation and 19 same-tab reloads of
   the local production build; median and interpolated p95 are compared with the 5,000 ms limit.
@@ -43,6 +45,12 @@ Run `shiftzero export-schemas`, `shiftzero evaluate-scenarios`,
 `shiftzero build-hero-summary`, `shiftzero build-screenshot-manifest`, and
 `shiftzero build-evidence-bundle`. The bundle manifest hashes every included byte.
 
+With `NEBIUS_API_KEY` supplied outside the repository, reproduce the official live gate with
+`shiftzero compatibility --provider nebius --repetitions 20 --evidence-root
+evidence/runs/live-compatibility --report evidence/compatibility/live-gate.json`, then rebuild the
+bundle. The bundle validates the live report self-hash, run counts, trace chains, exact provider
+and model, HTTP/tool-call receipts, positive token counts and request-ID uniqueness.
+
 ## Visual evidence
 
 The private Judge Mode renders JSON evidence directly. Three checked-in PNG captures show the
@@ -52,5 +60,5 @@ records capture time, dimensions and SHA-256; JSON/JSONL remains the primary mac
 evidence. The manifest classifies them as `preflight_fixture`, marks them ineligible for final
 submission and requires replacement after the live gate. `validate-final-evidence` fails closed
 until all three replacement images carry `LIVE / NEBIUS`, UTC timestamps, exact hashes and a real
-provider receipt backed by `official_gate_passed=true`. Physical AGV video and live-provider
-screenshots are external gates and remain absent.
+provider receipt backed by `official_gate_passed=true`. The live gate now passes, but the final
+correlated physical screenshots and AGV video remain absent.

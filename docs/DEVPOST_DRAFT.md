@@ -52,12 +52,17 @@ and kept emergency stopping on the edge path.
 - Reproducible 100-scenario evaluation: 100/100 expected outcomes, zero observed safety
   violations, and 45/45 unsafe conditions rejected or safely handled.
 - 120-call deterministic fixture preflight across six intent variants.
+- Official live Token Factory Compatibility Gate: 120/120 simulator missions, 360/360 forced
+  Nemotron tool calls with HTTP 200 and unique request IDs, 100% schema-valid output, p95
+  intent-to-proposal 6.500 seconds and zero reported failures.
 - 20+20 matched Manual UI versus Agent Flow simulator baseline with method and sample size.
 - Per-tool arguments/result hashes, latency/error fields and structured JSON replay artifacts.
 - Credential-free owner-private Judge Mode staging and downloadable, hash-indexed evidence;
   public access remains an explicit release action.
 
-These results are explicitly scoped to the reference simulator and fixture provider.
+The control-flow, safety and throughput results are scoped to the reference simulator. Model-call
+compatibility results are from the live Nebius Token Factory provider; no physical AGV claim is
+made.
 
 ## What we learned
 
@@ -67,10 +72,10 @@ rule authorized each transition, who approved it, and why it stopped.
 
 ## What's next
 
-After Token Factory credentials are registered, run the forced live tool-call check and the
-official six-variant Compatibility Gate. Only a passing live report can unlock site-approved AGV
-transport work. The next physical phase requires an OEM protocol, MQTT or VDA 5050 gateway,
-PLC/edge stop contract, mapped test area and safety-owner approval.
+The live six-variant Compatibility Gate now passes. The next physical phase requires an OEM
+protocol, MQTT or VDA 5050 gateway, PLC/edge stop contract, mapped test area and safety-owner
+approval. After that integration, record the continuous physical segment and replace the three
+fixture screenshots with one correlated `LIVE / NEBIUS` evidence set.
 
 ## Existing work
 
@@ -83,8 +88,8 @@ During the HERO-002 competition period, this repository added the Nebius Token F
 provider implementation, the six-variant Compatibility Gate, state-gated typed contracts,
 three-layer validation, signed approval and idempotency controls, proof-carrying mission objects,
 the reproducible 100-scenario suite, public-release-gated Judge Mode, and the hardware integration
-boundary. Live-provider, Serverless and physical claims remain pending until their corresponding
-external evidence exists.
+boundary. Live-provider compatibility is now evidenced; Serverless deployment and physical claims
+remain pending until their corresponding external evidence exists.
 
 The detailed file-level declaration is maintained in `PRE_EXISTING_WORK.md`. The project owner
 must confirm that declaration against the complete private history and sign/date it before final
@@ -96,4 +101,5 @@ submission; this draft does not impersonate that owner confirmation.
   public access is explicitly approved)
 - Source repository: `[ADD PUBLIC REPOSITORY URL]`
 - Demo video: `[ADD VIDEO URL]`
-- Live compatibility report: `[ADD ONLY AFTER OFFICIAL GATE PASSES]`
+- Live compatibility report: included in the downloadable Evidence Bundle; `[ADD PUBLIC ARTIFACT
+  URL AT RELEASE]`

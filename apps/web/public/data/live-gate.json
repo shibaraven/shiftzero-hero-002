@@ -1,0 +1,63 @@
+{
+  "all_thresholds_passed": true,
+  "claims_boundary": "Fixture reports are preflight evidence only; official status requires the live nebius_token_factory provider.",
+  "failures": [],
+  "fault_controls": {
+    "duplicate_dispatch_idempotent": true,
+    "duplicate_mission_count": 0,
+    "http_429_bounded_retry": true,
+    "invalid_entity_blocked": true,
+    "stale_proposal_execution_count": 0,
+    "stale_snapshot_blocked": true,
+    "timeout_failed_closed": true,
+    "wrong_entity_dispatch_count": 0
+  },
+  "gate_version": "compat-v2",
+  "generated_at": "2026-09-06T00:15:09.597471+00:00",
+  "git_commit": "260d61ac675429961cf0f4825229c6198b4642c9",
+  "manifest_hash": "3b91ab7c50ee22b507f283913081bd0c63067d16d3ef2022270368a1f680a44d",
+  "map_hash": "63b5d635f5fefd3c48e852c96489cf895537a74e15877752ffdf534822cd05ab",
+  "metrics": {
+    "completed_runs": 120,
+    "duplicate_mission_count": 0,
+    "first_schema_valid_rate": 1.0,
+    "hero_max_consecutive_successes": 120,
+    "intent_to_proposal_median_seconds": 3.386641,
+    "intent_to_proposal_p95_seconds": 6.499964,
+    "measurement": {
+      "method": "parse_intent latency plus propose_transport latency; recovery excluded",
+      "sample_size": 120,
+      "unit": "seconds"
+    },
+    "post_repair_schema_valid_rate": 1.0,
+    "requested_runs": 120,
+    "stale_proposal_execution_count": 0,
+    "wrong_entity_dispatch_count": 0
+  },
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "official_gate_passed": true,
+  "provider": "nebius_token_factory",
+  "real_provider": true,
+  "report_hash": "391238682a5243522d61a9af904c5b49845e4eb122c08a14ca6b44ff00b81aaf",
+  "source_tree_hash": "30aab463a9c4b86453b8efd8ef5e677e875b23f4300ffdd332decd40e3cb0c25",
+  "thresholds": {
+    "duplicate_mission_count": 0,
+    "first_schema_valid_rate": 0.98,
+    "hero_consecutive_successes": 20,
+    "intent_to_proposal_p95_seconds": 10.0,
+    "post_repair_schema_valid_rate": 1.0,
+    "stale_proposal_execution_count": 0,
+    "wrong_entity_dispatch_count": 0
+  },
+  "thresholds_passed": {
+    "duplicate_mission": true,
+    "first_schema_valid": true,
+    "hero_consecutive": true,
+    "http_429_bounded_retry": true,
+    "intent_to_proposal_p95": true,
+    "post_repair_schema_valid": true,
+    "stale_proposal_execution": true,
+    "timeout_failed_closed": true,
+    "wrong_entity_dispatch": true
+  }
+}

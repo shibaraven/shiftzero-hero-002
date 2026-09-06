@@ -83,6 +83,12 @@ The compatibility command executes six intent variants 20 times each. Only a rep
 with the real `nebius_token_factory` provider can set `official_gate_passed=true`. Missing
 credentials fail closed; there is no silent mock fallback.
 
+The checked-in aggregate live report passed on 2026-09-06: 120/120 simulator missions, 360/360
+forced Nemotron tool calls with HTTP 200 and unique request IDs, 100% first/post-repair schema
+validity, p95 intent-to-proposal 6.500 seconds, and zero reported failures. The raw live traces are
+ignored as standalone working files but are hash-indexed inside the checked-in Evidence Bundle;
+the API key is included in neither artifact.
+
 The checked-in screenshots are preflight-only `MOCK / FIXTURE` captures. They cannot be promoted
 to final evidence. After the live gate and physical capture, validate their provider receipts,
 hashes, UTC timestamps and visible `LIVE / NEBIUS` labels with:
@@ -104,7 +110,8 @@ and the [Nebius Nemotron 3 Super guide](https://github.com/nebius/token-factory-
 - `adapters/reference-mqtt`: public simulator/MQTT contract.
 - `adapters/real-agv`: hardware integration boundary, guarded by a signed compatibility result.
 - `schemas`: checked-in JSON Schemas generated from the Pydantic contracts.
-- `evidence`: verified run and compatibility outputs. Generated live evidence is ignored by Git.
+- `evidence`: verified run and compatibility outputs. The aggregate live report and Evidence
+  Bundle are checked in; standalone generated live traces are ignored by Git.
 
 All mutating Agent API calls require a signed bearer identity, idempotency key and expected version.
 Stale writes return HTTP 409, verified-role violations return HTTP 403, and
@@ -128,8 +135,8 @@ npm run dev
 ```
 
 The judge-facing workflow is documented in `docs/JUDGE_MODE_RUNBOOK.md`. Offline evaluation
-results are always marked as reference-simulator evidence; the UI keeps the live provider gate
-visibly locked until real credentials produce a passing attestation.
+results are always marked as reference-simulator evidence. The UI shows the passed live-provider
+attestation separately while keeping the replay and current screenshots visibly `MOCK / FIXTURE`.
 
 ## Scope
 

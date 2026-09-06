@@ -2,9 +2,11 @@
 
 The three screenshots currently stored in `evidence/screenshots/` are local preflight captures.
 They are visibly labeled `MOCK / FIXTURE`, have timestamps and hashes, and are useful for layout
-and reproducibility checks. They are not eligible for A01 or final competition submission.
+and reproducibility checks. They are not eligible as A01/final screenshot evidence.
 
 ## Prerequisites
+
+As of 2026-09-06, prerequisites 1 and 2 pass. Prerequisites 3 and 4 remain open.
 
 Do not replace or promote the screenshots until all of the following are true:
 

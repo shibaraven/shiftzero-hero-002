@@ -120,6 +120,25 @@ type ScreenshotEvidence = {
   replacement_required_after_live_gate: boolean;
 };
 
+type LiveGateEvidence = {
+  generated_at: string;
+  provider: string;
+  model: string;
+  real_provider: boolean;
+  official_gate_passed: boolean;
+  all_thresholds_passed: boolean;
+  report_hash: string;
+  failures: Array<string>;
+  metrics: {
+    requested_runs: number;
+    completed_runs: number;
+    first_schema_valid_rate: number;
+    post_repair_schema_valid_rate: number;
+    hero_max_consecutive_successes: number;
+    intent_to_proposal_p95_seconds: number;
+  };
+};
+
 const views: Array<{ id: View; label: string }> = [
   { id: 'mission', label: 'Run Hero' },
   { id: 'architecture', label: 'Architecture' },
@@ -258,7 +277,7 @@ const architectureLayers = [
     number: '04',
     title: 'Adapter boundary',
     detail:
-      'Reference simulator today; physical AGV remains gated behind official compatibility.',
+      'Reference simulator today; physical AGV remains gated behind a safety-approved hardware handoff.',
     icon: Layers3,
     label: 'SWAPPABLE',
   },
@@ -301,6 +320,7 @@ export default function MissionConsole() {
   const [impactLoad, setImpactLoad] = useState<ImpactLoadModel | null>(null);
   const [screenshotEvidence, setScreenshotEvidence] =
     useState<ScreenshotEvidence | null>(null);
+  const [liveGate, setLiveGate] = useState<LiveGateEvidence | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -338,6 +358,13 @@ export default function MissionConsole() {
         return response.json() as Promise<ScreenshotEvidence>;
       })
       .then(setScreenshotEvidence)
+      .catch(() => setEvidenceError(true));
+    fetch('/data/live-gate.json')
+      .then((response) => {
+        if (!response.ok) throw new Error('live gate evidence unavailable');
+        return response.json() as Promise<LiveGateEvidence>;
+      })
+      .then(setLiveGate)
       .catch(() => setEvidenceError(true));
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -443,9 +470,21 @@ export default function MissionConsole() {
             </Button>
             <Badge
               variant="outline"
-              className="hidden h-8 rounded-md border-amber-300/20 bg-amber-300/[0.06] px-3 font-mono text-[9px] tracking-[0.12em] text-amber-200 sm:flex"
+              className={classNames(
+                'hidden h-8 rounded-md px-3 font-mono text-[9px] tracking-[0.12em] sm:flex',
+                liveGate?.official_gate_passed
+                  ? 'border-emerald-300/20 bg-emerald-300/[0.06] text-emerald-200'
+                  : 'border-amber-300/20 bg-amber-300/[0.06] text-amber-200',
+              )}
             >
-              <LockKeyhole className="size-3" /> LIVE GATE LOCKED
+              {liveGate?.official_gate_passed ? (
+                <ShieldCheck className="size-3" />
+              ) : (
+                <LockKeyhole className="size-3" />
+              )}
+              {liveGate?.official_gate_passed
+                ? 'LIVE GATE PASSED'
+                : 'LIVE GATE VERIFYING'}
             </Badge>
             <Badge className="hidden h-8 rounded-md border border-rose-300/25 bg-rose-300/[0.08] px-3 font-mono text-[9px] tracking-[0.12em] text-rose-200 sm:flex">
               MOCK / FIXTURE
@@ -474,8 +513,8 @@ export default function MissionConsole() {
             <span className="font-medium text-slate-200">MOCK verified replay</span>
             <span className="text-slate-700">/</span>
             <span>
-              Reference simulator · deterministic fixture · no cloud key
-              required
+              Reference simulator · deterministic fixture · no cloud key loaded
+              in Judge Mode
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -536,6 +575,7 @@ export default function MissionConsole() {
           judgeLoad={judgeLoad}
           impactLoad={impactLoad}
           screenshotEvidence={screenshotEvidence}
+          liveGate={liveGate}
           evidenceError={evidenceError}
         />
       )}
@@ -1258,7 +1298,7 @@ function ArchitectureView({ onRun }: { onRun: () => void }) {
         <BoundaryCard
           icon={FileCheck2}
           title="Claims are scoped"
-          detail="Simulator evidence is never presented as physical AGV or live Token Factory evidence."
+          detail="Simulator replay and live Token Factory receipts are labeled separately; neither is presented as physical AGV evidence."
         />
       </div>
     </div>
@@ -1291,6 +1331,7 @@ function EvidenceView({
   judgeLoad,
   impactLoad,
   screenshotEvidence,
+  liveGate,
   evidenceError,
 }: {
   heroSummary: HeroSummary | null;
@@ -1298,6 +1339,7 @@ function EvidenceView({
   judgeLoad: JudgeLoadEvidence | null;
   impactLoad: ImpactLoadModel | null;
   screenshotEvidence: ScreenshotEvidence | null;
+  liveGate: LiveGateEvidence | null;
   evidenceError: boolean;
 }) {
   return (
@@ -1361,6 +1403,64 @@ function EvidenceView({
         />
         <Metric value="400–500" label="Pallets/day modeled" tone="violet" />
       </div>
+
+      <Card className="mb-4 rounded-lg border-emerald-300/20 bg-emerald-300/[0.035] shadow-none">
+        <CardHeader className="border-b border-emerald-300/10 px-5 py-4">
+          <CardTitle className="flex flex-wrap items-center justify-between gap-3 text-xs text-white">
+            <span className="flex items-center gap-2">
+              <RadioTower className="size-4 text-emerald-300" />
+              Live Nebius Token Factory Compatibility Gate
+            </span>
+            <Badge className="rounded-sm bg-emerald-300/10 font-mono text-[8px] text-emerald-300">
+              {liveGate?.official_gate_passed ? 'OFFICIAL GATE · PASS' : 'VERIFYING'}
+            </Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-5">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <EvidenceStat
+              label="Live runs"
+              value={
+                liveGate
+                  ? `${liveGate.metrics.completed_runs}/${liveGate.metrics.requested_runs}`
+                  : '—'
+              }
+            />
+            <EvidenceStat
+              label="Forced tool calls"
+              value={liveGate ? `${liveGate.metrics.completed_runs * 3}` : '—'}
+            />
+            <EvidenceStat
+              label="First / repaired schema"
+              value={
+                liveGate
+                  ? `${(liveGate.metrics.first_schema_valid_rate * 100).toFixed(0)}% / ${(liveGate.metrics.post_repair_schema_valid_rate * 100).toFixed(0)}%`
+                  : '—'
+              }
+            />
+            <EvidenceStat
+              label="Intent→proposal p95"
+              value={
+                liveGate
+                  ? `${liveGate.metrics.intent_to_proposal_p95_seconds.toFixed(3)} s`
+                  : '—'
+              }
+            />
+            <EvidenceStat
+              label="Failures"
+              value={liveGate ? `${liveGate.failures.length}` : '—'}
+            />
+          </div>
+          <p className="mt-4 break-all font-mono text-[9px] leading-4 text-slate-500">
+            {liveGate
+              ? `${liveGate.provider} · ${liveGate.model} · report ${liveGate.report_hash}`
+              : 'Loading signed-off aggregate report…'}
+          </p>
+          <p className="mt-2 text-[10px] leading-5 text-slate-500">
+            Live model/provider evidence over the reference simulator. This does not claim physical AGV execution.
+          </p>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 lg:grid-cols-[1.2fr_.8fr]">
         <Card className="rounded-lg border-white/[0.09] bg-[#0a1828] shadow-none">
@@ -1438,6 +1538,10 @@ function EvidenceView({
                 label="compatibility-preflight.json"
               />
               <EvidenceLink
+                href="/data/live-gate.json"
+                label="compatibility-live-gate.json"
+              />
+              <EvidenceLink
                 href="/data/hero-reliability.json"
                 label="hero-reliability.json"
               />
@@ -1465,7 +1569,7 @@ function EvidenceView({
             <CardTitle className="flex items-center justify-between gap-2 text-xs text-white">
               <span className="flex items-center gap-2">
                 <TerminalSquare className="size-4 text-violet-200" />
-                Typed model tool evidence
+                Fixture replay tool evidence
               </span>
               <Badge className="rounded-sm border border-rose-300/20 bg-rose-300/[0.08] font-mono text-[8px] text-rose-200">
                 MOCK / FIXTURE
@@ -1529,7 +1633,12 @@ function EvidenceView({
             {[
               ['A05', '100-scenario simulator suite', 'PASS', 'emerald'],
               ['A03', '20 consecutive Hero replays', 'SIMULATOR', 'cyan'],
-              ['A01–A02', 'Live Nebius + final recapture', 'KEY GATED', 'amber'],
+              [
+                'A01–A02',
+                'Live Nebius runtime + compatibility',
+                liveGate?.official_gate_passed ? 'LIVE PASS' : 'VERIFYING',
+                liveGate?.official_gate_passed ? 'emerald' : 'amber',
+              ],
               ['A06–A07', 'Physical stop and AGV loop', 'HARDWARE', 'amber'],
               [
                 'A09–A12',
@@ -1621,7 +1730,9 @@ function EvidenceView({
             <p className="mt-1 text-[11px] leading-5 text-slate-500">
               {screenshotEvidence?.final_submission_eligible
                 ? 'The three screenshots are bound to a passing live-provider gate and are eligible for final review.'
-                : 'The three current PNGs are preflight-only MOCK / FIXTURE captures. They cannot satisfy A01 or final submission and must be replaced after the live Compatibility Gate passes.'}
+                : liveGate?.official_gate_passed
+                  ? 'The live Compatibility Gate passes. The three current PNGs remain preflight-only MOCK / FIXTURE captures and must be replaced only after the correlated physical AGV run and safety review.'
+                  : 'The three current PNGs are preflight-only MOCK / FIXTURE captures and cannot satisfy final submission.'}
             </p>
             <Badge
               variant="outline"

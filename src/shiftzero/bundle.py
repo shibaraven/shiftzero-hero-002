@@ -5,9 +5,17 @@ import json
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
+from shiftzero.domain import canonical_hash
 from shiftzero.evidence import EvidenceRecorder
 
-BUNDLE_VERSION = "hero002-preflight-evidence-v4"
+BUNDLE_VERSION = "hero002-evidence-v5"
+LIVE_GATE_PATH = "evidence/compatibility/live-gate.json"
+LIVE_TRACE_ROOT = "evidence/runs/live-compatibility"
+LIVE_PROVIDER = "nebius_token_factory"
+LIVE_MODEL = "nvidia/nemotron-3-super-120b-a12b"
+LIVE_MODEL_TOOLS = frozenset(
+    {"parse_mission_intent", "propose_transport", "propose_recovery"}
+)
 P0_TOOL_SPAN_KINDS = frozenset(
     {
         "tool.get_operational_snapshot",
@@ -78,11 +86,25 @@ def build_evidence_bundle(
         for path in files
     ]
     completeness_checks = _completeness_checks(root, files)
+    official_gate_passed = bool(
+        completeness_checks["live_nebius_gate_passed"]
+        and completeness_checks["live_trace_count_matches_gate"]
+        and completeness_checks["live_provider_receipts_complete"]
+        and completeness_checks["live_request_ids_unique"]
+    )
     embedded_manifest: dict[str, object] = {
         "bundle_version": BUNDLE_VERSION,
-        "evidence_class": "preflight_fixture",
-        "claim_scope": "reference_simulator_and_fixture_provider_only",
-        "official_gate_passed": False,
+        "evidence_class": (
+            "live_provider_with_reference_simulator"
+            if official_gate_passed
+            else "preflight_fixture"
+        ),
+        "claim_scope": (
+            "live_nebius_token_factory_with_reference_simulator_no_physical_hardware"
+            if official_gate_passed
+            else "reference_simulator_and_fixture_provider_only"
+        ),
+        "official_gate_passed": official_gate_passed,
         "final_release_ready": completeness_checks["passed"],
         "completeness_checks": completeness_checks,
         "files": entries,
@@ -141,6 +163,15 @@ def _resolve_files(root: Path) -> list[Path]:
     paths.extend(
         sorted((root / "evidence" / "scenario-evaluation" / "runs").glob("*/hero-run.json"))
     )
+    live_gate_path = root / LIVE_GATE_PATH
+    if live_gate_path.is_file():
+        paths.append(live_gate_path)
+        paths.extend(
+            sorted((root / LIVE_TRACE_ROOT).glob("*/hero-run.jsonl"))
+        )
+        paths.extend(
+            sorted((root / LIVE_TRACE_ROOT).glob("*/hero-run.json"))
+        )
     missing = [path for path in paths[: len(REQUIRED_PATHS)] if not path.is_file()]
     if missing:
         missing_text = ", ".join(path.relative_to(root).as_posix() for path in missing)
@@ -183,6 +214,54 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
         path: [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
         for path in trace_paths
     }
+    live_gate_path = root / LIVE_GATE_PATH
+    live_gate = (
+        json.loads(live_gate_path.read_text(encoding="utf-8"))
+        if live_gate_path in files
+        else None
+    )
+    live_trace_paths = [
+        path
+        for path in trace_paths
+        if path.relative_to(root).as_posix().startswith(f"{LIVE_TRACE_ROOT}/")
+    ]
+    live_trace_json_paths = [
+        path
+        for path in trace_json_paths
+        if path.relative_to(root).as_posix().startswith(f"{LIVE_TRACE_ROOT}/")
+    ]
+    live_model_events = [
+        event
+        for path in live_trace_paths
+        for event in trace_events[path]
+        if event["kind"] in {"llm.intent", "llm.proposal", "llm.recovery"}
+    ]
+    live_request_ids = [
+        event["payload"].get("request_id") for event in live_model_events
+    ]
+    expected_live_runs = live_gate["metrics"]["requested_runs"] if live_gate else 0
+
+    def live_receipt_complete(event: dict[str, object]) -> bool:
+        payload = event["payload"]
+        return bool(
+            payload.get("provider") == LIVE_PROVIDER
+            and payload.get("model") == LIVE_MODEL
+            and payload.get("http_status") == 200
+            and payload.get("finish_reason") == "tool_calls"
+            and payload.get("tool_name") in LIVE_MODEL_TOOLS
+            and payload.get("request_id")
+            and isinstance(payload.get("input_tokens"), int)
+            and payload["input_tokens"] > 0
+            and isinstance(payload.get("output_tokens"), int)
+            and payload["output_tokens"] > 0
+            and payload.get("timed_out") is False
+        )
+
+    live_gate_hash_valid = False
+    if live_gate:
+        report_without_hash = dict(live_gate)
+        report_hash = report_without_hash.pop("report_hash", None)
+        live_gate_hash_valid = report_hash == canonical_hash(report_without_hash)
 
     def proof_has_approval_integrity(events: list[dict[str, object]], kind: str) -> bool:
         return any(
@@ -250,6 +329,44 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
                 for row in screenshot_manifest["screenshots"]
             )
         ),
+        "live_nebius_gate_passed": bool(
+            live_gate
+            and live_gate.get("provider") == LIVE_PROVIDER
+            and live_gate.get("model") == LIVE_MODEL
+            and live_gate.get("real_provider") is True
+            and live_gate.get("official_gate_passed") is True
+            and live_gate.get("all_thresholds_passed") is True
+            and live_gate.get("failures") == []
+            and live_gate_hash_valid
+        ),
+        "live_trace_count_matches_gate": bool(
+            live_gate
+            and expected_live_runs > 0
+            and len(live_trace_paths) == expected_live_runs
+            and len(live_trace_json_paths) == expected_live_runs
+            and live_gate["metrics"]["completed_runs"] == expected_live_runs
+            and len(live_model_events) == expected_live_runs * len(LIVE_MODEL_TOOLS)
+        ),
+        "live_provider_receipts_complete": bool(
+            live_model_events
+            and all(live_receipt_complete(event) for event in live_model_events)
+            and all(
+                {
+                    event["payload"].get("tool_name")
+                    for event in trace_events[path]
+                    if event["kind"] in {"llm.intent", "llm.proposal", "llm.recovery"}
+                }
+                == LIVE_MODEL_TOOLS
+                for path in live_trace_paths
+            )
+        ),
+        "live_request_ids_unique": bool(
+            live_request_ids
+            and all(isinstance(request_id, str) and request_id for request_id in live_request_ids)
+            and len(live_request_ids) == len(set(live_request_ids))
+        ),
+        "live_trace_count": len(live_trace_paths),
+        "live_model_call_count": len(live_model_events),
         "judge_mode_load_under_five_seconds": judge_load["acceptance_passed"] is True
         and judge_load["sample_count"] >= 20
         and judge_load["p95_ms"] < judge_load["threshold_ms"],
@@ -296,6 +413,10 @@ def _completeness_checks(root: Path, files: list[Path]) -> dict[str, object]:
     checks["local_preflight_passed"] = all(checks[name] is True for name in local_preflight_checks)
     checks["passed"] = (
         checks["local_preflight_passed"] is True
+        and checks["live_nebius_gate_passed"] is True
+        and checks["live_trace_count_matches_gate"] is True
+        and checks["live_provider_receipts_complete"] is True
+        and checks["live_request_ids_unique"] is True
         and checks["final_real_screenshots_ready"] is True
     )
     return checks

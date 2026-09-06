@@ -1,8 +1,8 @@
 # Judge Mode runbook
 
 This runbook is intentionally credential-free. It demonstrates the complete proof-carrying
-mission loop using the deterministic reference simulator and labels that scope in the UI and
-every evidence artifact.
+mission loop using the deterministic reference simulator, and separately exposes the already
+recorded live-provider Compatibility Gate without loading an API key in the browser.
 
 ## Fastest path
 
@@ -14,8 +14,8 @@ every evidence artifact.
 3. Open **Architecture** to inspect the authority boundary: Nemotron may propose typed tools;
    deterministic policy and the state machine authorize execution.
 4. Open **Evidence** to inspect the 100-scenario result, run manifest, fixture compatibility
-   preflight, fair baseline, Judge load report, 400–500 pallets/day projection, typed tool spans,
-   and downloadable Evidence Bundle.
+   preflight, official live Compatibility Gate, fair baseline, Judge load report, 400–500
+   pallets/day projection, typed tool spans, and downloadable Evidence Bundle.
 5. Open **GitHub** to inspect repository readiness and the explicit public-release gate. The page
    never fabricates a source URL while no public remote exists.
 
@@ -42,9 +42,10 @@ python -m venv .venv
 ## Claims boundary
 
 - `MOCK / FIXTURE` means locally reproducible simulator evidence and is visible in every capture.
-- `LIVE GATE LOCKED` means no claim is made about live Token Factory execution.
-- Physical AGV execution remains impossible until a real-provider Compatibility Gate passes
-  and the site safety owner supplies the approved edge stop and transport interfaces.
+- `LIVE GATE PASSED` refers only to the archived Token Factory/Nemotron Compatibility Gate.
+- `MOCK / FIXTURE` refers to the interactive replay and current screenshots.
+- Physical AGV execution remains unavailable until the site safety owner supplies the approved
+  OEM transport, mapped test area and edge-stop interfaces.
 
 The offline demo never reads secrets and never falls back from a failed live provider to a
 fixture while retaining a live label.
