@@ -1,7 +1,7 @@
 {
-  "bundle_bytes": 3937435,
+  "bundle_bytes": 3937428,
   "bundle_path": "evidence/HERO002-evidence-bundle.zip",
-  "bundle_sha256": "1e8bd996faa67c2bfc932f10b8edb75092eeffe2e23d8d3944ff823760e3b9e1",
+  "bundle_sha256": "036d196c70db333d0aa8e845d827338b57e69b9a30a6befa041be85f54e5d04f",
   "bundle_version": "hero002-evidence-v9",
   "claim_scope": "live_nebius_token_factory_with_reference_simulator_no_physical_hardware",
   "completeness_checks": {
@@ -133,7 +133,7 @@
     {
       "bytes": 6375,
       "path": "docs/SPEC_COMPLIANCE.md",
-      "sha256": "35088d36075a3a932df51a2cdc8ab3c6d660717d4bb34986cc1a058e1afb716c"
+      "sha256": "010919802f9314ad2d32d363c0c5b76b55aea38a163eb55d9a3d5e7e6127e608"
     },
     {
       "bytes": 3641,
@@ -386,9 +386,9 @@
       "sha256": "b1290062cf327492316002aa562c827680795b3da4398b32cad1be12dade7d97"
     },
     {
-      "bytes": 1284,
+      "bytes": 1282,
       "path": "evidence/judge-mode-publication.json",
-      "sha256": "9f9449aa98dccc505e47b27aef3bf7a409c2fa6bbc14802aac77860bbf2ab715"
+      "sha256": "9229ef17eebbf8e7a97144ef463ef1f5bc8412066c52b452add6ab25ee18676f"
     },
     {
       "bytes": 6559,
@@ -403,7 +403,7 @@
     {
       "bytes": 5205,
       "path": "evidence/release-acceptance.json",
-      "sha256": "f456a642f1318ca57293db4b9f08243e40ad34f5572cd214e7bd230aacd57eea"
+      "sha256": "30e40fb3429898c6a75c11062eee114128c1e73ead6c54c64b451cfd6913c660"
     },
     {
       "bytes": 72156,

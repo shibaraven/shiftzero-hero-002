@@ -67,7 +67,7 @@
   uninterrupted 65-second physical segment; Devpost includes an explicit existing-work section.
 - Complete resolved Python/npm dependency inventory with exact versions, license identifiers,
   source URLs and a frozen Python verification lock.
-- Public Judge Mode deployment at `https://shiftzero-hero-002.mingjen.chatgpt.site`; v11 and its
+- Public Judge Mode deployment at `https://shiftzero-hero-002.mingjen.chatgpt.site`; v14 and its
   source SHA are captured in a deployment receipt, and four anonymous HTTP checks return 200.
 - Public GitHub repository at `https://github.com/shibaraven/shiftzero-hero-002`; visibility,
   default branch, remote head, immutable commit URL and unauthenticated HTTP reachability are

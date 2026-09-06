@@ -8,33 +8,33 @@
       "status": 200
     },
     {
+      "bytes": 5355,
+      "content_type": "application/json",
+      "path": "/data/release-acceptance.json",
+      "status": 200
+    },
+    {
       "bytes": 6735,
       "content_type": "application/json",
       "path": "/data/live-runtime-summary.json",
       "status": 200
     },
     {
-      "bytes": 1562,
-      "content_type": "application/json",
-      "path": "/data/serverless-readiness.json",
-      "status": 200
-    },
-    {
-      "bytes": 3922407,
+      "bytes": 3937435,
       "content_type": "application/zip",
       "path": "/data/evidence-bundle.zip",
       "status": 200
     }
   ],
-  "deployment_id": "appgdep_6a9cb84c1f0c8191a702394e29fd1710",
+  "deployment_id": "appgdep_6a9cd00c1dcc81919c19fab79b092181",
   "deployment_status": "succeeded",
   "http_authentication_used": false,
   "project_id": "appgprj_6a9bd61c6bd08191a88940d173418467",
-  "published_at": "2026-09-06T00:48:25.114183Z",
-  "root_repository_commit": "7b13c71b6ff58648ba88b999cbff318b05a11e4c",
-  "site_source_commit": "8de2ee51fea871d20209114845c25741c20e84a8",
+  "published_at": "2026-09-06T02:29:43.280124Z",
+  "root_repository_commit": "4c1c187db667c58e9da651f93e8f180c748deae3",
+  "site_source_commit": "42cb1dd629c4f5d7ee04717cf41f6e44f1d731d0",
   "url": "https://shiftzero-hero-002.mingjen.chatgpt.site",
   "verification_scope": "anonymous HTTP reachability; not a visual or physical-hardware claim",
-  "version_id": "appgprj_6a9bd61c6bd08191a88940d173418467~appgver_c30d51f08330819183ea53b1cb705cc0",
-  "version_number": 11
+  "version_id": "appgprj_6a9bd61c6bd08191a88940d173418467~appgver_3f2e3a7693d88191accb1288f5933235",
+  "version_number": 14
 }

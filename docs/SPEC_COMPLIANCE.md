@@ -33,7 +33,7 @@ fixture result is equivalent to Nebius or physical evidence.
 | Real AGV adapter | Gate + hardware-gated | interface, nine-AGV pre-physical harness, field protocol and fail-closed evidence validator complete; OEM protocol/safety approval absent |
 | Physical sensor-to-stop under 200 ms | Harness complete; hardware-gated | Field Test Lab rehearses pass/fail timing and exports ineligible synthetic evidence; strict physical schema/validator requires correlated clocked field events |
 | Public GitHub repository | Complete | `https://github.com/shibaraven/shiftzero-hero-002`; public visibility, `main`, immutable commit and anonymous HTTP checks captured in `evidence/public-repository.json` |
-| Anonymous public Judge Mode | Complete | public v11 deployment, source SHA and four unauthenticated HTTP 200 checks are captured in `evidence/judge-mode-publication.json` |
+| Anonymous public Judge Mode | Complete | public v14 deployment, source SHA and four unauthenticated HTTP 200 checks are captured in `evidence/judge-mode-publication.json` |
 | Physical demo video | Hardware/publication-gated | shot list complete; recording is not fabricated |
 | Devpost submission | External action | draft/checklist complete; final URLs and submit action pending |
 | Third-party dependency inventory | Complete locally | all resolved Python/npm packages have exact versions, license identifiers and sources; final legal review remains a release action |
